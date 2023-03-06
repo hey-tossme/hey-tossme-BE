@@ -1,0 +1,11 @@
+
+/.idea/
+/.settings/
+/deploy/
+/target/
+*.yml
+
+/lib/chc-components-0.0.1-lib.jar
+/src/main/resources/version.json
+# 프로젝트 제외 경로
+/.gradle/
