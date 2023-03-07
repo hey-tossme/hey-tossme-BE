@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/chatMessages")
 @RequiredArgsConstructor
 public class ChatMessageController {
-    private final ChatService chatService;
 
     @GetMapping
     public ResponseEntity<ResponseForm> chatRoomList(@RequestHeader("Authorization") String token) {
