@@ -21,14 +21,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-public class Bookmark {
+public class Bookmark extends BaseTimeEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
-	private LocalDateTime createdAt;
+//	@NotNull
+//	private LocalDateTime createdAt;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
