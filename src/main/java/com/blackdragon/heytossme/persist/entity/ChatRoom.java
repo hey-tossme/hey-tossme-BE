@@ -1,14 +1,13 @@
 package com.blackdragon.heytossme.persist.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.Queue;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +17,7 @@ import lombok.ToString;
 public class ChatRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
@@ -30,4 +29,7 @@ public class ChatRoom {
     private  Long itemId;
     @NotNull
     private boolean accountTransferStatus;
+
+    @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    Queue<ChatMessage> chatMessageQueue;
 }
