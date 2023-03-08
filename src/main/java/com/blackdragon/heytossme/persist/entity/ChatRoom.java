@@ -31,7 +31,7 @@ public class ChatRoom {
     private Long sellerId;
 
     @NotNull
-    private  Long itemId;
+    private Long itemId;
     @NotNull
     private boolean accountTransferStatus;
 

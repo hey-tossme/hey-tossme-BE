@@ -21,27 +21,27 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Notification {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotNull
-	private String message;
+    @NotNull
+    private String message;
 
-	@NotNull
-	private String type;
-	private boolean readOrNot;
+    @NotNull
+    private String type;
+    private boolean readOrNot;
 
-	@NotNull
-	private LocalDateTime createdAt;
+    @NotNull
+    private LocalDateTime createdAt;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_id")
-	private Item item;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
