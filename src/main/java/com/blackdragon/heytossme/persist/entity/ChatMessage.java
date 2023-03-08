@@ -1,7 +1,6 @@
 package com.blackdragon.heytossme.persist.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,15 +13,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
-@EntityListeners(AuditingEntityListener.class)
 public class ChatMessage {
 
     @Id
@@ -37,8 +33,10 @@ public class ChatMessage {
     private String sender;
     @NotNull
     private String message;
-
     @NotNull
-    @CreatedDate
     private LocalDateTime createdAt;
+
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
 }
