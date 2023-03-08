@@ -1,6 +1,5 @@
 package com.blackdragon.heytossme.persist.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
