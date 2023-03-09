@@ -1,5 +1,9 @@
 package com.blackdragon.heytossme.component;
 
+import static com.blackdragon.heytossme.exception.ErrorCode.INVALID_TOKEN;
+
+import com.blackdragon.heytossme.exception.CustomException;
+import com.blackdragon.heytossme.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -36,8 +40,12 @@ public class JWTUtil {
 				.compact();
 	}
 
-	private Claims getClaims(String token) throws ExpiredJwtException{
-		return Jwts.parser().setSigningKey(this.key).parseClaimsJws(token).getBody();
+	private Claims getClaims(String token){
+		try {
+			return Jwts.parser().setSigningKey(this.key).parseClaimsJws(token).getBody();
+		} catch (Exception e) {
+			throw new CustomException(INVALID_TOKEN);
+		}
 	}
 
 	public boolean validateToken(String token) {
