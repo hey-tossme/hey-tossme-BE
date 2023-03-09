@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-public class Bookmark extends BaseTimeEntity{
+public class Bookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

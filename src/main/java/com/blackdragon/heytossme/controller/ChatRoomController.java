@@ -3,7 +3,7 @@ package com.blackdragon.heytossme.controller;
 import com.blackdragon.heytossme.dto.ChatRoomDto.CreateRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
-import com.blackdragon.heytossme.type.ChatRoomType;
+import com.blackdragon.heytossme.type.ChatRoomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,8 @@ public class ChatRoomController {
     public ResponseEntity<ResponseForm> getChatRoomList(
             Long userId) { //<- token 생성 함수 만들기전 임시 방편 @RequestHeader("Authorization") String token
         var data = chatService.getChatRoomList(userId);
-        return ResponseEntity.ok(new ResponseForm(ChatRoomType.CHAT_ROOM_LIST.getMessage(), data));
+        return ResponseEntity.ok(
+                new ResponseForm(ChatRoomResponse.CHAT_ROOM_LIST.getMessage(), data));
     }
 
     @PostMapping
@@ -32,7 +33,7 @@ public class ChatRoomController {
         var data = chatService.createChatRoom(request.getBuyerId(), request.getSellerId(),
                 request.getItemId());
         return ResponseEntity.ok(
-                new ResponseForm(ChatRoomType.CREATE_CHAT_ROOM.getMessage(), data));
+                new ResponseForm(ChatRoomResponse.CREATE_CHAT_ROOM.getMessage(), data));
     }
 
 }

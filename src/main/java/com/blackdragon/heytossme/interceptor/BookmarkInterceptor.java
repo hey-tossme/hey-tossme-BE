@@ -15,26 +15,26 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class BookmarkInterceptor implements HandlerInterceptor {
 
-	private final JWTUtil jwtUtil;
-	private final AuthExtractor authExtractor;
+    private final JWTUtil jwtUtil;
+    private final AuthExtractor authExtractor;
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) throws Exception {
 
-		log.info(">>>>>>>>> 인터셉터 호출됨 >>>>>>>>>>>>");
-		String token = authExtractor.extract(request, "Bearer");
+        log.info(">>>>>>>>> 인터셉터 호출됨 >>>>>>>>>>>>");
+        String token = authExtractor.extract(request, "Bearer");
 
-		if (StringUtils.hasText(token)) {
-			return true;
-		}
+        if (StringUtils.hasText(token)) {
+            return true;
+        }
 
-		if (!jwtUtil.validateToken(token)) {
-			throw new IllegalArgumentException("유효하지 않은 토큰입니다");
-		}
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다");
+        }
 
-		Long userId = jwtUtil.getUserId(token);
-		request.setAttribute("userId", userId);
-		return true;
-	}
+        Long userId = jwtUtil.getUserId(token);
+        request.setAttribute("userId", userId);
+        return true;
+    }
 }
