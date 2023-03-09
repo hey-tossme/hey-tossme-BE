@@ -5,6 +5,12 @@ import java.util.Objects;
 import lombok.Data;
 
 public class ChatRoomDto {
+    @Data
+    public static class CreateRequest {
+        private Long buyerId;
+        private Long sellerId;
+        private Long itemId;
+    }
 
     @Data
     public static class Response {

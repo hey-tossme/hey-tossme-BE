@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.ChatRoomDto.CreateRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
 import com.blackdragon.heytossme.type.ChatRoomType;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,11 +27,13 @@ public class ChatRoomController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseForm> createChatRoomList(Long buyerId, Long sellerId,
-            Long itemId) {
-        var data = chatService.createChatRoom(buyerId, sellerId, itemId);
+    public ResponseEntity<ResponseForm> createChatRoomList(@RequestBody CreateRequest request) {
+//        System.out.println(request.toString());
+        var data = chatService.createChatRoom(request.getBuyerId(), request.getSellerId(),
+                request.getItemId());
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomType.CREATE_CHAT_ROOM.getMessage(), data));
     }
 
 }
+
