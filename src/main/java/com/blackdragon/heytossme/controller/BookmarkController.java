@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class BookmarkController {
 
 
-	@GetMapping("/bookmarks")
-	public ResponseEntity<?> getBookmarks(HttpServletRequest request) {
-		String userId = (String) request.getAttribute("userId");
-		log.info("controller 진입!" + userId);
+    @GetMapping("/bookmarks")
+    public ResponseEntity<?> getBookmarks(HttpServletRequest request) {
+        String userId = (String) request.getAttribute("userId");
+        log.info("controller 진입!" + userId);
 
-		return ResponseEntity.ok().build();
-	}
+        return ResponseEntity.ok().build();
+    }
 }

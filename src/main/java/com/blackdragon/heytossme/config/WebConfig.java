@@ -12,13 +12,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	private final BookmarkInterceptor bookmarkInterceptor;
+    private final BookmarkInterceptor bookmarkInterceptor;
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		log.info(">>>>>>>>>>> 인터셉터 구현 >>>>>>>>>>");
-		registry.addInterceptor(bookmarkInterceptor)
-				.order(1)
-				.addPathPatterns("/bookmarks");
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        log.info(">>>>>>>>>>> 인터셉터 구현 >>>>>>>>>>");
+        registry.addInterceptor(bookmarkInterceptor)
+                .order(1)
+                .addPathPatterns("/bookmarks");
+    }
 }
