@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     //공통
     INSUFFICIENT_PARAMETER(HttpStatus.BAD_REQUEST, "Not sufficient parameter"),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "Invalid token supplied"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token supplied"),
     //회원 가입에러
     CONFLICT_EMAIL(HttpStatus.CONFLICT, "Already existed email"),
     INCORRECT_AUTH_CODE(HttpStatus.CONFLICT, "Incorrect authorize code"),

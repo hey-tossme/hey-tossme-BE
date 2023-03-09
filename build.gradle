@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'com.rabbitmq:amqp-client'
+//    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359' //xml -> object로 변환
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
