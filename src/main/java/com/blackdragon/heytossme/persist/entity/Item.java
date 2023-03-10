@@ -23,7 +23,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item {
+public class Item extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +46,6 @@ public class Item {
     private int price;
 
     @NotNull
-    private LocalDateTime createdAt;
-
-    @NotNull
     private LocalDateTime dueDate;
 
     private float latitude;
@@ -62,4 +59,9 @@ public class Item {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Address address;
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
 }

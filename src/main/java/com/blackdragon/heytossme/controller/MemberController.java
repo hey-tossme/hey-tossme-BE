@@ -22,7 +22,6 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<ResponseForm> signUp(@RequestBody SignUpRequest request) {
-        log.info("------------------------sign up------------------------");
         var data = memberService.signUp(request);
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SING_UP.getMessage(), data));
     }

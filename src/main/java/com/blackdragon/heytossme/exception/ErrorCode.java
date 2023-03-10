@@ -17,6 +17,7 @@ public enum ErrorCode {
     DIFFERENT_PASSWORD_REQUIRED(HttpStatus.CONFLICT, "Different password required"),
     //상품 정보
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Item not found"),
+    ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "Address can't convert to coordinate"),
     //채팅방 정보
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom not found");
 

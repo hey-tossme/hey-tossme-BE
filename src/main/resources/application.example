@@ -17,3 +17,14 @@ spring:
     password: guest
     host: localhost
     port: 5672
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+com:
+  blackdragon:
+    jwt:
+      secret: {필수 입력}
+    kakao:
+      key: {필수 입력}
