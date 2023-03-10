@@ -4,7 +4,9 @@ import com.blackdragon.heytossme.persist.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.http.ResponseCookie;
 
 public class MemberDto {
 
@@ -47,5 +49,19 @@ public class MemberDto {
             this.account = member.getAccount();
             this.bankName = member.getBankName();
         }
+    }
+
+    @Data
+    public static class SignInRequest{
+        private String email;
+        private String password;
+    }
+
+    @Data
+    @Builder
+    public static class ResponseToken{
+
+        private ResponseCookie responseCookie;
+        private String accessToken;
     }
 }
