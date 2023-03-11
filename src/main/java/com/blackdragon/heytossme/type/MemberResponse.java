@@ -4,7 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum MemberResponse {
-    SING_UP("Successfully signed up");
+    SIGN_UP("Successfully signed up"),
+    FIND_INFO("successfully get user info"),
+    CHANGE_INFO("successfully edit info"),
+
+    DELETE_USER("successfully deleted"),
+
+    SIGN_IN("successfully signed up");
 
     MemberResponse(String message) {
         this.message = message;
