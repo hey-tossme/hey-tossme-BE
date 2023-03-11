@@ -25,6 +25,8 @@ public class MemberService {
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.CONFLICT_EMAIL);
         }
+
+
         Member member = memberRepository.save(
                 Member.builder()
                         .email(request.getEmail())
