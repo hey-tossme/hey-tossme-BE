@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class MemberDto {
+
 
     @Data
     public static class SignUpRequest {
@@ -24,6 +26,19 @@ public class MemberDto {
     }
 
     @Data
+    public static class ModifyRequest {
+        private String email;
+        private String name;
+        private String curPassword;
+        private String password;
+        private String imageUrl;
+        private String socialType;
+        private String account;
+        private String bankName;
+    }
+
+    @Data
+    @NoArgsConstructor
     public static class Response {
 
         private Long id;
@@ -36,6 +51,8 @@ public class MemberDto {
         private String account;
         private String bankName;
 
+        private String token;
+
         public Response(Member member) {
             this.id = member.getId();
             this.email = member.getEmail();
@@ -47,5 +64,10 @@ public class MemberDto {
             this.account = member.getAccount();
             this.bankName = member.getBankName();
         }
+    }
+
+    public static class SingInRequest {
+        private String email;
+        private String password;
     }
 }
