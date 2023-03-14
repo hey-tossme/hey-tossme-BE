@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.ChatRoomDto.ConvertAccountStatusRequest;
 import com.blackdragon.heytossme.dto.ChatRoomDto.CreateRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
@@ -10,10 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/chatrooms")
+@RequestMapping("/chat/rooms")
 @RequiredArgsConstructor
 public class ChatRoomController {
 
@@ -21,7 +23,7 @@ public class ChatRoomController {
 
     @GetMapping
     public ResponseEntity<ResponseForm> getChatRoomList(
-            Long userId) { //<- token 생성 함수 만들기전 임시 방편 @RequestHeader("Authorization") String token
+            @RequestParam("userId") Long userId) { //<- token 생성 함수 만들기전 임시 방편 @RequestHeader("Authorization") String token
         var data = chatService.getChatRoomList(userId);
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomResponse.CHAT_ROOM_LIST.getMessage(), data));
@@ -29,11 +31,18 @@ public class ChatRoomController {
 
     @PostMapping
     public ResponseEntity<ResponseForm> createChatRoomList(@RequestBody CreateRequest request) {
-//        System.out.println(request.toString());
-        var data = chatService.createChatRoom(request.getBuyerId(), request.getSellerId(),
-                request.getItemId());
+        var data = chatService.createChatRoom(request);
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomResponse.CREATE_CHAT_ROOM.getMessage(), data));
+    }
+
+    @PostMapping("/account-share")
+    public ResponseEntity<ResponseForm> convertAccountTransferStatus(@RequestBody
+    ConvertAccountStatusRequest request) {
+        var data = chatService.convertAccountTransferStatus(request);
+        return ResponseEntity.ok(
+                new ResponseForm(ChatRoomResponse.CONVERT_ACCOUNT_TRANSFER_STATUS.getMessage(),
+                        data));
     }
 
 }
