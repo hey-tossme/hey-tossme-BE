@@ -1,26 +1,40 @@
 package com.blackdragon.heytossme.controller;
 
-import com.blackdragon.heytossme.persist.entity.ChatMessage;
+import com.blackdragon.heytossme.dto.MessageDto;
+import com.blackdragon.heytossme.dto.ResponseForm;
+import com.blackdragon.heytossme.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ChatMessageController {
 
-    public void getMessageList(Long roomId, @RequestHeader("Authorization") String token) {
+    private static final String CHAT_EXCHANGE_NAME = "chat.exchange";
+    private final ChatService chatService;
+    private final RabbitTemplate template;
 
-        return;
+    @GetMapping("/chat/message/{roomId}")
+    public ResponseEntity<ResponseForm> getMessageList(@PathVariable Long roomId) {
+        var data = chatService.getChatRoomMessage(roomId);
+
+        return ResponseEntity.ok(new ResponseForm("ok", data));
     }
 
-    @MessageMapping("/{roomId}")
-    @SendTo("/room/{roomId}")
-    public void sendMessage(@DestinationVariable Long roomId, ChatMessage message) {
-
-        return;
+    @MessageMapping("chat.message.{chatRoomId}")
+    public void sendMessage(@Payload MessageDto.SendMessage request,
+            @DestinationVariable String chatRoomId) {
+        log.info("message = {}", request.toString());
+        chatService.sendMessage(request);
+        template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + chatRoomId, request);
     }
 }

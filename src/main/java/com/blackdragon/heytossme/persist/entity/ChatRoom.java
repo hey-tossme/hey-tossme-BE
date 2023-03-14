@@ -10,19 +10,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter
-public class ChatRoom implements Comparable<ChatRoom> {
+@Setter
+public class ChatRoom extends BaseTimeEntity implements Comparable<ChatRoom> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,13 +45,11 @@ public class ChatRoom implements Comparable<ChatRoom> {
     @NotNull
     private boolean accountTransferStatus;
 
-    private LocalDateTime createdAt;
-
     @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    Queue<ChatMessage> chatMessageQueue;
+    List<ChatMessage> chatMessageList = new ArrayList<>();
 
     @Override
     public int compareTo(ChatRoom o) {
-        return this.createdAt.compareTo(o.createdAt);
+        return this.getCreatedAt().compareTo(o.getCreatedAt());
     }
 }

@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     List<ChatRoom> findAllBySellerId(Long sellerId);
-
-    List<ChatRoom> findAllByBuyerId(Long BuyerId);
+    List<ChatRoom> findAllByBuyerId(Long buyerId);
 }
