@@ -21,8 +21,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
-//        registry.setApplicationDestinationPrefixes("/send"); // 매세지를 보낼 것인지
-//        registry.enableStompBrokerRelay("/room"); // 어떤 채팅방에 입장할 것인지 (구독)
+        WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
+        registry.setApplicationDestinationPrefixes("/send"); // 매세지를 보낼 것인지
+        registry.enableStompBrokerRelay("/room"); // 어떤 채팅방에 입장할 것인지 (구독)
     }
 }

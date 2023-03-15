@@ -44,20 +44,24 @@ public class MemberService {
 
     public ResponseToken generateToken(Long id, String email) {
 
-        String accessToken = jwtUtil.generateToken(id, email, false);
-        String refreshToken = jwtUtil.generateToken(id, email, true);
+        String accessToken = jwtUtil.generateToken(id, email);
+        String refreshToken = jwtUtil.generateToken(id, email);
 
         //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .path("/")
+                .maxAge(86400000)   //쿠키 만료시간 = 1일
                 .secure(true)
                 .httpOnly(true)
+                .sameSite("Strict")
                 .build();
 
-        //refresh + access token을 담아 리턴
+        // access token리턴, refresh
         return ResponseToken.builder()
                 .responseCookie(cookie)
                 .accessToken(accessToken)
                 .build();
     }
+
+
 }

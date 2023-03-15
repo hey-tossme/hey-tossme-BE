@@ -4,6 +4,8 @@ import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.JWTUtil;
 import com.blackdragon.heytossme.exception.CustomException;
 import com.blackdragon.heytossme.exception.ErrorCode;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
@@ -29,52 +31,34 @@ public class TokenInterceptor implements HandlerInterceptor {
 
 		log.info(">>>>>>>>> 인터셉터 호출됨 >>>>>>>>>>>>");
 
-		boolean isRefreshToken = checkRefreshToken(request);
-		log.info("isrefreshtoken : " + isRefreshToken);
+		String accessToken = authExtractor.extract(request, "Bearer");
+		Cookie cookie = request.getCookies()[0];
+		String refreshToken = cookie.getAttribute("refreshToken");
 
-		String token = "";
-		if (isRefreshToken) {
-			token = authExtractor.extract(request, "Bearer");
-		} else {
-			token = request.getHeader("Authorization");
-		}
-
-		if (!StringUtils.hasText(token)) {
+		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
 
-		if (!jwtUtil.validateToken(token, isRefreshToken)) {
-			throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-		}
-
-		if (isRefreshToken) {
-			Long userId = jwtUtil.getUserId(token, isRefreshToken);
-			String userEmail = jwtUtil.getUserEmail(token, isRefreshToken);
-
-			//토큰 재발급로직수행
-			String accessToken = jwtUtil.generateToken(userId, userEmail, false);
-			String refreshToken = jwtUtil.generateToken(userId, userEmail, true);
-
+		if (!jwtUtil.validateToken(accessToken)) {
+//			throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+			if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
+				//리프레쉬토큰이 만료되었다면
+				cookie.setMaxAge(0);
+			}
+			// refresh token이 만료안되었다면 accessToken재발급
+			accessToken = this.updateAccessToken(accessToken);
 			response.setHeader("accessToken", accessToken);
-			response.setHeader("refreshToken", refreshToken);
-
-			return true;
 		}
 
-		Long userId = jwtUtil.getUserId(token, isRefreshToken);
+		Long userId = jwtUtil.getUserId(accessToken);
 		request.setAttribute("userId", userId);
 		return true;
 	}
 
-	private boolean checkRefreshToken(HttpServletRequest request) {
-		Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
-		while (headers.hasMoreElements()) {
-			String value = headers.nextElement();
-			if (value.toLowerCase().startsWith("bearer")) {
-				return false;
-			}
-		}
-		return true;
+	public String updateAccessToken(String accessToken) {
+		Claims claims = jwtUtil.getUserInfo(accessToken);
+		String email = claims.getSubject();
+		Long id = (Long) claims.get("id");
+		return jwtUtil.generateToken(id, email);
 	}
-
 }
