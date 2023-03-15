@@ -6,6 +6,8 @@ import com.blackdragon.heytossme.dto.ChatRoomDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
 import com.blackdragon.heytossme.type.ChatRoomResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,10 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatRoomController {
 
     private final ChatService chatService;
+    private final String USER_ID = "userId";
 
     @GetMapping
-    public ResponseEntity<ResponseForm> getChatRoomList(
-            @RequestParam("userId") Long userId) { //<- token 생성 함수 만들기전 임시 방편 @RequestHeader("Authorization") String token
+    public ResponseEntity<ResponseForm> getChatRoomList(HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomList(userId);
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomResponse.CHAT_ROOM_LIST.getMessage(), data)
@@ -33,25 +35,31 @@ public class ChatRoomController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseForm> createChatRoomList(@RequestBody CreateRequest request) {
-        var data = chatService.createChatRoom(request);
+    public ResponseEntity<ResponseForm> createChatRoomList(HttpServletRequest httpRequest,
+            @RequestBody CreateRequest createRequest) {
+        createRequest.setBuyerId((Long) httpRequest.getAttribute(USER_ID));
+        var data = chatService.createChatRoom(createRequest);
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomResponse.CREATE_CHAT_ROOM.getMessage(), data)
         );
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseForm> deleteChatRoom(@RequestBody DeleteRequest request) {
-        chatService.deleteChatRoom(request);
+    public ResponseEntity<ResponseForm> deleteChatRoom(HttpServletRequest httpRequest,
+            @RequestBody @Valid DeleteRequest deleteRequest) {
+        deleteRequest.setUserId((Long) httpRequest.getAttribute(USER_ID));
+        chatService.deleteChatRoom(deleteRequest);
         return ResponseEntity.ok(
-                new ResponseForm(ChatRoomResponse.LEAVE_CHAT_ROOM.getMessage(), null)
+                new ResponseForm(ChatRoomResponse.DELETE_CHAT_ROOM.getMessage(), null)
         );
     }
 
     @PostMapping("/account-share")
-    public ResponseEntity<ResponseForm> convertAccountTransferStatus(@RequestBody
-    ConvertAccountStatusRequest request) {
-        var data = chatService.convertAccountTransferStatus(request);
+    public ResponseEntity<ResponseForm> convertAccountTransferStatus(HttpServletRequest httpRequest,
+            @RequestBody @Valid
+            ConvertAccountStatusRequest convertAccountStatusRequest) {
+        convertAccountStatusRequest.setSellerId((Long) httpRequest.getAttribute(USER_ID));
+        var data = chatService.convertAccountTransferStatus(convertAccountStatusRequest);
         return ResponseEntity.ok(
                 new ResponseForm(ChatRoomResponse.CONVERT_ACCOUNT_TRANSFER_STATUS.getMessage(),
                         data)

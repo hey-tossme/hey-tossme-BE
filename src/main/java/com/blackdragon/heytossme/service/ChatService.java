@@ -73,7 +73,16 @@ public class ChatService {
                 .build());
     }
 
-    public List<MessageDto.Response> getChatRoomMessage(Long roomId) {
+    public List<MessageDto.Response> getChatRoomMessage(Long roomId, Long userId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        if (!(chatRoom.getBuyer().getId().equals(userId) || chatRoom.getSeller().getId()
+                .equals(userId))) {
+            throw new CustomException(ErrorCode.NOT_ACCEPTABLE_USER);
+        }
+
         List<ChatMessage> chatRoomList = chatMessageRepository.findAllByChatRoomId(roomId);
 
         return chatRoomList.stream().map(MessageDto.Response::new).collect(Collectors.toList());
@@ -82,6 +91,11 @@ public class ChatService {
     public ChatRoomDto.Response convertAccountTransferStatus(ConvertAccountStatusRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoodId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        if (!chatRoom.getSeller().getId().equals(request.getSellerId())) {
+            throw new CustomException(ErrorCode.USER_MISMATCH_TO_SELLER);
+        }
+
         chatRoom.setAccountTransferStatus(request.getAccountTransferStatus());
 
         chatRoom = chatRoomRepository.save(chatRoom);
@@ -90,9 +104,19 @@ public class ChatService {
     }
 
     public void deleteChatRoom(DeleteRequest request) {
+
         if (!chatRoomRepository.existsById(request.getChatRoomId())) {
             throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
         }
+
+        ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        if (!(chatRoom.getBuyer().getId().equals(request.getUserId()) || chatRoom.getSeller()
+                .getId().equals(request.getUserId()))) {
+            throw new CustomException(ErrorCode.NOT_ACCEPTABLE_USER);
+        }
+
         chatRoomRepository.deleteById(request.getChatRoomId());
     }
 }
