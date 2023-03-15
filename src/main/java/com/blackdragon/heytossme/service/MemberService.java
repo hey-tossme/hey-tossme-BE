@@ -1,14 +1,16 @@
 package com.blackdragon.heytossme.service;
 
+import static com.blackdragon.heytossme.exception.MemberErrorCode.INCORRECT_PASSWORD;
+import static com.blackdragon.heytossme.exception.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER;
 
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
+import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.exception.CustomException;
 import com.blackdragon.heytossme.exception.ErrorCode;
-import com.blackdragon.heytossme.exception.MemberErrorCode;
 import com.blackdragon.heytossme.exception.MemberException;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
@@ -35,7 +37,6 @@ public class MemberService {
             throw new CustomException(ErrorCode.CONFLICT_EMAIL);
         }
 
-
         Member member = memberRepository.save(
                 Member.builder()
                         .email(request.getEmail())
@@ -47,6 +48,22 @@ public class MemberService {
                         .build()
         );
         return new Response(member);
+    }
+
+
+    public Member signIn(SignInRequest request) {
+
+        Member member = memberRepository.findByEmail(request.getEmail());
+
+        if (member == null) {
+            throw new MemberException(NOT_FOUND_USER);
+        }
+
+        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new MemberException(INCORRECT_PASSWORD);
+        }
+
+        return member;
     }
 
     public Response getInfo(long userId) {
@@ -67,11 +84,11 @@ public class MemberService {
         log.info(passwordEncoder.encode(request.getCurPassword()));
         // 사용자 비밀번호 확인
         if (!passwordEncoder.matches(request.getCurPassword(), member.getPassword())) {
-            throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
+            throw new MemberException(INCORRECT_PASSWORD);
         }
         // 변경 후 비밀번호가 변경 전 비밀번호와 같을때
         if (passwordEncoder.encode(request.getPassword()).equals(member.getPassword())) {
-            throw new MemberException(MemberErrorCode.MATCH_PREVIOUS_PASSWORD);
+            throw new MemberException(MATCH_PREVIOUS_PASSWORD);
         }
 
         Member updatedMember = Member.builder()
@@ -103,7 +120,7 @@ public class MemberService {
                 .orElseThrow(() -> new MemberException(NOT_FOUND_USER));
         // 사용자 비밀번호 확인
         if (!passwordEncoder.matches(request.getCurPassword(), member.getPassword())) {
-            throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
+            throw new MemberException(INCORRECT_PASSWORD);
         }
 
         /**
