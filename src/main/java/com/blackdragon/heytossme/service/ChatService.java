@@ -3,6 +3,7 @@ package com.blackdragon.heytossme.service;
 import com.blackdragon.heytossme.dto.ChatRoomDto;
 import com.blackdragon.heytossme.dto.ChatRoomDto.ConvertAccountStatusRequest;
 import com.blackdragon.heytossme.dto.ChatRoomDto.CreateRequest;
+import com.blackdragon.heytossme.dto.ChatRoomDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.ChatRoomDto.Response;
 import com.blackdragon.heytossme.dto.MessageDto;
 import com.blackdragon.heytossme.dto.MessageDto.SendMessage;
@@ -86,5 +87,12 @@ public class ChatService {
         chatRoom = chatRoomRepository.save(chatRoom);
 
         return new Response(chatRoom);
+    }
+
+    public void deleteChatRoom(DeleteRequest request) {
+        if (!chatRoomRepository.existsById(request.getChatRoomId())) {
+            throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
+        }
+        chatRoomRepository.deleteById(request.getChatRoomId());
     }
 }

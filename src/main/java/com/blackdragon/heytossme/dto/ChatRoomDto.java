@@ -10,8 +10,13 @@ public class ChatRoomDto {
     public static class CreateRequest {
 
         private Long buyerId;
-        ;
         private Long itemId;
+    }
+
+    @Data
+    public static class DeleteRequest {
+
+        private Long chatRoomId;
     }
 
     @Data
