@@ -32,26 +32,50 @@ public class TokenInterceptor implements HandlerInterceptor {
 		log.info(">>>>>>>>> 인터셉터 호출됨 >>>>>>>>>>>>");
 
 		String accessToken = authExtractor.extract(request, "Bearer");
-		Cookie cookie = request.getCookies()[0];
-		String refreshToken = cookie.getAttribute("refreshToken");
+
+		String refreshToken = null;
+
+		Cookie cookie = null;
+
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie _cookie : cookies) {
+				if ("refreshToken".equals(_cookie.getName())) {
+					refreshToken = _cookie.getValue();
+					cookie = _cookie;
+					break;
+				}
+			}
+		}
+
+		if (refreshToken == null) {
+			// refreshToken이 없는 경우에 대한 예외 처리 필요
+			throw new CustomException(ErrorCode.FORBIDDEN);
+
+//			return false;
+		}
 
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
 
 		if (!jwtUtil.validateToken(accessToken)) {
-//			throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-			if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
-				//리프레쉬토큰이 만료되었다면
-				cookie.setMaxAge(0);
-			}
-			// refresh token이 만료안되었다면 accessToken재발급
-			accessToken = this.updateAccessToken(accessToken);
-			response.setHeader("accessToken", accessToken);
+			throw new CustomException(ErrorCode.INCORRECT_KEY);
 		}
+
+		if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
+			//리프레쉬토큰이 만료되었다면
+			cookie.setMaxAge(0);
+			//로그아웃 코드내려준다
+			throw new CustomException(ErrorCode.RESET_CONTENT);
+		}
+		// refresh token이 만료안되었다면 accessToken재발급
+		accessToken = this.updateAccessToken(accessToken);
+
 
 		Long userId = jwtUtil.getUserId(accessToken);
 		request.setAttribute("userId", userId);
+		response.setHeader("accessToken", accessToken);	//컨트롤러로 보내야겠다
 		return true;
 	}
 

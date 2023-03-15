@@ -25,9 +25,6 @@ public class JWTUtil {
 	@Value("${com.blackdragon.jwt.accesskey}")
 	private String accessKey;
 
-	@Value("${com.blackdragon.jwt.refreshkey}")
-	private String refreshKey;
-
 	private final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 30;	//30시간
 	private final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 30 * 30;	//30일
 
