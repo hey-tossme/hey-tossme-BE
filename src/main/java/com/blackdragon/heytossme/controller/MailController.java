@@ -25,4 +25,12 @@ public class MailController {
 
         return ResponseEntity.ok(new ResponseForm(MailResponse.SENT_MAIL.getMessage(), mailDto));
     }
+
+    @PostMapping("/validate")
+    public ResponseEntity<ResponseForm> validate(@RequestBody MailDto mailDto) {
+
+        mailService.validate(mailDto);
+
+        return ResponseEntity.ok(new ResponseForm(MailResponse.AUTH_MAIL.getMessage(), mailDto));
+    }
 }
