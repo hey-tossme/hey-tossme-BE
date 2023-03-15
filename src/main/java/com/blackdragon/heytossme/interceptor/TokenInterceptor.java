@@ -51,7 +51,6 @@ public class TokenInterceptor implements HandlerInterceptor {
 		if (refreshToken == null) {
 			// refreshToken이 없는 경우에 대한 예외 처리 필요
 			throw new CustomException(ErrorCode.FORBIDDEN);
-
 //			return false;
 		}
 
@@ -70,17 +69,16 @@ public class TokenInterceptor implements HandlerInterceptor {
 			throw new CustomException(ErrorCode.RESET_CONTENT);
 		}
 		// refresh token이 만료안되었다면 accessToken재발급
-		accessToken = this.updateAccessToken(accessToken);
-
+		accessToken = this.updateAccessToken(refreshToken);
 
 		Long userId = jwtUtil.getUserId(accessToken);
 		request.setAttribute("userId", userId);
-		response.setHeader("accessToken", accessToken);	//컨트롤러로 보내야겠다
+		request.setAttribute("accessToken", accessToken);	//컨트롤러로 보내야겠다
 		return true;
 	}
 
-	public String updateAccessToken(String accessToken) {
-		Claims claims = jwtUtil.getUserInfo(accessToken);
+	public String updateAccessToken(String refreshToken) {
+		Claims claims = jwtUtil.getUserInfo(refreshToken);
 		String email = claims.getSubject();
 		Long id = (Long) claims.get("id");
 		return jwtUtil.generateToken(id, email);
