@@ -53,9 +53,9 @@ public class MemberController {
     @DeleteMapping
     public ResponseEntity<ResponseForm> delete(@RequestBody ModifyRequest request) {
 
-        Response response = memberService.deleteUser(2L, request);
+        memberService.deleteUser(6L, request);
 
         return ResponseEntity.ok(
-                new ResponseForm(MemberResponse.DELETE_USER.getMessage(), response));
+                new ResponseForm(MemberResponse.DELETE_USER.getMessage(), null));
     }
 }
