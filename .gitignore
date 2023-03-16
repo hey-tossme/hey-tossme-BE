@@ -3,6 +3,7 @@
 /deploy/
 /target/
 *.yml
+*.class
 
 /lib/chc-components-0.0.1-lib.jar
 /src/main/resources/version.json

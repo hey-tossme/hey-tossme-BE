@@ -7,8 +7,8 @@ public enum ChatRoomResponse {
 
     CHAT_ROOM_LIST("successfully get chatroom list"),
     CREATE_CHAT_ROOM("successfully create chatroom"),
-
-    LEAVE_CHAT_ROOM("Successfully leave chatroom");
+    CONVERT_ACCOUNT_TRANSFER_STATUS("successfully convert account transfer status"),
+    DELETE_CHAT_ROOM("Successfully delete chatroom");
 
     ChatRoomResponse(String message) {
         this.message = message;
