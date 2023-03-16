@@ -1,5 +1,10 @@
 package com.blackdragon.heytossme.persist;
 
-public interface BookmarkRepository {
+import com.blackdragon.heytossme.persist.entity.Bookmark;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
 }

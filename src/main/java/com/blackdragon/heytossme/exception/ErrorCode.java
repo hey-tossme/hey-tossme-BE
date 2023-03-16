@@ -11,6 +11,7 @@ public enum ErrorCode {
     INCORRECT_KEY(HttpStatus.NOT_ACCEPTABLE, "Incorrect key"),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Expired access token supplied"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token supplied"),
     //회원 가입에러
     CONFLICT_EMAIL(HttpStatus.CONFLICT, "Already existed email"),
     INCORRECT_AUTH_CODE(HttpStatus.CONFLICT, "Incorrect authorize code"),
