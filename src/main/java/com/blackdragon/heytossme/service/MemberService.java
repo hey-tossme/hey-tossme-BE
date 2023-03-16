@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.service;
 
+import com.blackdragon.heytossme.component.JWTUtil;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER;
@@ -7,6 +8,7 @@ import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
+import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.exception.CustomException;
@@ -18,6 +20,7 @@ import com.blackdragon.heytossme.type.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,13 +33,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ModelMapper modelMapper;
+    private final JWTUtil jwtUtil;
 
     public MemberDto.Response signUp(SignUpRequest request) {
 
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(ErrorCode.CONFLICT_EMAIL);
         }
-
         Member member = memberRepository.save(
                 Member.builder()
                         .email(request.getEmail())
@@ -50,7 +53,26 @@ public class MemberService {
         return new Response(member);
     }
 
+    public ResponseToken generateToken(Long id, String email) {
 
+        String accessToken = jwtUtil.generateToken(id, email);
+        String refreshToken = jwtUtil.generateToken(id, email);
+
+        //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .path("/")
+                .maxAge(86400000)   //쿠키 만료시간 = 1일
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build();
+
+        // access token리턴, refresh
+        return ResponseToken.builder()
+                .responseCookie(cookie)
+                .accessToken(accessToken)
+                .build();
+    }
     public Member signIn(SignInRequest request) {
 
         Member member = memberRepository.findByEmail(request.getEmail());

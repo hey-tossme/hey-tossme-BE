@@ -13,7 +13,7 @@ public class BookmarkController {
 
     @GetMapping("/bookmarks")
     public ResponseEntity<?> getBookmarks(HttpServletRequest request) {
-        String userId = (String) request.getAttribute("userId");
+        Long userId = (Long) request.getAttribute("userId");
         log.info("controller 진입!" + userId);
 
         return ResponseEntity.ok().build();
