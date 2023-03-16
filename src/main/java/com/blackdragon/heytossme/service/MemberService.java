@@ -82,7 +82,7 @@ public class MemberService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
-        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             //throw new MemberException(INCORRECT_PASSWORD);
             throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
         }
@@ -113,7 +113,7 @@ public class MemberService {
             throw new MemberException(INCORRECT_PASSWORD);
         }
         // 변경 후 비밀번호가 변경 전 비밀번호와 같을때
-        if (passwordEncoder.encode(request.getPassword()).equals(member.getPassword())) {
+        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MATCH_PREVIOUS_PASSWORD);
         }
 
