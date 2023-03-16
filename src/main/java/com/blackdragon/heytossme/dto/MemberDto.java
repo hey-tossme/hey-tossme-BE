@@ -47,7 +47,6 @@ public class MemberDto {
         private String name;
         private String imageURL;
         private String socialType;
-        private LocalDateTime createdAt;
         private String status;
         private String account;
         private String bankName;
@@ -60,7 +59,6 @@ public class MemberDto {
             this.name = member.getName();
             this.imageURL = member.getImageUrl();
             this.socialType = member.getSocialLoginType();
-            this.createdAt = member.getCreatedAt();
             this.status = member.getStatus();
             this.account = member.getAccount();
             this.bankName = member.getBankName();
