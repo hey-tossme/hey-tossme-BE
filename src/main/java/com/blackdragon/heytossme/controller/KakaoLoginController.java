@@ -1,9 +1,14 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.KakaoLoginService;
+import com.blackdragon.heytossme.type.KakaoResponse;
+import com.blackdragon.heytossme.type.MemberSocialType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,10 +33,12 @@ public class KakaoLoginController {
         return url;
     }
     @GetMapping("/callback")
-    public String oauthKakaoLogin(@RequestParam(value = "code", required = false) String code) {
-        log.info("+++++++++++++++++++code+++++++++++++++++" + code);
-        String kakaoAccessToken = kakaoLoginService.getAccessToken(code);
+    public ResponseEntity<?> oauthKakaoLogin(
+            @RequestParam(value = "code", required = false) String code) {
 
-        return kakaoAccessToken;
+        String accessToken = kakaoLoginService.getAccessToken(code);
+
+        return ResponseEntity.ok(
+                new ResponseForm(KakaoResponse.LOG_IN.getMessage(), accessToken));
     }
 }
