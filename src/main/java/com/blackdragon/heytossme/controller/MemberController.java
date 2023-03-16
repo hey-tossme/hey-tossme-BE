@@ -38,7 +38,7 @@ public class MemberController {
     @GetMapping
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
         long id = (long) httpServletRequest.getAttribute("id");
-        Response response = memberService.getInfo(3L);
+        Response response = memberService.getInfo(id);
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.FIND_INFO.getMessage(), response));
