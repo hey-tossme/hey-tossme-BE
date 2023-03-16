@@ -56,11 +56,13 @@ public class MemberService {
         Member member = memberRepository.findByEmail(request.getEmail());
 
         if (member == null) {
-            throw new MemberException(NOT_FOUND_USER);
+            //throw new MemberException(NOT_FOUND_USER);
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
 
         if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(INCORRECT_PASSWORD);
+            //throw new MemberException(INCORRECT_PASSWORD);
+            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
         }
 
         return member;
