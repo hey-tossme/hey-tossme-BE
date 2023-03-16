@@ -57,6 +57,16 @@ public class MemberDto {
 
     @Data
     @Builder
+    public static class SignInResponse{
+        private Long id;
+        private String email;
+        private String name;
+        private String accessToken;
+
+    }
+
+    @Data
+    @Builder
     public static class ResponseToken{
 
         private ResponseCookie responseCookie;

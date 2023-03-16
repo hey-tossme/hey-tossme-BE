@@ -4,6 +4,7 @@ import com.blackdragon.heytossme.component.JWTUtil;
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
+import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.exception.CustomException;
 import com.blackdragon.heytossme.exception.ErrorCode;
@@ -42,6 +43,19 @@ public class MemberService {
         return new Response(member);
     }
 
+    public Member signIn(SignInRequest request) {
+
+        Member member = memberRepository.findByEmail(request.getEmail())
+                            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            //throw new MemberException(INCORRECT_PASSWORD);
+            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        return member;
+    }
+
     public ResponseToken generateToken(Long id, String email) {
 
         String accessToken = jwtUtil.generateToken(id, email);
@@ -62,4 +76,6 @@ public class MemberService {
                 .accessToken(accessToken)
                 .build();
     }
+
+
 }
