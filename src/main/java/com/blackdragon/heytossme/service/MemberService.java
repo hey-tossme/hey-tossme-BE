@@ -73,7 +73,7 @@ public class MemberService {
                 .accessToken(accessToken)
                 .build();
     }
-    public Member signIn(SignInRequest request) {
+    public ResponseToken signIn(SignInRequest request) {
 
         Member member = memberRepository.findByEmail(request.getEmail());
 
@@ -87,7 +87,9 @@ public class MemberService {
             throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
         }
 
-        return member;
+        ResponseToken tokens = generateToken(member.getId(), member.getEmail());
+
+        return tokens;
     }
 
     public Response getInfo(long userId) {
