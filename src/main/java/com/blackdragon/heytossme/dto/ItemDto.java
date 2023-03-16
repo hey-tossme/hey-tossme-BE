@@ -2,6 +2,7 @@ package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Item;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -10,13 +11,11 @@ public class ItemDto {
     @Data
     public static class CreateItemRequest {
 
-        @NotBlank
         private Long sellerId;
         @NotBlank
         private String category;
         @NotBlank
         private String title;
-        @NotBlank
         private int price;
         @NotBlank
         private String dueDate;
@@ -45,7 +44,7 @@ public class ItemDto {
         public Response(Item item) {
             this.id = item.getId();
             this.seller = new MemberDto.Response(item.getMember());
-            this.category = item.getCategory();
+            this.category = item.getCategory().getToKorean();
             this.title = item.getTitle();
             this.contents = item.getContents();
             this.price = item.getPrice();
