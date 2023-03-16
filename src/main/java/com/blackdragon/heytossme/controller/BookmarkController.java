@@ -1,13 +1,11 @@
 package com.blackdragon.heytossme.controller;
 
-import com.blackdragon.heytossme.dto.BookmarkDto.CreateRequest;
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.BookmarkService;
 import com.blackdragon.heytossme.type.BookmarkResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.awt.print.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,7 @@ public class BookmarkController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseForm> registerBookmarks(HttpServletRequest request, Long itemId) {
+    public ResponseEntity<ResponseForm> registerBookmarks(HttpServletRequest request,@RequestBody Long itemId) {
         Long userId = (Long)request.getAttribute("userId");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
 
@@ -46,7 +44,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseForm> deleteBookmarks(HttpServletRequest request, Long itemId) {
+    public ResponseEntity<ResponseForm> deleteBookmarks(HttpServletRequest request,@RequestBody Long itemId) {
         Long userId = (Long)request.getAttribute("userId");
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
         return ResponseEntity.ok(
