@@ -27,4 +27,11 @@ public class KakaoLoginController {
 
         return url;
     }
+    @GetMapping("/callback")
+    public String oauthKakaoLogin(@RequestParam(value = "code", required = false) String code) {
+        log.info("+++++++++++++++++++code+++++++++++++++++" + code);
+        String kakaoAccessToken = kakaoLoginService.getAccessToken(code);
+
+        return kakaoAccessToken;
+    }
 }
