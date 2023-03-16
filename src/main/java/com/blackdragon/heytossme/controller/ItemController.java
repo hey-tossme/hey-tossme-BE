@@ -40,7 +40,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<ResponseForm> register(HttpServletRequest httpRequest,
             @RequestBody @Valid CreateItemRequest request) {
-        request.setSellerId(httpRequest.getAttribute(USER_ID));
+        request.setSellerId(Long.valueOf(String.valueOf(httpRequest.getAttribute(USER_ID))));
         var data = itemService.createItem(request);
         return ResponseEntity.ok(new ResponseForm(ItemResponse.REGISTER_ITEM.getMessage(), data));
     }
