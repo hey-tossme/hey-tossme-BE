@@ -66,7 +66,8 @@ public class MemberDto {
         }
     }
 
-    public static class SingInRequest {
+    @Data
+    public static class SignInRequest {
         private String email;
         private String password;
     }
