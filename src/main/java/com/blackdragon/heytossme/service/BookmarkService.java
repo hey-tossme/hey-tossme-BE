@@ -34,9 +34,9 @@ public class BookmarkService {
 
 	public CreateResponse registerBookmark(Long userId, Long itemId) {
 		Item item = itemRepository.findById(itemId)
-						.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_PARAMETER));
+						.orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 		Member member = memberRepository.findById(userId)
-						.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_PARAMETER));
+						.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 		Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
 								.item(item)
 								.member(member)
@@ -47,9 +47,9 @@ public class BookmarkService {
 
 	public DeleteResponse deleteBookmark(Long userId, Long itemId) {
 		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(ErrorCode.INVALID_TOKEN));
+				.orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
 		Bookmark bookmark = bookmarkRepository.findById(itemId)
-				.orElseThrow(() -> new CustomException(ErrorCode.INSUFFICIENT_PARAMETER));
+				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
 		bookmarkRepository.deleteById(bookmark.getId());
 		return DeleteResponse.from(bookmark);

@@ -1,6 +1,7 @@
 package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Bookmark;
+import jakarta.validation.constraints.NotBlank;
 import java.awt.print.Book;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -11,7 +12,9 @@ public class BookmarkDto {
 	@Data
 	public static class CreateRequest{
 
+		@NotBlank
 		private Long userId;
+		@NotBlank
 		private Long itemId;
 	}
 
