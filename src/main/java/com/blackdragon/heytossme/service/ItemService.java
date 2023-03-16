@@ -10,14 +10,23 @@ import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Address;
 import com.blackdragon.heytossme.persist.entity.Item;
+import com.blackdragon.heytossme.type.Category;
 import com.blackdragon.heytossme.type.ItemStatus;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,11 +47,11 @@ public class ItemService {
 
     private AddressInfo getData(String address) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", API_KEY_PREFIX + API_KEY);
+        httpHeaders.set("Authorization", API_KEY_PREFIX + this.API_KEY);
         String addressURL = "https://dapi.kakao.com/v2/local/search/address.json";
         URI targetURI = UriComponentsBuilder.fromHttpUrl(addressURL)
                 .queryParam("query", address)
-//                .queryParam("analyze_type", "exact");
+                .queryParam("analyze_type", "exact")
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
@@ -52,6 +61,7 @@ public class ItemService {
             RestTemplate restTemplate = new RestTemplate();
             Kakao result = restTemplate.exchange(targetURI, HttpMethod.GET, entity, Kakao.class)
                     .getBody();
+            assert result != null;
             return result.getDocuments().get(0).getAddress();
 
         } catch (Exception e) {
@@ -59,16 +69,20 @@ public class ItemService {
         }
     }
 
-    public Response createItem(CreateItemRequest request) {
+    private LocalDateTime parseToDateType(String stringDate) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
-        LocalDateTime dueDate = LocalDateTime.parse(request.getDueDate(), dateFormatter);
+        return LocalDateTime.parse(stringDate, dateFormatter);
+    }
+
+    public Response createItem(CreateItemRequest request) {
+        LocalDateTime dueDate = parseToDateType(request.getDueDate());
 //        log.info("dueDate = {}", dueDate);
         AddressInfo addressInfo = getData(request.getAddress());
 //        log.info("address = {}", address);
         Item item = Item.builder()
                 .member(memberRepository.findById(request.getSellerId())
                         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)))
-                .category(request.getCategory())
+                .category(Category.findBy(request.getCategory()))
                 .title(request.getTitle())
                 .contents(request.getContents())
                 .dueDate(dueDate)
@@ -86,10 +100,45 @@ public class ItemService {
                         .substring(addressInfo.getRegion_1depth_name().length()).trim()
                         .substring(addressInfo.getRegion_2depth_name().length()).trim()
                         .substring(addressInfo.getRegion_3depth_name().length()).trim()
-                        + " " + request.getAddressDetail())
+                        + " " + (request.getAddressDetail() == null
+                        ? ""
+                        : request.getAddressDetail()))
                 .build();
         item.setAddress(address);
         itemRepository.save(item);
         return new Response(item);
+    }
+
+    public Page<Response> getList(Integer pageNum, Integer size, String region, String startDue,
+            String endDue, String searchTitle, String category) {
+        Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 8 : size);
+        Specification<Item> search = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (searchTitle != null) {
+                predicates.add(cb.like(root.get("title"), "%" + searchTitle + "%"));
+            }
+            if (endDue != null) {
+                LocalDateTime endDueDate = parseToDateType(endDue);
+                predicates.add(cb.between(root.get("dueDate"),
+                        startDue == null ? endDueDate : parseToDateType(startDue),
+                        endDueDate.withHour(23).withMinute(59).withSecond(59)));
+            }
+            if (category != null) {
+                predicates.add(
+                        cb.equal(root.get("category"), Category.valueOf(category.toUpperCase())));
+            }
+            if (region != null) {
+                Join<Item, Address> itemAddressJoin = root.join("address");
+                String[] address = region.split(" ");
+                predicates.add(cb.equal(itemAddressJoin.get("sidoArea"), address[0]));
+                predicates.add(cb.equal(itemAddressJoin.get("sigunArea"), address[1]));
+            }
+
+            Predicate[] p = new Predicate[predicates.size()];
+            return cb.and(predicates.toArray(p));
+        };
+        Page<Item> listPage = itemRepository.findAll(search, pageable);
+
+        return listPage.map(Response::new);
     }
 }
