@@ -2,15 +2,16 @@ package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
+import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
+import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.type.MemberResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,14 +35,19 @@ public class MemberController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
 
-        //로그인 하는 로직(웅준님 코드 삽입해야함)
-        //Member member = memberService.signin()~~~~
+        Member member = memberService.signIn(request);
+        ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
 
-        ResponseToken tokens =
-                memberService.generateToken(1L, "bomilee.dev@gmail.com");//member.getId, member.getEmail로 수정요망
+        SignInResponse data = SignInResponse.builder()
+                .id(member.getId())
+                .accessToken(tokens.getAccessToken())
+                .build();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString()).build();
+                .headers(responseHeaders)
+                .body(new ResponseForm(MemberResponse.SING_UP.getMessage(), data));
     }
-
 }

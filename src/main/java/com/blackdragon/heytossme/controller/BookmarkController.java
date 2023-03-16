@@ -13,8 +13,9 @@ public class BookmarkController {
 
     @GetMapping("/bookmarks")
     public ResponseEntity<?> getBookmarks(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
-        log.info("controller 진입!" + userId);
+        Long userId = (Long)request.getAttribute("userId");
+        String accessToken = (String) request.getAttribute("accessToken");
+        log.info("controller 진입!" + userId + ", token: " + accessToken);
 
         return ResponseEntity.ok().build();
     }
