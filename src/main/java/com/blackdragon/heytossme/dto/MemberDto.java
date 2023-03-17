@@ -60,8 +60,6 @@ public class MemberDto {
     public static class SignInResponse {
 
         private Long id;
-        private String email;
-        private String name;
         private String accessToken;
 
     }
