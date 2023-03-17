@@ -27,12 +27,11 @@ public class BookmarkService {
 	private final MemberRepository memberRepository;
 	private final ItemRepository itemRepository;
 
-	public List<CreateResponse> getBookmarkList(Long userId, Pageable pageable) {
-		Pageable setting = PageRequest.of(0, 8);
-		Page<Bookmark> page = bookmarkRepository.findByMember(userId, pageable);
+	public List<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
+		Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
+		Page<Bookmark> page = bookmarkRepository.findAllByMemberId(userId, pageable);
 
-		return page.stream()
-				.map(e -> BookmarkDto.CreateResponse.from(e)).collect(Collectors.toList());
+		return page.stream().map(CreateResponse::from).collect(Collectors.toList());
 	}
 
 	public CreateResponse registerBookmark(Long userId, Long itemId) {
