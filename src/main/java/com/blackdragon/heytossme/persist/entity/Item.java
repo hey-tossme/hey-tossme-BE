@@ -1,7 +1,10 @@
 package com.blackdragon.heytossme.persist.entity;
 
+import com.blackdragon.heytossme.type.Category;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,7 +37,8 @@ public class Item extends BaseTimeEntity {
     private Member member;
 
     @NotNull
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     @NotNull
     private String title;
