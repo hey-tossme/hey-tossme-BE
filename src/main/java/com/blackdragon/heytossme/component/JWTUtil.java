@@ -4,7 +4,6 @@ import static com.blackdragon.heytossme.exception.ErrorCode.INCORRECT_KEY;
 import static com.blackdragon.heytossme.exception.ErrorCode.METHOD_NOT_ALLOWED;
 import static com.blackdragon.heytossme.exception.ErrorCode.SERVER_ERROR;
 
-import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.exception.CustomException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,7 +13,6 @@ import io.jsonwebtoken.SignatureException;
 import java.util.Date;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -81,8 +79,8 @@ public class JWTUtil {
 		return this.getClaims(token);
 	}
 
-	public Long getUserId(String token) {
-		return (Long)this.getClaims(token).get("id");
+	public Object getUserId(String token) {
+		return Long.valueOf(String.valueOf( this.getClaims(token).get("id")));
 	}
 
 }

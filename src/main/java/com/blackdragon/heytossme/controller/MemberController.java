@@ -4,8 +4,10 @@ import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
+import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
+import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.type.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +47,7 @@ public class MemberController {
                 new ResponseForm(MemberResponse.FIND_INFO.getMessage(), response));
     }
 
-    @PostMapping
+ @PostMapping
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
         ResponseToken tokens = memberService.signIn(request);
 

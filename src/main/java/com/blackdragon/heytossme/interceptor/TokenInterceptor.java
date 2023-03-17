@@ -8,10 +8,8 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -29,58 +27,39 @@ public class TokenInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) throws Exception {
 
-		log.info(">>>>>>>>> 인터셉터 호출됨 >>>>>>>>>>>>");
-
-		String accessToken = authExtractor.extract(request, "Bearer");
-
 		String refreshToken = null;
-
+		String accessToken = null;
 		Cookie cookie = null;
+		Object userId = null;
 
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie _cookie : cookies) {
-				if ("refreshToken".equals(_cookie.getName())) {
-					refreshToken = _cookie.getValue();
-					cookie = _cookie;
-					break;
-				}
-			}
-		}
-
-		if (refreshToken == null) {
-			// refreshToken이 없는 경우에 대한 예외 처리 필요
-			throw new CustomException(ErrorCode.FORBIDDEN);
-//			return false;
-		}
+		accessToken = authExtractor.extractAccessToken(request, "Bearer");
+		refreshToken =  authExtractor.extractRefreshToken(request);
 
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
 
 		if (!jwtUtil.validateToken(accessToken)) {
-			throw new CustomException(ErrorCode.INCORRECT_KEY);
+			if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
+				accessToken = this.updateAccessToken(refreshToken);
+				userId = jwtUtil.getUserId(accessToken);
+			} else {	//refresh tokne이 만료되어 로그아웃 + 쿠키삭제
+				cookie.setMaxAge(0);
+				throw new CustomException(ErrorCode.UNAUTHORIZED);
+			}
+		} else {
+			userId = jwtUtil.getUserId(accessToken);
 		}
 
-		if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
-			//리프레쉬토큰이 만료되었다면
-			cookie.setMaxAge(0);
-			//로그아웃 코드내려준다
-			throw new CustomException(ErrorCode.RESET_CONTENT);
-		}
-		// refresh token이 만료안되었다면 accessToken재발급
-		accessToken = this.updateAccessToken(refreshToken);
-
-		Long userId = jwtUtil.getUserId(accessToken);
 		request.setAttribute("userId", userId);
-		request.setAttribute("accessToken", accessToken);	//컨트롤러로 보내야겠다
+		request.setAttribute("accessToken", accessToken);
 		return true;
 	}
 
 	public String updateAccessToken(String refreshToken) {
 		Claims claims = jwtUtil.getUserInfo(refreshToken);
 		String email = claims.getSubject();
-		Long id = (Long) claims.get("id");
+		Long id = Long.valueOf(String.valueOf( claims.get("id")));
 		return jwtUtil.generateToken(id, email);
 	}
 }

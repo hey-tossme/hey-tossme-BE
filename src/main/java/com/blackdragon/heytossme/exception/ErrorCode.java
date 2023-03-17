@@ -11,6 +11,7 @@ public enum ErrorCode {
     INCORRECT_KEY(HttpStatus.NOT_ACCEPTABLE, "Incorrect key"),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Expired access token supplied"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token supplied"),
     //회원 가입에러
     CONFLICT_EMAIL(HttpStatus.CONFLICT, "Already existed email"),
     INCORRECT_AUTH_CODE(HttpStatus.CONFLICT, "Incorrect authorize code"),
@@ -21,7 +22,7 @@ public enum ErrorCode {
     //상품 정보
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Item not found"),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "Address can't convert to coordinate"),
-    RESET_CONTENT(HttpStatus.RESET_CONTENT, "Logout - refresh token expired"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Logout - refresh token expired"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "Refreshtoken not existed"),
     //채팅방 정보
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom not found"),
