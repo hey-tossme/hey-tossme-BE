@@ -1,14 +1,15 @@
 package com.blackdragon.heytossme.service;
 
 import com.blackdragon.heytossme.dto.ChatRoomDto;
-import com.blackdragon.heytossme.dto.ChatRoomDto.ConvertAccountStatusRequest;
-import com.blackdragon.heytossme.dto.ChatRoomDto.CreateRequest;
-import com.blackdragon.heytossme.dto.ChatRoomDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.ChatRoomDto.Response;
 import com.blackdragon.heytossme.dto.MessageDto;
 import com.blackdragon.heytossme.dto.MessageDto.SendMessage;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.AuthException;
+import com.blackdragon.heytossme.exception.ChatException;
+import com.blackdragon.heytossme.exception.ItemException;
+import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.ChatErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.persist.ChatMessageRepository;
 import com.blackdragon.heytossme.persist.ChatRoomRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
@@ -41,21 +42,21 @@ public class ChatService {
         return chatRoomList.stream().map(ChatRoomDto.Response::new).collect(Collectors.toList());
     }
 
-    public ChatRoomDto.Response createChatRoom(CreateRequest request) {
+    public ChatRoomDto.Response createChatRoom(Long userId, Long itemId) {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder()
-                .buyer(memberRepository.findById(request.getBuyerId())
-                        .orElseThrow(() -> new CustomException(
-                                ErrorCode.USER_NOT_FOUND
+                .buyer(memberRepository.findById(userId)
+                        .orElseThrow(() -> new AuthException(
+                                AuthErrorCode.USER_NOT_FOUND
                         )))
-                .seller(memberRepository.findById(itemRepository.findById(request.getItemId())
-                                .orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND))
+                .seller(memberRepository.findById(itemRepository.findById(itemId)
+                                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND))
                                 .getMember().getId())
-                        .orElseThrow(() -> new CustomException(
-                                ErrorCode.USER_NOT_FOUND)
+                        .orElseThrow(() -> new AuthException(
+                                AuthErrorCode.USER_NOT_FOUND)
                         ))
-                .item(itemRepository.findById(request.getItemId())
-                        .orElseThrow(() -> new CustomException(
-                                ErrorCode.ITEM_NOT_FOUND
+                .item(itemRepository.findById(itemId)
+                        .orElseThrow(() -> new ItemException(
+                                ItemErrorCode.ITEM_NOT_FOUND
                         )))
                 .accountTransferStatus(false)
                 .build());
@@ -66,9 +67,9 @@ public class ChatService {
     public void sendMessage(SendMessage request) {
         chatMessageRepository.save(ChatMessage.builder()
                 .chatRoom(chatRoomRepository.findById(request.getChatRoomId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND)))
+                        .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_ROOM_NOT_FOUND)))
                 .sender(memberRepository.findById(request.getSenderId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)))
+                        .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)))
                 .message(request.getMessage())
                 .build());
     }
@@ -76,11 +77,11 @@ public class ChatService {
     public List<MessageDto.Response> getChatRoomMessage(Long roomId, Long userId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
         if (!(chatRoom.getBuyer().getId().equals(userId) || chatRoom.getSeller().getId()
                 .equals(userId))) {
-            throw new CustomException(ErrorCode.NOT_ACCEPTABLE_USER);
+            throw new ChatException(ChatErrorCode.NOT_ACCEPTABLE_USER);
         }
 
         List<ChatMessage> chatRoomList = chatMessageRepository.findAllByChatRoomId(roomId);
@@ -88,35 +89,36 @@ public class ChatService {
         return chatRoomList.stream().map(MessageDto.Response::new).collect(Collectors.toList());
     }
 
-    public ChatRoomDto.Response convertAccountTransferStatus(ConvertAccountStatusRequest request) {
-        ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoodId())
-                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+    public ChatRoomDto.Response convertAccountTransferStatus(Long userId, Long roomId,
+            boolean status) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        if (!chatRoom.getSeller().getId().equals(request.getSellerId())) {
-            throw new CustomException(ErrorCode.USER_MISMATCH_TO_SELLER);
+        if (!chatRoom.getSeller().getId().equals(userId)) {
+            throw new ChatException(ChatErrorCode.USER_MISMATCH_TO_SELLER);
         }
 
-        chatRoom.setAccountTransferStatus(request.getAccountTransferStatus());
+        chatRoom.setAccountTransferStatus(status);
 
         chatRoom = chatRoomRepository.save(chatRoom);
 
         return new Response(chatRoom);
     }
 
-    public void deleteChatRoom(DeleteRequest request) {
+    public void deleteChatRoom(Long userId, Long roomId) {
 
-        if (!chatRoomRepository.existsById(request.getChatRoomId())) {
-            throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
+        if (!chatRoomRepository.existsById(roomId)) {
+            throw new ChatException(ChatErrorCode.CHAT_ROOM_NOT_FOUND);
         }
 
-        ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
-                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        if (!(chatRoom.getBuyer().getId().equals(request.getUserId()) || chatRoom.getSeller()
-                .getId().equals(request.getUserId()))) {
-            throw new CustomException(ErrorCode.NOT_ACCEPTABLE_USER);
+        if (!(chatRoom.getBuyer().getId().equals(userId)
+                || chatRoom.getSeller().getId().equals(userId))) {
+            throw new ChatException(ChatErrorCode.NOT_ACCEPTABLE_USER);
         }
 
-        chatRoomRepository.deleteById(request.getChatRoomId());
+        chatRoomRepository.deleteById(roomId);
     }
 }

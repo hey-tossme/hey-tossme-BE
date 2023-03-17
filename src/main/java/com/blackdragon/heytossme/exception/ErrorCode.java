@@ -1,12 +1,15 @@
 package com.blackdragon.heytossme.exception;
 
+import com.blackdragon.heytossme.exception.errorcode.impl.BaseErrorCodeImpl;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ErrorCode {
-    //공통
-    INSUFFICIENT_PARAMETER(HttpStatus.BAD_REQUEST, "Not sufficient parameter"),
+@RequiredArgsConstructor
+public enum ErrorCode implements BaseErrorCodeImpl {
+    // 해당 클래스는 삭제 예정이오니 해당 코드를 사용하시는 분은 refactoring 부탁드립니다.
+
     //토큰
     INCORRECT_KEY(HttpStatus.NOT_ACCEPTABLE, "Incorrect key"),
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
@@ -18,23 +21,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
     INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "Incorrect current password"),
     DIFFERENT_PASSWORD_REQUIRED(HttpStatus.CONFLICT, "Different password required"),
-    //상품 정보
-    ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "Item not found"),
-    ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "Address can't convert to coordinate"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Logout - refresh token expired"),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "Refreshtoken not existed"),
-    //채팅방 정보
-    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "Chatroom not found"),
-    NOT_ACCEPTABLE_USER(HttpStatus.NOT_ACCEPTABLE, "User does not belong to the room"),
-    USER_MISMATCH_TO_SELLER(HttpStatus.NOT_ACCEPTABLE, "User is not the seller"),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "Refreshtoken not existed");
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occurred");
-
-
-    ErrorCode(HttpStatus statusCode, String message) {
-        this.httpStatus = statusCode;
-        this.message = message;
-    }
 
     final HttpStatus httpStatus;
     final String message;

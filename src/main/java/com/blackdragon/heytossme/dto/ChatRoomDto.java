@@ -1,40 +1,11 @@
 package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.ChatRoom;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 public class ChatRoomDto {
 
-    @Data
-    public static class CreateRequest {
-
-        private Long buyerId;
-        @NotBlank
-        private Long itemId;
-    }
-
-    @Data
-    public static class DeleteRequest {
-
-        @NotBlank
-        private Long chatRoomId;
-        private Long userId;
-    }
-
-    @Data
-    public static class ConvertAccountStatusRequest {
-
-        @NotBlank
-        private Long chatRoodId;
-        private Long sellerId;
-        private boolean accountTransferStatus;
-
-        public boolean getAccountTransferStatus() {
-            return accountTransferStatus;
-        }
-    }
 
     @Data
     @Slf4j

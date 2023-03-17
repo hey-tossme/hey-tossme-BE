@@ -1,14 +1,18 @@
 package com.blackdragon.heytossme.controller;
 
-import com.blackdragon.heytossme.dto.ItemDto.CreateItemRequest;
+import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ItemService;
 import com.blackdragon.heytossme.type.ItemResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
+@Slf4j
 public class ItemController {
 
     private final ItemService itemService;
@@ -33,15 +38,26 @@ public class ItemController {
             @RequestParam(name = "searchTitle", required = false) String searchTitle,
             @RequestParam(name = "category", required = false) String category
     ) {
-        var data = itemService.getList(pageNum, size, region, startDue, endDue, searchTitle, category);
+        var data = itemService.getList(pageNum, size, region, startDue, endDue, searchTitle,
+                category);
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ITEM_LIST.getMessage(), data));
     }
 
-    @PostMapping
+    @PostMapping("/auth")
     public ResponseEntity<ResponseForm> register(HttpServletRequest httpRequest,
-            @RequestBody @Valid CreateItemRequest request) {
-        request.setSellerId(Long.valueOf(String.valueOf(httpRequest.getAttribute(USER_ID))));
-        var data = itemService.createItem(request);
+            @RequestBody @Valid ItemRequest request) {
+        Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
+//        log.info("request.getSellerId() = {}", sellerId);
+        var data = itemService.createItem(sellerId, request);
         return ResponseEntity.ok(new ResponseForm(ItemResponse.REGISTER_ITEM.getMessage(), data));
+    }
+
+    @PatchMapping("/{item-id}/auth")
+    @DeleteMapping("/{item-id}/auth")
+    public ResponseEntity<ResponseForm> modify(HttpServletRequest httpRequest,
+            @PathVariable("item-id") Long itemId, @RequestBody ItemRequest request) {
+        Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
+        Long a = itemService.modify(sellerId, request);
+        return ResponseEntity.ok(new ResponseForm("abc", a));
     }
 }
