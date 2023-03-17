@@ -1,6 +1,7 @@
 package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Bookmark;
+import com.blackdragon.heytossme.type.Category;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class BookmarkDto {
 		private Long id;
 		private Long itemId;
 		private Long userId;
-		private String category;
+		private Category category;
 		private String title;
 		private String contents;
 		private int price;
@@ -34,22 +35,6 @@ public class BookmarkDto {
 		private float longitude;
 		private String imageUrl;
 		private String status;
-
-//		public CreateResponse(Bookmark bookmark) {
-//			this.id = bookmark.getId();
-//			this.itemId = bookmark.getItem().getId();
-//			this.userId = bookmark.getMember().getId();
-//			this.category = bookmark.getItem().getCategory();
-//			this.title = bookmark.getItem().getTitle();
-//			this.contents = bookmark.getItem().getContents();
-//			this.price = bookmark.getItem().getPrice();
-//			this.createdAt = bookmark.getCreatedAt();
-//			this.dueTime = bookmark.getItem().getDueDate();
-//			this.latitude = bookmark.getItem().getLatitude();
-//			this.longitude = bookmark.getItem().getLongitude();
-//			this.imageUrl = bookmark.getItem().getImageUrl();
-//			this.status = bookmark.getItem().getStatus();
-//		}
 
 		public static CreateResponse from(Bookmark bookmark) {
 			return CreateResponse.builder()
@@ -76,7 +61,7 @@ public class BookmarkDto {
 
 		private Long id;
 		private Long userId;
-		private String category;
+		private Category category;
 		private String title;
 		private String contents;
 		private int price;
