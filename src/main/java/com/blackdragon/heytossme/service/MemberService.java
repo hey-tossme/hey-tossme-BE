@@ -1,6 +1,6 @@
 package com.blackdragon.heytossme.service;
 
-import com.blackdragon.heytossme.component.JWTUtil;
+import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
@@ -23,7 +23,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private final JWTUtil jwtUtil;
+    private final TokenProvider tokenProvider;
 
     public MemberDto.Response signUp(SignUpRequest request) {
 
@@ -58,8 +58,8 @@ public class MemberService {
 
     public ResponseToken generateToken(Long id, String email) {
 
-        String accessToken = jwtUtil.generateToken(id, email);
-        String refreshToken = jwtUtil.generateToken(id, email);
+        String accessToken = tokenProvider.generateToken(id, email);
+        String refreshToken = tokenProvider.generateToken(id, email);
 
         //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)

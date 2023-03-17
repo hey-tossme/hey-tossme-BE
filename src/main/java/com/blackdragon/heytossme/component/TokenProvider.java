@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 
 @Component
 @Log4j2
-public class JWTUtil {
+public class TokenProvider {
 
 	@Value("${com.blackdragon.jwt.accesskey}")
 	private String accessKey;

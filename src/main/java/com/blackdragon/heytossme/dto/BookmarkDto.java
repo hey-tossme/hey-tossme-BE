@@ -2,7 +2,6 @@ package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Bookmark;
 import jakarta.validation.constraints.NotBlank;
-import java.awt.print.Book;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
