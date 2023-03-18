@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +26,7 @@ public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @GetMapping
+    @GetMapping("/auth")
     public ResponseEntity<ResponseForm> getBookmarks(HttpServletRequest request,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer size) {
@@ -40,8 +38,9 @@ public class BookmarkController {
                 new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data));
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseForm> registerBookmarks(HttpServletRequest request,@RequestParam("itemId") Long itemId) {
+    @PostMapping("/auth")
+    public ResponseEntity<ResponseForm> registerBookmarks(
+                                HttpServletRequest request,@RequestParam("item-id") Long itemId) {
 
         Long userId = (Long)request.getAttribute("userId");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
@@ -49,8 +48,8 @@ public class BookmarkController {
                 new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data));
     }
 
-    @DeleteMapping("/{itemId}")
-    public ResponseEntity<ResponseForm> deleteBookmarks(HttpServletRequest request,@PathVariable Long itemId) {
+    @DeleteMapping("/{item-id}/auth")
+    public ResponseEntity<ResponseForm> deleteBookmarks(HttpServletRequest request,@PathVariable("item-id") Long itemId) {
         Long userId = (Long)request.getAttribute("userId");
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
         return ResponseEntity.ok(
