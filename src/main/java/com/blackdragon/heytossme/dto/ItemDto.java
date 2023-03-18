@@ -2,16 +2,14 @@ package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Item;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 public class ItemDto {
 
     @Data
-    public static class CreateItemRequest {
+    public static class ItemRequest {
 
-        private Long sellerId;
         @NotBlank
         private String category;
         @NotBlank
@@ -23,6 +21,7 @@ public class ItemDto {
         private String address;
         private String addressDetail;
         private String imageUrl;
+        private String status;
     }
 
     @Data
