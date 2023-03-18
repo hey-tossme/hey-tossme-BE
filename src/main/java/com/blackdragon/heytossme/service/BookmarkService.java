@@ -3,8 +3,12 @@ package com.blackdragon.heytossme.service;
 import com.blackdragon.heytossme.dto.BookmarkDto;
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.BookmarkException;
+import com.blackdragon.heytossme.exception.ItemException;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.BookmarkErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.BookmarkRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
@@ -36,9 +40,9 @@ public class BookmarkService {
 
 	public CreateResponse registerBookmark(Long userId, Long itemId) {
 		Item item = itemRepository.findById(itemId)
-						.orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+						.orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
 		Member member = memberRepository.findById(userId)
-						.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+						.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 		Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
 								.item(item)
 								.member(member)
@@ -49,9 +53,9 @@ public class BookmarkService {
 
 	public DeleteResponse deleteBookmark(Long userId, Long itemId) {
 		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(ErrorCode.ITEM_NOT_FOUND));
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 		Bookmark bookmark = bookmarkRepository.findById(itemId)
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
 
 		bookmarkRepository.deleteById(bookmark.getId());
 		return DeleteResponse.from(bookmark);

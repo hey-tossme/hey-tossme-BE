@@ -1,10 +1,7 @@
 package com.blackdragon.heytossme.component;
 
-import static com.blackdragon.heytossme.exception.ErrorCode.INCORRECT_KEY;
-import static com.blackdragon.heytossme.exception.ErrorCode.METHOD_NOT_ALLOWED;
-import static com.blackdragon.heytossme.exception.ErrorCode.SERVER_ERROR;
-
-import com.blackdragon.heytossme.exception.CustomException;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -52,15 +49,15 @@ public class TokenProvider {
 		} catch (SignatureException e) {
 			log.info(" >>>>>>SignatureException" + e.getMessage());
 			log.info(" >>>>>>SignatureException" + e.getCause());
-			throw new CustomException(INCORRECT_KEY);
+			throw new MemberException(MemberErrorCode.INVALID_KEY);
 		} catch (ExpiredJwtException e) {
 			log.info(" >>>>>>>ExpiredJwtException" + e.getMessage());
 			log.info(" >>>>>>>ExpiredJwtException" + e.getCause());
-			throw new CustomException(METHOD_NOT_ALLOWED);
+			throw new MemberException(MemberErrorCode.METHOD_NOT_ALLOWED);
 		} catch (Exception e) {
 			log.info(" >>>>>>>Exception" + e.getMessage());
 			log.info(" >>>>>>>Exception" + e.getCause());
-			throw new CustomException(SERVER_ERROR);
+			throw new MemberException(MemberErrorCode.SERVER_ERROR);
 		}
 	}
 

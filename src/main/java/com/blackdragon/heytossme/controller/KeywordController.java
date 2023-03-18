@@ -2,8 +2,8 @@ package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.KeywordDto.Response;
 import com.blackdragon.heytossme.dto.ResponseForm;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Keyword;
 import com.blackdragon.heytossme.persist.entity.Member;
@@ -34,7 +34,7 @@ public class KeywordController {
 
 		Long userId = (Long)request.getAttribute("userId");
 		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 		List<Response> data = keywordService.getKeywordList(member.getId());
 
 		return ResponseEntity.ok(
@@ -47,7 +47,7 @@ public class KeywordController {
 
 		Long userId = (Long)request.getAttribute("userId");
 		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 		Response data = keywordService.registerKeyword(member.getId(), keyword);
 
 		return ResponseEntity.ok(

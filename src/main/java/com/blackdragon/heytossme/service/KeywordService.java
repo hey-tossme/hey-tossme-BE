@@ -1,8 +1,8 @@
 package com.blackdragon.heytossme.service;
 
 import com.blackdragon.heytossme.dto.KeywordDto.Response;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.KeywordRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Keyword;
@@ -31,7 +31,7 @@ public class KeywordService {
 	public Response registerKeyword(Long userId, String keyword) {
 
 		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		Keyword savedKeyword = keywordRepository.save(Keyword.builder()
 				.keyword(keyword)
