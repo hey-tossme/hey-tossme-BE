@@ -1,6 +1,5 @@
 package com.blackdragon.heytossme.type;
 
-import com.blackdragon.heytossme.persist.entity.Bookmark;
 import lombok.Getter;
 
 @Getter
