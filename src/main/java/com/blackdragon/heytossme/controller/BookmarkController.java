@@ -29,9 +29,12 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
 
     @GetMapping
-    public ResponseEntity<ResponseForm> getBookmarks(HttpServletRequest request, @PageableDefault(size = 8) Pageable pageable) {
+    public ResponseEntity<ResponseForm> getBookmarks(HttpServletRequest request,
+            @RequestParam(name = "pageNum", required = false) Integer pageNum,
+            @RequestParam(name = "size", required = false) Integer size) {
+
         Long userId = (Long)request.getAttribute("userId");
-        List<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageable);
+        List<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageNum, size);
 
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data));
