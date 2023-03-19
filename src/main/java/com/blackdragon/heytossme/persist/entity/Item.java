@@ -1,6 +1,7 @@
 package com.blackdragon.heytossme.persist.entity;
 
 import com.blackdragon.heytossme.type.Category;
+import com.blackdragon.heytossme.type.ItemStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 @Entity
 @Getter
@@ -59,9 +61,11 @@ public class Item extends BaseTimeEntity {
     private String imageUrl;
 
     @NotNull
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ItemStatus status;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Exclude
     private Address address;
 
     public void setAddress(Address address) {

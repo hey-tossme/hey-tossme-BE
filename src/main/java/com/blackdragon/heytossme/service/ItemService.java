@@ -91,7 +91,7 @@ public class ItemService {
                 .latitude(addressInfo.getY())
                 .longitude(addressInfo.getX())
                 .imageUrl(request.getImageUrl())
-                .status(ItemStatus.SALE.name())
+                .status(ItemStatus.SALE)
                 .build();
         Address address = Address.builder()
                 .item(item)
@@ -146,5 +146,12 @@ public class ItemService {
 
     public Long modify(Long sellerId, ItemRequest request) {
         return sellerId + Long.parseLong(String.valueOf(request.getPrice()));
+    }
+
+    public Response getDetail(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+
+        return new Response(item);
     }
 }

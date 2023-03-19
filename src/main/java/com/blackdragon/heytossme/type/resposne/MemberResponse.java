@@ -1,4 +1,4 @@
-package com.blackdragon.heytossme.type;
+package com.blackdragon.heytossme.type.resposne;
 
 import lombok.Getter;
 

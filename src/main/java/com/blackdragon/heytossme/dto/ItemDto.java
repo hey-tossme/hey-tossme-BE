@@ -52,7 +52,7 @@ public class ItemDto {
             this.latitude = item.getLatitude();
             this.longitude = item.getLongitude();
             this.imageUrl = item.getImageUrl();
-            this.status = item.getStatus();
+            this.status = item.getStatus().name();
         }
     }
 }

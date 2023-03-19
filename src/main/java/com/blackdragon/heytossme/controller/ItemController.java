@@ -3,7 +3,7 @@ package com.blackdragon.heytossme.controller;
 import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ItemService;
-import com.blackdragon.heytossme.type.ItemResponse;
+import com.blackdragon.heytossme.type.resposne.ItemResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +41,13 @@ public class ItemController {
         var data = itemService.getList(pageNum, size, region, startDue, endDue, searchTitle,
                 category);
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ITEM_LIST.getMessage(), data));
+    }
+
+    @GetMapping("/{item-id}")
+    public ResponseEntity<ResponseForm> getDetail(@PathVariable("item-id") Long itemId) {
+        var data = itemService.getDetail(itemId);
+
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_DETAIL.getMessage(), data));
     }
 
     @PostMapping("/auth")
