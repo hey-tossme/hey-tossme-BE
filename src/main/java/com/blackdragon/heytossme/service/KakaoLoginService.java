@@ -1,15 +1,13 @@
 package com.blackdragon.heytossme.service;
 
 import com.blackdragon.heytossme.component.JWTUtil;
-import com.blackdragon.heytossme.dto.KakaoTokenDto;
-import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.MemberSocialType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.blackdragon.heytossme.type.MemberStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -18,6 +16,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;
@@ -33,29 +34,17 @@ public class KakaoLoginService {
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
 
-    public String getAccessToken(String authorizationCode) throws RuntimeException {
-
-        log.info("**************GETACCESSTOKEN 메서드 실행************");
+    public String getAccessToken(String authorizationCode) {
 
         //kakao openId 토큰 발급 받기
         String token = getKakaoOpenIdToken(authorizationCode);
-
-        log.info("***************토큰 발급 받기 완료**************");
-        log.info(token);
         //token 인코딩 해서 유저 정보 추출
-        KakaoTokenDto payload = getPayload(token);
-        //레포에서 해당 유저 정보 찾기 없으면 회원가입 로직 있으면 로그인 로직 진행
-        Member member = memberRepository.findByEmail(payload.getEmail());
-        //유저 정보 없으면 회원 가입 진행
-        if (member == null) {
-            member = memberRepository.save(
-                    Member.builder()
-                            .email(payload.getEmail())
-                            .name(payload.getNickname())
-                            .socialLoginType(MemberSocialType.KAKAO.toString())
-                            .build()
-            );
-        }
+        String payload = getPayload(token);
+        //payload 파싱해서 map 객체에 담아주기
+        Map<String, String> kakaoInfo = getUserKakaoInfo(payload);
+        //DB 에서 해당 유저 이메일로 찾기
+        Member member = getOrSaveUserByEmail(kakaoInfo);
+
         Response response = new Response();
         response.setId(member.getId());
         response.setEmail(member.getEmail());
@@ -63,10 +52,28 @@ public class KakaoLoginService {
         return jwtUtil.generateToken(response.getId(), response.getEmail());
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private KakaoTokenDto getPayload(String token) {
+    private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
+        Optional<Member> memberOptional = Optional.ofNullable(
+                memberRepository.findByEmail(kakaoInfo.get("email")));
+
+        if (memberOptional.isPresent()) {
+            return memberOptional.get();
+        } else {
+            Member newMember = Member.builder()
+                    .email(kakaoInfo.get("email"))
+                    .name(kakaoInfo.get("nickname"))
+                    .socialLoginType(MemberSocialType.KAKAO.toString())
+                    .imageUrl(kakaoInfo.get("picture"))
+                    .password(UUID.randomUUID().toString())
+                    .status(MemberStatus.NORMAL.toString())
+                    .build();
+            return memberRepository.save(newMember);
+        }
+    }
+
+    private String getPayload(String token) {
         String requestURL = "https://kauth.kakao.com/oauth/tokeninfo";
-        KakaoTokenDto kakaoTokenDto;
+        String payload;
 
         try {
             URL url = new URL(requestURL);
@@ -91,19 +98,28 @@ public class KakaoLoginService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            log.info(result);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            kakaoTokenDto = objectMapper.readValue(result, KakaoTokenDto.class);
-
-            log.info(kakaoTokenDto);
+            payload = result;
 
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return kakaoTokenDto;
+
+        return payload;
+    }
+
+    private Map<String, String> getUserKakaoInfo(String payload) {
+        Map<String, String> kakaoInfo;
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            kakaoInfo = mapper.readValue(payload, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return kakaoInfo;
     }
 
     private String getKakaoOpenIdToken(String authorizationCode) {
@@ -131,7 +147,6 @@ public class KakaoLoginService {
             bw.write(sb.toString());
             bw.flush();
 
-            //200 성공
             int responseCode = conn.getResponseCode();
             log.info("responseCode :" + responseCode);
             log.info("responseMessage :" + conn.getResponseMessage());
@@ -151,7 +166,6 @@ public class KakaoLoginService {
             br.close();
             bw.close();
 
-
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -159,14 +173,6 @@ public class KakaoLoginService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        /**
-         * 토큰을 까서 이메일 추출
-         * if 있으면 -> 로그인 로직
-         *    없으면 -> 회원가입 후 로그인
-         * 로그인 완료 후 AccessToken 발급 리턴
-         */
-
         return kakaoToken;
     }
 
