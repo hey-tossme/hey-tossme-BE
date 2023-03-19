@@ -1,9 +1,13 @@
 package com.blackdragon.heytossme.service;
 
+
 import com.blackdragon.heytossme.component.JWTUtil;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER;
+
+
+import com.blackdragon.heytossme.component.TokenProvider;
 
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
@@ -35,6 +39,9 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final JWTUtil jwtUtil;
 
+    private final TokenProvider tokenProvider;
+
+
     public MemberDto.Response signUp(SignUpRequest request) {
 
         if (memberRepository.existsByEmail(request.getEmail())) {
@@ -53,10 +60,25 @@ public class MemberService {
         return new Response(member);
     }
 
+
+    public Member signIn(SignInRequest request) {
+
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            //throw new MemberException(INCORRECT_PASSWORD);
+            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        return member;
+    }
+
+
     public ResponseToken generateToken(Long id, String email) {
 
-        String accessToken = jwtUtil.generateToken(id, email);
-        String refreshToken = jwtUtil.generateToken(id, email);
+        String accessToken = tokenProvider.generateToken(id, email);
+        String refreshToken = tokenProvider.generateToken(id, email);
 
         //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)

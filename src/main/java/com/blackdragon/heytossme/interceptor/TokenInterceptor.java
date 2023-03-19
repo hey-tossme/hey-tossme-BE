@@ -1,7 +1,7 @@
 package com.blackdragon.heytossme.interceptor;
 
 import com.blackdragon.heytossme.component.AuthExtractor;
-import com.blackdragon.heytossme.component.JWTUtil;
+import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.exception.CustomException;
 import com.blackdragon.heytossme.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -19,7 +19,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
 
-	private final JWTUtil jwtUtil;
+	private final TokenProvider tokenProvider;
 	private final AuthExtractor authExtractor;
 	public static final String AUTHORIZATION = "Authorization";
 
@@ -39,16 +39,16 @@ public class TokenInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		if (!jwtUtil.validateToken(accessToken)) {
-			if (!jwtUtil.isExpiredRefreshToken(refreshToken)) {
+		if (!tokenProvider.validateToken(accessToken)) {
+			if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {
 				accessToken = this.updateAccessToken(refreshToken);
-				userId = jwtUtil.getUserId(accessToken);
+				userId = tokenProvider.getUserId(accessToken);
 			} else {	//refresh tokne이 만료되어 로그아웃 + 쿠키삭제
 				cookie.setMaxAge(0);
 				throw new CustomException(ErrorCode.UNAUTHORIZED);
 			}
 		} else {
-			userId = jwtUtil.getUserId(accessToken);
+			userId = tokenProvider.getUserId(accessToken);
 		}
 
 		request.setAttribute("userId", userId);
@@ -57,9 +57,9 @@ public class TokenInterceptor implements HandlerInterceptor {
 	}
 
 	public String updateAccessToken(String refreshToken) {
-		Claims claims = jwtUtil.getUserInfo(refreshToken);
+		Claims claims = tokenProvider.getUserInfo(refreshToken);
 		String email = claims.getSubject();
 		Long id = Long.valueOf(String.valueOf( claims.get("id")));
-		return jwtUtil.generateToken(id, email);
+		return tokenProvider.generateToken(id, email);
 	}
 }

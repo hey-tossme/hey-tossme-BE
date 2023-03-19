@@ -1,11 +1,13 @@
 package com.blackdragon.heytossme.service;
 
-import com.blackdragon.heytossme.dto.ItemDto.CreateItemRequest;
+import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
 import com.blackdragon.heytossme.dto.Kakao;
 import com.blackdragon.heytossme.dto.Kakao.AddressInfo;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.AuthException;
+import com.blackdragon.heytossme.exception.ItemException;
+import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Address;
@@ -43,11 +45,11 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
     @Value("${com.blackdragon.kakao.key}")
-    private String API_KEY;
+    private String apiKey;
 
     private AddressInfo getData(String address) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", API_KEY_PREFIX + this.API_KEY);
+        httpHeaders.set("Authorization", API_KEY_PREFIX + this.apiKey);
         String addressURL = "https://dapi.kakao.com/v2/local/search/address.json";
         URI targetURI = UriComponentsBuilder.fromHttpUrl(addressURL)
                 .queryParam("query", address)
@@ -65,7 +67,7 @@ public class ItemService {
             return result.getDocuments().get(0).getAddress();
 
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.ADDRESS_NOT_FOUND);
+            throw new ItemException(ItemErrorCode.ADDRESS_NOT_FOUND);
         }
     }
 
@@ -74,14 +76,14 @@ public class ItemService {
         return LocalDateTime.parse(stringDate, dateFormatter);
     }
 
-    public Response createItem(CreateItemRequest request) {
+    public Response createItem(Long sellerId, ItemRequest request) {
         LocalDateTime dueDate = parseToDateType(request.getDueDate());
 //        log.info("dueDate = {}", dueDate);
         AddressInfo addressInfo = getData(request.getAddress());
 //        log.info("address = {}", address);
         Item item = Item.builder()
-                .member(memberRepository.findById(request.getSellerId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)))
+                .member(memberRepository.findById(sellerId)
+                        .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)))
                 .category(Category.findBy(request.getCategory()))
                 .title(request.getTitle())
                 .contents(request.getContents())
@@ -140,5 +142,9 @@ public class ItemService {
         Page<Item> listPage = itemRepository.findAll(search, pageable);
 
         return listPage.map(Response::new);
+    }
+
+    public Long modify(Long sellerId, ItemRequest request) {
+        return sellerId + Long.parseLong(String.valueOf(request.getPrice()));
     }
 }

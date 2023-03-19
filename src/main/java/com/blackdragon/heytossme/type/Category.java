@@ -1,7 +1,6 @@
 package com.blackdragon.heytossme.type;
 
 import lombok.Getter;
-import org.springframework.util.StringUtils;
 
 @Getter
 public enum Category {
@@ -14,11 +13,12 @@ public enum Category {
     Category(String korean) {
         this.toKorean = korean;
     }
+
     final String toKorean;
 
     public static Category findBy(String arg) {
-        for(Category category: values()) {
-            if(arg.equals(category.toKorean)) {
+        for (Category category : values()) {
+            if (arg.equals(category.toKorean)) {
                 return category;
             }
         }

@@ -11,11 +11,12 @@ import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Bookmark;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
-import com.blackdragon.heytossme.type.BookmarkResponse;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,10 +27,11 @@ public class BookmarkService {
 	private final MemberRepository memberRepository;
 	private final ItemRepository itemRepository;
 
-	public List<CreateResponse> getBookmarkList(Long userId) {
-		List<Bookmark> bookmarkList = bookmarkRepository.findAllById(Collections.singleton(userId));
-		return bookmarkList.stream()
-				.map(e -> BookmarkDto.CreateResponse.from(e)).collect(Collectors.toList());
+	public List<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
+		Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
+		Page<Bookmark> page = bookmarkRepository.findAllByMemberId(userId, pageable);
+
+		return page.stream().map(CreateResponse::from).collect(Collectors.toList());
 	}
 
 	public CreateResponse registerBookmark(Long userId, Long itemId) {
