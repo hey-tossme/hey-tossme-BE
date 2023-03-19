@@ -47,7 +47,7 @@ public class MemberController {
                 new ResponseForm(MemberResponse.FIND_INFO.getMessage(), response));
     }
 
- @PostMapping
+ @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
         ResponseToken tokens = memberService.signIn(request);
 
