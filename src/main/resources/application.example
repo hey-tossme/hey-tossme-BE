@@ -28,3 +28,17 @@ com:
       secret: {필수 입력}
     kakao:
       key: {필수 입력}
+
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 587
+    username: heytossme@gmail.com
+    password: ljoqtqwngcprmejp
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true

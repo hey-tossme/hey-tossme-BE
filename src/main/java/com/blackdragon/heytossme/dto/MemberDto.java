@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.ResponseCookie;
+import lombok.NoArgsConstructor;
 
 public class MemberDto {
 
@@ -25,6 +26,19 @@ public class MemberDto {
     }
 
     @Data
+    public static class ModifyRequest {
+        private String email;
+        private String name;
+        private String curPassword;
+        private String password;
+        private String imageUrl;
+        private String socialType;
+        private String account;
+        private String bankName;
+    }
+
+    @Data
+    @NoArgsConstructor
     public static class Response {
 
         private Long id;
@@ -35,6 +49,8 @@ public class MemberDto {
         private String status;
         private String account;
         private String bankName;
+
+        private String token;
 
         public Response(Member member) {
             this.id = member.getId();
@@ -54,6 +70,7 @@ public class MemberDto {
         private String email;
         private String password;
     }
+
 
     @Data
     @Builder
