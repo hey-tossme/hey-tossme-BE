@@ -5,12 +5,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.blackdragon.heytossme.dto.KeywordDto.Response;
 import com.blackdragon.heytossme.persist.KeywordRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Keyword;
 import com.blackdragon.heytossme.persist.entity.Member;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +61,7 @@ class KeywordServiceTest {
 //		keywordRepository.save(keyword2);
 //		given(memberRepository.findById(anyLong()))
 //				.willReturn(Optional.ofNullable(member));
-//		given(keywordRepository.findAllByMemberId(any()))
+////		given(keywordRepository.findAllByMemberId(any()))
 //				.willReturn((List<Keyword>) keyword1);
 //
 //		//when
@@ -66,7 +69,7 @@ class KeywordServiceTest {
 //
 //		//then
 //		assertEquals("숙박", keywordList.get(0).getKeyword());
-//
+//		verify(keywordRepository, times(1)).findAllByMemberId(anyLong());
 //	}
 
 	@Test
@@ -91,10 +94,11 @@ class KeywordServiceTest {
 						.build());
 
 	  	//when
-		Response keyword = keywordService.registerKeyword(1L, "숙박");
+		Response keyword = keywordService.registerKeyword(1L, "숙박22");
 
 		//then
 		Assertions.assertEquals("숙박", keyword.getKeyword());
+		verify(keywordRepository, times(1)).save(any());
 	}
 
 	@Test
