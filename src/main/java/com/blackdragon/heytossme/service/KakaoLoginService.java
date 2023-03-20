@@ -1,6 +1,6 @@
 package com.blackdragon.heytossme.service;
 
-import com.blackdragon.heytossme.component.JWTUtil;
+import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class KakaoLoginService {
 
     private final MemberRepository memberRepository;
-    private final JWTUtil jwtUtil;
+    private final TokenProvider tokenProvider;
 
     public String getAccessToken(String authorizationCode) {
 
@@ -49,7 +49,7 @@ public class KakaoLoginService {
         response.setId(member.getId());
         response.setEmail(member.getEmail());
 
-        return jwtUtil.generateToken(response.getId(), response.getEmail());
+        return tokenProvider.generateToken(response.getId(), response.getEmail());
     }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
