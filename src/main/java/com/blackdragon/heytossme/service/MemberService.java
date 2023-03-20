@@ -1,14 +1,11 @@
 package com.blackdragon.heytossme.service;
 
 
-import com.blackdragon.heytossme.component.JWTUtil;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER;
 
-
 import com.blackdragon.heytossme.component.TokenProvider;
-
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
@@ -37,7 +34,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ModelMapper modelMapper;
-    private final JWTUtil jwtUtil;
 
     private final TokenProvider tokenProvider;
 
@@ -60,21 +56,6 @@ public class MemberService {
         return new Response(member);
     }
 
-
-    public Member signIn(SignInRequest request) {
-
-        Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            //throw new MemberException(INCORRECT_PASSWORD);
-            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
-        }
-
-        return member;
-    }
-
-
     public ResponseToken generateToken(Long id, String email) {
 
         String accessToken = tokenProvider.generateToken(id, email);
@@ -95,18 +76,17 @@ public class MemberService {
                 .accessToken(accessToken)
                 .build();
     }
+
     public ResponseToken signIn(SignInRequest request) {
 
         Member member = memberRepository.findByEmail(request.getEmail());
 
         if (member == null) {
-            //throw new MemberException(NOT_FOUND_USER);
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new MemberException(NOT_FOUND_USER);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            //throw new MemberException(INCORRECT_PASSWORD);
-            throw new CustomException(ErrorCode.INCORRECT_PASSWORD);
+            throw new MemberException(INCORRECT_PASSWORD);
         }
 
         ResponseToken tokens = generateToken(member.getId(), member.getEmail());
