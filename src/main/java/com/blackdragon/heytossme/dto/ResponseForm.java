@@ -9,4 +9,10 @@ public class ResponseForm {
 
     private String message;
     private Object data;
+    private String token;
+
+    public ResponseForm(String message, Object data) {
+        this.message = message;
+        this.data = data;
+    }
 }
