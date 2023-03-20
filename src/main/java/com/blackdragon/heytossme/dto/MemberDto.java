@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.ResponseCookie;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 public class MemberDto {
 
@@ -26,15 +26,36 @@ public class MemberDto {
     }
 
     @Data
-    public static class ModifyRequest {
+    public static class SignInRequest {
+
+        @Email
         private String email;
+        @NotBlank
+        private String password;
+    }
+
+    @Data
+    public static class ModifyRequest {
+
+        @Email
+        private String email;
+        @NotBlank
         private String name;
+        @NotBlank
         private String curPassword;
+        @NotBlank
         private String password;
         private String imageUrl;
         private String socialType;
         private String account;
         private String bankName;
+    }
+
+    @Data
+    public static class DeleteRequest {
+
+        @NotBlank
+        private String curPassword;
     }
 
     @Data
@@ -49,7 +70,6 @@ public class MemberDto {
         private String status;
         private String account;
         private String bankName;
-
         private String token;
 
         public Response(Member member) {
@@ -63,14 +83,6 @@ public class MemberDto {
             this.bankName = member.getBankName();
         }
     }
-
-    @Data
-    public static class SignInRequest {
-
-        private String email;
-        private String password;
-    }
-
 
     @Data
     @Builder
