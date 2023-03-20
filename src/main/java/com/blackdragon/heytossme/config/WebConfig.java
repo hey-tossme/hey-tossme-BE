@@ -19,6 +19,6 @@ public class WebConfig implements WebMvcConfigurer {
         log.info(">>>>>>>>>>> 인터셉터 구현 >>>>>>>>>>");
         registry.addInterceptor(bookmarkInterceptor)
                 .order(1)
-                .addPathPatterns("/bookmarks");
+                .addPathPatterns("/**/auth");
     }
 }

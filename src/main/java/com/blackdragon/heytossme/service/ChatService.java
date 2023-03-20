@@ -100,8 +100,6 @@ public class ChatService {
 
         chatRoom.setAccountTransferStatus(status);
 
-        chatRoom = chatRoomRepository.save(chatRoom);
-
         return new Response(chatRoom);
     }
 

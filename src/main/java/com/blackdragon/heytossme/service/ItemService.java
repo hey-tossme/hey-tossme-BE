@@ -144,8 +144,46 @@ public class ItemService {
         return listPage.map(Response::new);
     }
 
-    public Long modify(Long sellerId, ItemRequest request) {
-        return sellerId + Long.parseLong(String.valueOf(request.getPrice()));
+    public Response modify(Long itemId, Long sellerId, ItemRequest request) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        if (!item.getMember().getId().equals(sellerId)) {
+            System.out.println(sellerId);
+            System.out.println(item.getMember().getId());
+            throw new ItemException(ItemErrorCode.SELLER_MISMATCH);
+        }
+        Address address = item.getAddress();
+        if (request.getCategory() != null) {
+            item.setCategory(Category.findBy(request.getCategory()));
+        }
+        if (request.getTitle() != null) {
+            item.setTitle(request.getTitle());
+        }
+        if (request.getPrice() != 0) {
+            item.setPrice(request.getPrice());
+        }
+        if (request.getDueDate() != null) {
+            LocalDateTime dueDate = parseToDateType(request.getDueDate());
+            item.setDueDate(dueDate);
+        }
+        if (request.getContents() != null) {
+            item.setContents(request.getContents());
+        }
+        if (request.getAddress() != null) {
+            AddressInfo addressInfo = getData(request.getAddress());
+            address.setSidoArea(addressInfo.getRegion_1depth_name());
+            address.setSigunArea(addressInfo.getRegion_2depth_name());
+            address.setLotRoadAddress(addressInfo.getRegion_3depth_name());
+            item.setAddress(address);
+        }
+        if (request.getAddressDetail() != null) {
+            address.setDetailAddress(request.getAddressDetail());
+        }
+        if (request.getImageUrl() != null) {
+            item.setImageUrl(request.getImageUrl());
+        }
+
+        return new Response(item);
     }
 
     public Response getDetail(Long itemId) {
@@ -153,5 +191,16 @@ public class ItemService {
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
 
         return new Response(item);
+    }
+
+    public void deleteItem(Long itemId, Long sellerId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        if (!item.getMember().getId().equals(sellerId)) {
+            System.out.println(sellerId);
+            System.out.println(item.getMember().getId());
+            throw new ItemException(ItemErrorCode.SELLER_MISMATCH);
+        }
+        item.setStatus(ItemStatus.HIDDEN);
     }
 }

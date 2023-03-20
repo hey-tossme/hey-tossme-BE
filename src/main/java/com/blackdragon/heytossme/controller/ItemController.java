@@ -60,11 +60,20 @@ public class ItemController {
     }
 
     @PatchMapping("/{item-id}/auth")
-    @DeleteMapping("/{item-id}/auth")
     public ResponseEntity<ResponseForm> modify(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId, @RequestBody ItemRequest request) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
-        Long a = itemService.modify(sellerId, request);
-        return ResponseEntity.ok(new ResponseForm("abc", a));
+        var data = itemService.modify(itemId, sellerId, request);
+
+        return ResponseEntity.ok(new ResponseForm("abc", data));
+    }
+
+    @DeleteMapping("/{item-id}/auth")
+    public ResponseEntity<ResponseForm> delete(HttpServletRequest httpRequest,
+            @PathVariable("item-id") Long itemId) {
+        Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
+        itemService.deleteItem(itemId, sellerId);
+
+        return ResponseEntity.ok(new ResponseForm("cde", null));
     }
 }
