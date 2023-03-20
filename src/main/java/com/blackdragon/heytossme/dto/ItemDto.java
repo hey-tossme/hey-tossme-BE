@@ -11,7 +11,7 @@ public class ItemDto {
 
         private String category;
         private String title;
-        private int price;
+        private Integer price;
         private String dueDate;
         private String contents;
         private String address;
@@ -37,7 +37,7 @@ public class ItemDto {
 
         public Response(Item item) {
             this.id = item.getId();
-            this.seller = new MemberDto.Response(item.getMember());
+            this.seller = new MemberDto.Response(item.getSeller());
             this.category = item.getCategory().getToKorean();
             this.title = item.getTitle();
             this.contents = item.getContents();

@@ -37,8 +37,8 @@ public class Item extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "seller_id")
+    private Member seller;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -51,7 +51,7 @@ public class Item extends BaseTimeEntity {
     private String contents;
 
     @NotNull
-    private int price;
+    private Integer price;
 
     @NotNull
     private LocalDateTime dueDate;

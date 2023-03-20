@@ -50,7 +50,7 @@ public class ChatService {
                         )))
                 .seller(memberRepository.findById(itemRepository.findById(itemId)
                                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND))
-                                .getMember().getId())
+                                .getSeller().getId())
                         .orElseThrow(() -> new AuthException(
                                 AuthErrorCode.USER_NOT_FOUND)
                         ))

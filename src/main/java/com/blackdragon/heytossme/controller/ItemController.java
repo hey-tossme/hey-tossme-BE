@@ -5,7 +5,6 @@ import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ItemService;
 import com.blackdragon.heytossme.type.resposne.ItemResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +51,7 @@ public class ItemController {
 
     @PostMapping("/auth")
     public ResponseEntity<ResponseForm> register(HttpServletRequest httpRequest,
-            @RequestBody @Valid ItemRequest request) {
+            @RequestBody ItemRequest request) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
 //        log.info("request.getSellerId() = {}", sellerId);
         var data = itemService.createItem(sellerId, request);
@@ -75,5 +74,14 @@ public class ItemController {
         itemService.deleteItem(itemId, sellerId);
 
         return ResponseEntity.ok(new ResponseForm("cde", null));
+    }
+
+    @PostMapping("/{item-id}/transaction-confirm/auth")
+    public ResponseEntity<ResponseForm> deal(HttpServletRequest httpRequest,
+            @PathVariable("item-id") Long itemId, @RequestParam("buyer-id") Long buyerId) {
+        Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
+        var data = itemService.dealConfirm(itemId, sellerId, buyerId);
+
+        return ResponseEntity.ok(new ResponseForm("abc", data));
     }
 }
