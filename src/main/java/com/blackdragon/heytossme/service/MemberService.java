@@ -5,14 +5,17 @@ import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
+import com.blackdragon.heytossme.dto.MemberDto.SignOutResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.exception.CustomException;
 import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.MemberStatus;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,21 +64,36 @@ public class MemberService {
         String accessToken = tokenProvider.generateToken(id, email);
         String refreshToken = tokenProvider.generateToken(id, email);
 
-        //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .path("/")
-                .maxAge(86400000)   //쿠키 만료시간 = 1일
-                .secure(true)
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build();
-
-        // access token리턴, refresh
         return ResponseToken.builder()
-                .responseCookie(cookie)
+                .refreshToken(refreshToken)
                 .accessToken(accessToken)
                 .build();
     }
 
+    public Cookie generateCookie(String refreshToken) {
 
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setPath("/");
+        cookie.setMaxAge(86400000);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
+
+    public Cookie deleteCookie() {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+
+        return cookie;
+    }
+
+    public SignOutResponse signOut(Long userId) {
+
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        return MemberDto.SignOutResponse.from(member);
+    }
 }

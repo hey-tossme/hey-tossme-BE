@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.ResponseCookie;
 
 public class MemberDto {
 
@@ -60,7 +59,7 @@ public class MemberDto {
     public static class SignInResponse {
 
         private Long id;
-        private String accessToken;
+        private String account;
 
     }
 
@@ -68,7 +67,25 @@ public class MemberDto {
     @Builder
     public static class ResponseToken {
 
-        private ResponseCookie responseCookie;
+        private String refreshToken;
         private String accessToken;
+    }
+
+    @Data
+    @Builder
+    public static class SignOutResponse {
+
+        private Long id;
+        private String email;
+        private String name;
+
+        public static SignOutResponse from(Member member) {
+            return SignOutResponse.builder()
+                    .id(member.getId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .build();
+        }
+
     }
 }
