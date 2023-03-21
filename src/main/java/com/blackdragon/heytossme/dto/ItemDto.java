@@ -3,6 +3,7 @@ package com.blackdragon.heytossme.dto;
 import com.blackdragon.heytossme.persist.entity.Item;
 import java.time.LocalDateTime;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 
 public class ItemDto {
 
@@ -48,6 +49,17 @@ public class ItemDto {
             this.longitude = item.getLongitude();
             this.imageUrl = item.getImageUrl();
             this.status = item.getStatus().name();
+        }
+    }
+
+    @Data
+    public static class DealListResponse {
+        private Page<Response> sale;
+        private Page<Response> buy;
+
+        public DealListResponse(Page<Response> buyList, Page<Response> saleList) {
+            this.sale = saleList;
+            this.buy = buyList;
         }
     }
 }
