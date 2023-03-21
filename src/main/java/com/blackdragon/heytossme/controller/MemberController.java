@@ -50,4 +50,13 @@ public class MemberController {
                 .headers(responseHeaders)
                 .body(new ResponseForm(MemberResponse.SING_UP.getMessage(), data));
     }
+
+
+//    @PostMapping("/logout")
+//    public ResponseEntity logout(@LoginUser UserSession userSession, HttpSession httpSession) {
+//        loginService.logout(userSession.getId());
+//        notificationService.deleteToken(userSession.getId());
+//        httpSession.removeAttribute(USER_SESSION_KEY);
+//        return ResponseEntity.ok().build();
+//    }
 }

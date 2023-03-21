@@ -72,7 +72,9 @@ class NotificationControllerTest {
 		Response response = notificationService.changeStatus(233L);
 
 		//then
-		assertEquals(true, response.isReadOrNot());
+		assertTrue(response.isReadOrNot());
+		verify(notificationRepository, times(1)).findById(anyLong());
+		verify(notificationRepository, times(1)).save(any());
 	}
 
 	@Test
