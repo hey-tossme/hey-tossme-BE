@@ -1,4 +1,4 @@
-package com.blackdragon.heytossme.controller;
+package com.blackdragon.heytossme.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.blackdragon.heytossme.dto.NotificationDto.Response;
 import com.blackdragon.heytossme.persist.NotificationRepository;
@@ -16,10 +15,8 @@ import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Notification;
 import com.blackdragon.heytossme.service.NotificationService;
 import com.blackdragon.heytossme.type.Category;
-import com.blackdragon.heytossme.type.NotificationResponse;
 import com.blackdragon.heytossme.type.Type;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -28,10 +25,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationControllerTest {
+class NotificationServiceTest {
 
 	@Mock
 	private NotificationRepository notificationRepository;
