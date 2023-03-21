@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum GeneralErrorCode implements BaseErrorCodeImpl {
-    INSUFFICIENT_PARAMETER(HttpStatus.BAD_REQUEST, "Not sufficient parameter"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occurred");
+public enum MailErrorCode implements BaseErrorCodeImpl {
 
+    ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT,"Already exist Email"),
+    INCORRECT_CODE(HttpStatus.UNAUTHORIZED, "Incorrect authorize code");
 
     private final HttpStatus httpStatus;
     private final String message;

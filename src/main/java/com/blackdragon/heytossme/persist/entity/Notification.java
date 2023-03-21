@@ -28,7 +28,7 @@ public class Notification {
     @NotNull
     private String message;
 
-    @NotNull
+//    @NotNull
 //    @Enumerated(EnumType.STRING)    ///type enum 정리
     private String type;
     private boolean readOrNot;

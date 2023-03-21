@@ -1,22 +1,23 @@
 package com.blackdragon.heytossme.service;
 
 
-import static com.blackdragon.heytossme.exception.MemberErrorCode.INCORRECT_PASSWORD;
-import static com.blackdragon.heytossme.exception.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
-import static com.blackdragon.heytossme.exception.MemberErrorCode.NOT_FOUND_USER;
+import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
+import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
+import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.NOT_FOUND_USER;
 
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
+import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
 import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
+import com.blackdragon.heytossme.type.MemberSocialType;
 import com.blackdragon.heytossme.type.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,14 +35,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ModelMapper modelMapper;
-
     private final TokenProvider tokenProvider;
 
 
     public MemberDto.Response signUp(SignUpRequest request) {
 
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(ErrorCode.CONFLICT_EMAIL);
+            throw new MemberException(MemberErrorCode.EXIST_EMAIL);
         }
         Member member = memberRepository.save(
                 Member.builder()
@@ -49,32 +49,13 @@ public class MemberService {
                         .name(request.getName())
                         .password(passwordEncoder.encode(request.getPassword()))
                         .imageUrl(request.getImageUrl())
-                        .socialLoginType(request.getSocialType())
+                        .socialLoginType(MemberSocialType.EMAIL.name())
                         .status(MemberStatus.NORMAL.name())
+                        .account(request.getAccount())
+                        .bankName(request.getBankName())
                         .build()
         );
         return new Response(member);
-    }
-
-    public ResponseToken generateToken(Long id, String email) {
-
-        String accessToken = tokenProvider.generateToken(id, email);
-        String refreshToken = tokenProvider.generateToken(id, email);
-
-        //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .path("/")
-                .maxAge(86400000)   //쿠키 만료시간 = 1일
-                .secure(true)
-                .httpOnly(true)
-                .sameSite("Strict")
-                .build();
-
-        // access token리턴, refresh
-        return ResponseToken.builder()
-                .responseCookie(cookie)
-                .accessToken(accessToken)
-                .build();
     }
 
     public ResponseToken signIn(SignInRequest request) {
@@ -89,9 +70,7 @@ public class MemberService {
             throw new MemberException(INCORRECT_PASSWORD);
         }
 
-        ResponseToken tokens = generateToken(member.getId(), member.getEmail());
-
-        return tokens;
+        return generateToken(member.getId(), member.getEmail());
     }
 
     public Response getInfo(long userId) {
@@ -142,7 +121,7 @@ public class MemberService {
         return response;
     }
 
-    public void deleteUser(long userId, ModifyRequest request) {
+    public void deleteUser(long userId, DeleteRequest request) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_USER));
@@ -167,5 +146,26 @@ public class MemberService {
                 .build();
 
         memberRepository.save(updateStatus);
+    }
+
+    public ResponseToken generateToken(Long id, String email) {
+
+        String accessToken = tokenProvider.generateToken(id, email);
+        String refreshToken = tokenProvider.generateToken(id, email);
+
+        //쿠키객체에 refresh token추가(쿠키 + 쿠키관련설정을 포함한 객체)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .path("/")
+                .maxAge(86400000)   //쿠키 만료시간 = 1일
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Strict")
+                .build();
+
+        // access token리턴, refresh
+        return ResponseToken.builder()
+                .responseCookie(cookie)
+                .accessToken(accessToken)
+                .build();
     }
 }

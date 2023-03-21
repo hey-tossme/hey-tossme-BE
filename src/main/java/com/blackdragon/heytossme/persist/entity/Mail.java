@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-public class EmailCertification {
+public class Mail {
 
     @Id
     private String email;

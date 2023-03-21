@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
@@ -9,6 +10,7 @@ import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -30,9 +32,17 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<ResponseForm> signUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
         var data = memberService.signUp(request);
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
+        ResponseToken tokens = memberService.signIn(request);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString()).build();
     }
 
     @GetMapping
@@ -44,17 +54,9 @@ public class MemberController {
                 new ResponseForm(MemberResponse.FIND_INFO.getMessage(), response));
     }
 
- @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
-        ResponseToken tokens = memberService.signIn(request);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString()).build();
-    }
-
     @PatchMapping
     public ResponseEntity<ResponseForm> modifyInfo(HttpServletRequest httpServletRequest,
-            @RequestBody ModifyRequest request) {
+            @Valid @RequestBody ModifyRequest request) {
 
         long id = (long) httpServletRequest.getAttribute("id");
         Response response = memberService.modifyInfo(id, request);
@@ -65,7 +67,7 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
-            @RequestBody ModifyRequest request) {
+            @Valid @RequestBody DeleteRequest request) {
 
         long id = (long) httpServletRequest.getAttribute("id");
         memberService.deleteUser(id, request);
