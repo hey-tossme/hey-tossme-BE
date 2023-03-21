@@ -84,4 +84,14 @@ public class ItemController {
 
         return ResponseEntity.ok(new ResponseForm("abc", data));
     }
+
+    @GetMapping("/complete/auth")
+    public ResponseEntity<ResponseForm> checkDealList(HttpServletRequest httpRequest,
+            @PathVariable(name = "page-num", required = false) Integer pageNum,
+            @PathVariable(name = "size", required = false) Integer size) {
+        Long memberId = (Long) httpRequest.getAttribute(USER_ID);
+        var data = itemService.getDealList(memberId, pageNum, size);
+
+        return ResponseEntity.ok(new ResponseForm("abc", data));
+    }
 }
