@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class KakaoException extends RuntimeException{
+public class KakaoException extends RuntimeException {
 
     private final KakaoErrorCode kakaoErrorCode;
     private final HttpStatus httpStatus;

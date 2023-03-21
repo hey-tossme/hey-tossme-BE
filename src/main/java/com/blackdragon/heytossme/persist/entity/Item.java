@@ -1,6 +1,7 @@
 package com.blackdragon.heytossme.persist.entity;
 
 import com.blackdragon.heytossme.type.Category;
+import com.blackdragon.heytossme.type.ItemStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,10 +19,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @ToString
 @AllArgsConstructor
@@ -33,8 +37,8 @@ public class Item extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "seller_id")
+    private Member seller;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -47,7 +51,7 @@ public class Item extends BaseTimeEntity {
     private String contents;
 
     @NotNull
-    private int price;
+    private Integer price;
 
     @NotNull
     private LocalDateTime dueDate;
@@ -59,9 +63,11 @@ public class Item extends BaseTimeEntity {
     private String imageUrl;
 
     @NotNull
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ItemStatus status;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Exclude
     private Address address;
 
     public void setAddress(Address address) {

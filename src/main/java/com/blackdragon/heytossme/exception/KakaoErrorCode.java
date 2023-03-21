@@ -12,7 +12,6 @@ public enum KakaoErrorCode {
     INCORRECT_REQUEST_URL(HttpStatus.NOT_FOUND, "잘못된 요청 주소 입니다.");
 
 
-
     private final HttpStatus httpStatus;
     private final String errorCode;
 

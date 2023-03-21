@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
-	List<Keyword> findAllByMemberId(Long memberId);
+    List<Keyword> findAllByMemberId(Long memberId);
 
-	Keyword findByKeyword(String keyword);
+    Keyword findByKeyword(String keyword);
 }

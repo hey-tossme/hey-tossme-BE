@@ -7,21 +7,21 @@ import lombok.Data;
 
 public class KeywordDto {
 
-	@Builder
-	@Data
-	public static class Response{
+    @Builder
+    @Data
+    public static class Response {
 
-		@NotBlank
-		private Long id;
-		@NotBlank
-		private String keyword;
+        @NotBlank
+        private Long id;
+        @NotBlank
+        private String keyword;
 
-		public static Response from(Keyword keyword) {
-			return Response.builder()
-					.id(keyword.getId())
-					.keyword(keyword.getKeyword())
-					.build();
-		}
-	}
+        public static Response from(Keyword keyword) {
+            return Response.builder()
+                    .id(keyword.getId())
+                    .keyword(keyword.getKeyword())
+                    .build();
+        }
+    }
 
 }

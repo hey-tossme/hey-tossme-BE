@@ -82,9 +82,7 @@ public class KakaoLoginService {
             //InputStream 으로 서버로 응답을 받을지 유무
             conn.setDoOutput(true);
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            StringBuilder sb = new StringBuilder();
-            sb.append("id_token=" + token);
-            bw.write(sb.toString());
+            bw.write("id_token=" + token);
             bw.flush();
 
             int responseCode = conn.getResponseCode();
@@ -139,12 +137,11 @@ public class KakaoLoginService {
 
             //getOutputStream() -> 메시지 바디에 포함
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            StringBuilder sb = new StringBuilder();
-            sb.append("grant_type=authorization_code");
-            sb.append("&client_id=" + client_id); // REST_API 키 본인이 발급받은 key 넣어주기
-            sb.append("&redirect_uri=" + redirect_uri); // REDIRECT_URI 본인이 설정한 주소 넣어주기
-            sb.append("&code=" + authorizationCode);
-            bw.write(sb.toString());
+            String sb = "grant_type=authorization_code"
+                    + "&client_id=" + client_id // REST_API 키 본인이 발급받은 key 넣어주기
+                    + "&redirect_uri=" + redirect_uri // REDIRECT_URI 본인이 설정한 주소 넣어주기
+                    + "&code=" + authorizationCode;
+            bw.write(sb);
             bw.flush();
 
             int responseCode = conn.getResponseCode();

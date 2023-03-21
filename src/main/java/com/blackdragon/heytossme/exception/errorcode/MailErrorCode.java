@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum MailErrorCode implements BaseErrorCodeImpl {
 
-    ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT,"Already exist Email"),
+    ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "Already exist Email"),
     INCORRECT_CODE(HttpStatus.UNAUTHORIZED, "Incorrect authorize code");
 
     private final HttpStatus httpStatus;

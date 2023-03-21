@@ -4,7 +4,7 @@ import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.BookmarkService;
-import com.blackdragon.heytossme.type.BookmarkResponse;
+import com.blackdragon.heytossme.type.resposne.BookmarkResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,29 +31,31 @@ public class BookmarkController {
             HttpServletRequest request,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer size) {
-        Long userId = (Long)request.getAttribute("userId");
+        Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         Page<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageNum, size);
         return ResponseEntity.ok(
-            new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data, accessToken));
+                new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data,
+                        accessToken));
     }
 
     @PostMapping("/auth")
     public ResponseEntity<ResponseForm> registerBookmarks(
-                                HttpServletRequest request,@RequestParam("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
 
-        Long userId = (Long)request.getAttribute("userId");
+        Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
         return ResponseEntity.ok(
-                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
+                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data,
+                        accessToken));
     }
 
     @DeleteMapping("/{item-id}/auth")
     public ResponseEntity<ResponseForm> deleteBookmarks(
-                                HttpServletRequest request,@PathVariable("item-id") Long itemId) {
+            HttpServletRequest request, @PathVariable("item-id") Long itemId) {
 
-        Long userId = (Long)request.getAttribute("userId");
+        Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
         return ResponseEntity.ok(

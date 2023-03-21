@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class MailException extends RuntimeException{
+public class MailException extends RuntimeException {
 
     private final MailErrorCode mailErrorCode;
     private final HttpStatus httpStatus;
