@@ -35,6 +35,27 @@ spring:
     ansi:
       enabled: ALWAYS
 
+  servlet:
+      multipart:
+        enabled: true
+        location: C:\\upload
+        max-request-size: 30MB
+        max-file-size: 10MB
+
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAQBJZIIDEZFERRO7Z
+      secret-key: 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
+    s3:
+      bucket: hey-toss-me
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
+
 com:
   blackdragon:
     jwt:
