@@ -3,7 +3,7 @@ package com.blackdragon.heytossme.service;
 
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
-import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.NOT_FOUND_USER;
+import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
@@ -19,6 +19,7 @@ import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.MemberSocialType;
 import com.blackdragon.heytossme.type.MemberStatus;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -41,7 +42,7 @@ public class MemberService {
     public MemberDto.Response signUp(SignUpRequest request) {
 
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new MemberException(MemberErrorCode.EXIST_EMAIL);
+            throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
         }
         Member member = memberRepository.save(
                 Member.builder()
@@ -58,35 +59,31 @@ public class MemberService {
         return new Response(member);
     }
 
-    public ResponseToken signIn(SignInRequest request) {
+    public Member signIn(SignInRequest request) {
 
-        Member member = memberRepository.findByEmail(request.getEmail());
+        Optional<Member> byEmail = memberRepository.findByEmail(request.getEmail());
 
-        if (member == null) {
-            throw new MemberException(NOT_FOUND_USER);
-        }
+        Member member = byEmail.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(INCORRECT_PASSWORD);
+            throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
 
-        return generateToken(member.getId(), member.getEmail());
+        return member;
     }
 
     public Response getInfo(long userId) {
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(NOT_FOUND_USER));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        Response response = modelMapper.map(member, Response.class);
-
-        return response;
+        return modelMapper.map(member, Response.class);
     }
 
     public Response modifyInfo(long userId, ModifyRequest request) {
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(NOT_FOUND_USER));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         log.info(passwordEncoder.encode(request.getCurPassword()));
         // 사용자 비밀번호 확인
@@ -114,25 +111,23 @@ public class MemberService {
                 .status(member.getStatus())
                 .build();
 
-        Member save = memberRepository.save(updatedMember);
+        memberRepository.save(updatedMember);
 
-        Response response = modelMapper.map(updatedMember, Response.class);
-
-        return response;
+        return modelMapper.map(updatedMember, Response.class);
     }
 
     public void deleteUser(long userId, DeleteRequest request) {
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(NOT_FOUND_USER));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         // 사용자 비밀번호 확인
         if (!passwordEncoder.matches(request.getCurPassword(), member.getPassword())) {
             throw new MemberException(INCORRECT_PASSWORD);
         }
 
-        /**
-         * 회원탈퇴 시 실제 DB 에서 Delete 를 하지 않고 유저 status 값을 탈퇴로 바꾼다
-         * 탈퇴 처리한 유저가 다시 가입할 경우를 대비하여 이메일을 공백 값으로 둔다.
+        /*
+          회원탈퇴 시 실제 DB 에서 Delete 를 하지 않고 유저 status 값을 탈퇴로 바꾼다
+          탈퇴 처리한 유저가 다시 가입할 경우를 대비하여 이메일을 공백 값으로 둔다.
          */
 
         Member updateStatus = Member.builder()
