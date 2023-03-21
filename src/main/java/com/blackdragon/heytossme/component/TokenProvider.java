@@ -20,23 +20,26 @@ public class TokenProvider {
 	@Value("${com.blackdragon.jwt.accesskey}")
 	private String accessKey;
 
-	private final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 30;	//30시간
-	private final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 30 * 30;	//30일
+	@Value("${com.blackdragon.jwt.refreshkey}")
+	private String refreshKey;
 
+	private final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 ;	//1시간
+	private final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 3;	//3시간
 
-	public String generateToken(Long id, String email) {
+	public String generateToken(Long id, String email, boolean isAccessToken) {
 
 		Claims claims = Jwts.claims().setSubject(email);
 		claims.put("id", id);
 
 		Date now = new Date();
-		Date expiredDate = new Date(now.getTime() + this.ACCESS_TOKEN_EXPIRE_TIME);
+		Date expiredDate = new Date(now.getTime() +
+				(isAccessToken ? this.ACCESS_TOKEN_EXPIRE_TIME : REFRESH_TOKEN_EXPIRE_TIME));
 
 		return Jwts.builder()
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(expiredDate)
-				.signWith(SignatureAlgorithm.HS512, this.accessKey)
+				.signWith(SignatureAlgorithm.HS512, isAccessToken ? this.accessKey : this.refreshKey)
 				.compact();
 	}
 
@@ -61,7 +64,6 @@ public class TokenProvider {
 		}
 	}
 
-	//유효기간 확인 및 refresh 만료 메서드 작성해서 만료되었다면 거기서 예외날리고
 	public boolean validateToken(String token) {
 		if (!StringUtils.hasText(token)) return false;
 		Claims claims = this.getClaims(token);

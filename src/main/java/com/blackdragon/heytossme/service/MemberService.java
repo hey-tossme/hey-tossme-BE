@@ -61,8 +61,8 @@ public class MemberService {
 
     public ResponseToken generateToken(Long id, String email) {
 
-        String accessToken = tokenProvider.generateToken(id, email);
-        String refreshToken = tokenProvider.generateToken(id, email);
+        String accessToken = tokenProvider.generateToken(id, email, true);
+        String refreshToken = tokenProvider.generateToken(id, email, false);
 
         return ResponseToken.builder()
                 .refreshToken(refreshToken)
@@ -93,6 +93,8 @@ public class MemberService {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        memberRepository.deleteById(member.getId());
 
         return MemberDto.SignOutResponse.from(member);
     }

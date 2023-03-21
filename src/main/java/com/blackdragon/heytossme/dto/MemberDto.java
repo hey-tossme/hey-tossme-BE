@@ -1,8 +1,10 @@
 package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Member;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -86,6 +88,13 @@ public class MemberDto {
                     .name(member.getName())
                     .build();
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class AuthResponse{
+        private String refreshToken;
+        private Cookie cookie;
 
     }
 }
