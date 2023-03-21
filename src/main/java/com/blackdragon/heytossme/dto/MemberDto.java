@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.ResponseCookie;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 public class MemberDto {
 
