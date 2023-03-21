@@ -5,8 +5,10 @@ import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
+import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
+import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +40,23 @@ public class MemberController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
-        ResponseToken tokens = memberService.signIn(request);
+    public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
+
+        Member member = memberService.signIn(request);
+        ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
+
+        SignInResponse data = SignInResponse.builder()
+                .id(member.getId())
+                .accessToken(tokens.getAccessToken())
+                .build();
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, tokens.getResponseCookie().toString()).build();
+                .headers(responseHeaders)
+                .body(new ResponseForm(
+                        MemberResponse.SIGN_UP.getMessage(), data, tokens.getAccessToken()));
     }
 
     @GetMapping
