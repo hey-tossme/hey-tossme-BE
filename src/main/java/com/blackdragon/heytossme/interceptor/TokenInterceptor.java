@@ -2,8 +2,8 @@ package com.blackdragon.heytossme.interceptor;
 
 import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.TokenProvider;
-import com.blackdragon.heytossme.exception.CustomException;
-import com.blackdragon.heytossme.exception.ErrorCode;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 				userId = tokenProvider.getUserId(accessToken);
 			} else {	//refresh tokne이 만료되어 로그아웃 + 쿠키삭제
 				cookie.setMaxAge(0);
-				throw new CustomException(ErrorCode.UNAUTHORIZED);
+				throw new MemberException(MemberErrorCode.UNAUTHORIZED);
 			}
 		} else {
 			userId = tokenProvider.getUserId(accessToken);
