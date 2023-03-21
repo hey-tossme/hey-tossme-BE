@@ -12,12 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class ExceptionController {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ResponseForm> customException(CustomException customException) {
-        var data = new ResponseForm(customException.getMessage());
-        return ResponseEntity.status(customException.getErrorCode().getHttpStatus()).body(data);
-    }
-
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ResponseForm> memberException(BaseException e) {
         return ResponseEntity.status(e.getHttpStatus()).body(new ResponseForm(e.getMessage()));

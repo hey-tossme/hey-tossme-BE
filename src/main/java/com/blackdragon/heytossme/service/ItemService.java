@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.service;
 
+import com.blackdragon.heytossme.dto.ItemDto.DealListResponse;
 import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
 import com.blackdragon.heytossme.dto.Kakao;
@@ -121,6 +122,7 @@ public class ItemService {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 8 : size);
         Specification<Item> search = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("status"), ItemStatus.SALE.name())); // 판매 중인 상품
             if (searchTitle != null) {
                 predicates.add(cb.like(root.get("title"), "%" + searchTitle + "%"));
             }
@@ -225,5 +227,14 @@ public class ItemService {
                         .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)))
                 .build());
         return new Response(item);
+    }
+
+    public DealListResponse getDealList(Long memberId, Integer pageNum, Integer size) {
+        Page<Response> buyList = historyRepository.findAllByBuyerId(memberId,
+                PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 2 : size)).map(e -> new Response(e.getItem()));
+        Page<Response> saleList = itemRepository.findAllBySellerId(memberId,
+                PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 4 : size)).map(Response::new);
+
+        return new DealListResponse(buyList, saleList);
     }
 }
