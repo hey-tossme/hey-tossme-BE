@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum BookmarkErrorCode implements BaseErrorCodeImpl {
 
-	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Bookmark not found");
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Bookmark not found");
 
-	private final HttpStatus httpStatus;
-	private final String message;
+    private final HttpStatus httpStatus;
+    private final String message;
 }

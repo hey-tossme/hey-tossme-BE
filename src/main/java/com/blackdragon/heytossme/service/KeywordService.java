@@ -16,34 +16,34 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeywordService {
 
-	private final KeywordRepository keywordRepository;
-	private final MemberRepository memberRepository;
+    private final KeywordRepository keywordRepository;
+    private final MemberRepository memberRepository;
 
-	public Keyword getKeyword(String keyword) {
-		return keywordRepository.findByKeyword(keyword);
-	}
+    public Keyword getKeyword(String keyword) {
+        return keywordRepository.findByKeyword(keyword);
+    }
 
-	public List<Response> getKeywordList(Long memberId) {
-		List<Keyword> keywordList = keywordRepository.findAllByMemberId(memberId);
-		return keywordList.stream().map(Response::from).collect(Collectors.toList());
-	}
+    public List<Response> getKeywordList(Long memberId) {
+        List<Keyword> keywordList = keywordRepository.findAllByMemberId(memberId);
+        return keywordList.stream().map(Response::from).collect(Collectors.toList());
+    }
 
-	public Response registerKeyword(Long userId, String keyword) {
+    public Response registerKeyword(Long userId, String keyword) {
 
-		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		Keyword savedKeyword = keywordRepository.save(Keyword.builder()
-				.keyword(keyword)
-				.member(member)
-				.build());
+        Keyword savedKeyword = keywordRepository.save(Keyword.builder()
+                .keyword(keyword)
+                .member(member)
+                .build());
 
-		return Response.from(savedKeyword);
-	}
+        return Response.from(savedKeyword);
+    }
 
-	public Response deleteKeyword(String keyword) {
-		Keyword savedKeyword = keywordRepository.findByKeyword(keyword);
-		keywordRepository.deleteById(savedKeyword.getId());
-		return Response.from(savedKeyword);
-	}
+    public Response deleteKeyword(String keyword) {
+        Keyword savedKeyword = keywordRepository.findByKeyword(keyword);
+        keywordRepository.deleteById(savedKeyword.getId());
+        return Response.from(savedKeyword);
+    }
 }

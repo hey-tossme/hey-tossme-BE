@@ -25,36 +25,36 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BookmarkService {
 
-	private final BookmarkRepository bookmarkRepository;
-	private final MemberRepository memberRepository;
-	private final ItemRepository itemRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final MemberRepository memberRepository;
+    private final ItemRepository itemRepository;
 
-	public Page<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
-		Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
-		Page<Bookmark> page = bookmarkRepository.findAllByMemberId(userId, pageable);
-		return page.map(CreateResponse::from);
-	}
+    public Page<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
+        Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
+        Page<Bookmark> page = bookmarkRepository.findAllByMemberId(userId, pageable);
+        return page.map(CreateResponse::from);
+    }
 
-	public CreateResponse registerBookmark(Long userId, Long itemId) {
-		Item item = itemRepository.findById(itemId)
-						.orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
-		Member member = memberRepository.findById(userId)
-						.orElseThrow(() -> new MemberException(MemberErrorCode.UNAUTHORIZED));
-		Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
-								.item(item)
-								.member(member)
-								.build());
+    public CreateResponse registerBookmark(Long userId, Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.UNAUTHORIZED));
+        Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
+                .item(item)
+                .member(member)
+                .build());
 
-		return BookmarkDto.CreateResponse.from(bookmark);
-	}
+        return BookmarkDto.CreateResponse.from(bookmark);
+    }
 
-	public DeleteResponse deleteBookmark(Long userId, Long itemId) {
-		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-		Bookmark bookmark = bookmarkRepository.findById(itemId)
-				.orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
+    public DeleteResponse deleteBookmark(Long userId, Long itemId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Bookmark bookmark = bookmarkRepository.findById(itemId)
+                .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
 
-		bookmarkRepository.deleteById(bookmark.getId());
-		return DeleteResponse.from(bookmark);
-	}
+        bookmarkRepository.deleteById(bookmark.getId());
+        return DeleteResponse.from(bookmark);
+    }
 }

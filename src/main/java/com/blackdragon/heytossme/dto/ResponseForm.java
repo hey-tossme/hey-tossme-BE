@@ -6,6 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ResponseForm {
+
     private String message;
     private Object data;
     private String token;

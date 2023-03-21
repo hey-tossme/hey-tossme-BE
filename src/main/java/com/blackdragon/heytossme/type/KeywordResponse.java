@@ -5,13 +5,13 @@ import lombok.Getter;
 @Getter
 public enum KeywordResponse {
 
-	GET_KEYWORD_LIST("successfully find keyword"),
-	REGISTER_KEYWORD("successfully registered keyword"),
-	DELETE_KEYWORD("successfully deleted keyword");
+    GET_KEYWORD_LIST("successfully find keyword"),
+    REGISTER_KEYWORD("successfully registered keyword"),
+    DELETE_KEYWORD("successfully deleted keyword");
 
-	final String message;
+    final String message;
 
-	KeywordResponse(String message) {
-		this.message = message;
-	}
+    KeywordResponse(String message) {
+        this.message = message;
+    }
 }

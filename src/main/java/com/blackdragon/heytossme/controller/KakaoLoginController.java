@@ -30,6 +30,7 @@ public class KakaoLoginController {
 
         return url;
     }
+
     @GetMapping("/callback")
     public ResponseEntity<?> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code) {
