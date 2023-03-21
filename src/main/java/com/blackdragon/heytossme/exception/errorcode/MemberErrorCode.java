@@ -13,7 +13,10 @@ public enum MemberErrorCode implements BaseErrorCodeImpl {
     INVALID_KEY(HttpStatus.NOT_ACCEPTABLE, "Invalid token"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Expired access token supplied"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Logout - refresh token expired"),
-    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
+    INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "Incorrect current password"),
+    MATCH_PREVIOUS_PASSWORD(HttpStatus.CONFLICT, "Different password required");
+
 
     private final HttpStatus httpStatus;
     private final String message;
