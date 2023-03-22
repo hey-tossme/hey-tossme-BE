@@ -64,10 +64,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           password: ${{ secrets.EC2_PASSWORD }}
-          script: |
-              sudo docker rm -f ${docker ps -qa)
-              sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
-              sudo touch ./docker-compose.yml
-              sudo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-              docker-compose up -d
-              docker image prune -f
+#           script: |
+#               sudo docker rm -f ${docker ps -qa)
+#               sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+#               sudo touch ./docker-compose.yml
+#               sudo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+#               docker-compose up -d
+#               docker image prune -f
