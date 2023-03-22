@@ -12,7 +12,6 @@ public enum MemberResponse {
     SEND_EMAIL("successfully email sent"),
     MATCH_CODE("successfully authorized"),
     RESET_PASSWORD("successfully reset password"),
-    SIGN_IN("successfully signed up"),
     SIGN_OUT("LOGOUT");
 
 
