@@ -59,8 +59,9 @@ jobs:
 #       uses: appleboy/ssh-action@master
 #       id: deploy-prod
 #       with:
-#           host: ${{ secrets.HOST }}
-#           username: ubuntu
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USERNAME }}
+#           password: ${{ secrets.EC2_PASSWORD }}
 #           envs: GITHUB_SHA
 #           script: |
 #               sudo dockere rm -f ${docker ps -qa)
