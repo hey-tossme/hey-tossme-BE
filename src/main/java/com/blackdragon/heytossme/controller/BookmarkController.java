@@ -35,8 +35,7 @@ public class BookmarkController {
         String accessToken = (String) request.getAttribute("accessToken");
         Page<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageNum, size);
         return ResponseEntity.ok(
-                new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data,
-                        accessToken));
+                new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data, accessToken));
     }
 
     @PostMapping("/auth")
@@ -47,8 +46,7 @@ public class BookmarkController {
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
         return ResponseEntity.ok(
-                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data,
-                        accessToken));
+                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
     }
 
     @DeleteMapping("/{item-id}/auth")

@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.component;
 
+import com.blackdragon.heytossme.dto.MemberDto.AuthResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 public class AuthExtractor {
 
     public static final String AUTHORIZATION = "Authorization";
-    public static final String ACCESS_TOKEN_TYPE =
-            AuthExtractor.class.getSimpleName() + ".ACCESS_TOKEN_TYPE";
 
     public String extractAccessToken(HttpServletRequest request, String type) {
         Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
@@ -27,21 +26,23 @@ public class AuthExtractor {
         return Strings.EMPTY;
     }
 
-    public String extractRefreshToken(HttpServletRequest request) {
+    public AuthResponse extractRefreshToken(HttpServletRequest request) {
 
         String refreshToken = "";
+        Cookie cookie = null;
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    log.info("refresh cookie name : " + cookie.getName());
+            for (Cookie _cookie : cookies) {
+                if ("refreshToken".equals(_cookie.getName())) {
+                    refreshToken = _cookie.getValue();
+                    cookie = _cookie;
+                    log.info("refresh cookie name : " + _cookie.getName());
                     break;
                 }
             }
         }
 
-        return refreshToken;
+        return new AuthResponse(refreshToken, cookie);
     }
 }

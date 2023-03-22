@@ -10,7 +10,8 @@ public enum MemberResponse {
 
     DELETE_USER("successfully deleted"),
 
-    SIGN_IN("successfully signed up");
+    SIGN_IN("successfully signed up"),
+    SIGN_OUT("LOGOUT");
 
     MemberResponse(String message) {
         this.message = message;
