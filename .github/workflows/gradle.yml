@@ -69,4 +69,4 @@ jobs:
               sudo dockere rm -f ${docker ps -qa)
               sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
               docker-compose up -d
-              docer image prune -f
+              docker image prune -f
