@@ -57,17 +57,17 @@ jobs:
           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
           
           
-#     - name: Deploy to ec2
-#       uses: appleboy/ssh-action@master
-#       id: deploy-prod
-#       with:
-#           host: ${{ secrets.EC2_HOST }}
-#           username: ${{ secrets.EC2_USERNAME }}
-#           password: ${{ secrets.EC2_PASSWORD }}
-#           envs: GITHUB_SHA
-#           script: |
-#               sudo dockere rm -f ${docker ps -qa)
-#               sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
-#               sudo docker netwokr create heytossme_net
-#               docker-compose up -d
-#               docer image prune -f
+    - name: Deploy to ec2
+      uses: appleboy/ssh-action@master
+      id: deploy-prod
+      with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          envs: GITHUB_SHA
+          script: |
+              sudo dockere rm -f ${docker ps -qa)
+              sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+              sudo docker netwokr create heytossme_net
+              docker-compose up -d
+              docer image prune -f
