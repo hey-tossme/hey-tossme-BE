@@ -9,6 +9,7 @@ import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
+import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
     private final HistoryRepository historyRepository;
+    private final AddressRepository addressRepository;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -231,10 +234,26 @@ public class ItemService {
 
     public DealListResponse getDealList(Long memberId, Integer pageNum, Integer size) {
         Page<Response> buyList = historyRepository.findAllByBuyerId(memberId,
-                PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 2 : size)).map(e -> new Response(e.getItem()));
+                        PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 2 : size))
+                .map(e -> new Response(e.getItem()));
         Page<Response> saleList = itemRepository.findAllBySellerId(memberId,
-                PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 4 : size)).map(Response::new);
+                        PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 4 : size))
+                .map(Response::new);
 
         return new DealListResponse(buyList, saleList);
+    }
+
+    public HashMap<String, ArrayList<String>> getAddressList() {
+        var list = addressRepository.findDistinct();
+        HashMap<String, ArrayList<String>> addressMap = new HashMap<>();
+        for (List<String> item : list) {
+            ArrayList<String> sigunList = addressMap.getOrDefault(item.get(0), new ArrayList<>());
+            sigunList.add(item.get(1));
+            addressMap.put(item.get(0), sigunList);
+        }
+
+        log.info("addressMap = {}", addressMap);
+
+        return addressMap;
     }
 }

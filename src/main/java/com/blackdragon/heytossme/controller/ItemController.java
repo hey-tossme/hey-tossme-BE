@@ -94,4 +94,11 @@ public class ItemController {
 
         return ResponseEntity.ok(new ResponseForm("abc", data));
     }
+
+    @GetMapping("/address")
+    public ResponseEntity<ResponseForm> getAddressList() {
+        var data = itemService.getAddressList();
+
+        return ResponseEntity.ok(new ResponseForm("abc", data));
+    }
 }
