@@ -68,5 +68,7 @@ jobs:
           script: |
               sudo docker rm -f ${docker ps -qa)
               sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+              sudo touch ./docker-compose.yml
+              sudo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
               docker-compose up -d
               docker image prune -f
