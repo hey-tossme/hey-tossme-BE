@@ -1,12 +1,13 @@
 package com.blackdragon.heytossme.dto;
 
 import com.blackdragon.heytossme.persist.entity.Member;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.ResponseCookie;
 
 public class MemberDto {
 
@@ -89,7 +90,7 @@ public class MemberDto {
     public static class SignInResponse {
 
         private Long id;
-        private String accessToken;
+        private String account;
 
     }
 
@@ -97,7 +98,32 @@ public class MemberDto {
     @Builder
     public static class ResponseToken {
 
-        private ResponseCookie responseCookie;
+        private String refreshToken;
         private String accessToken;
+    }
+
+    @Data
+    @Builder
+    public static class SignOutResponse {
+
+        private Long id;
+        private String email;
+        private String name;
+
+        public static SignOutResponse from(Member member) {
+            return SignOutResponse.builder()
+                    .id(member.getId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .build();
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class AuthResponse{
+        private String refreshToken;
+        private Cookie cookie;
+
     }
 }

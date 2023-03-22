@@ -48,7 +48,7 @@ public class KakaoLoginService {
         response.setId(member.getId());
         response.setEmail(member.getEmail());
 
-        return tokenProvider.generateToken(response.getId(), response.getEmail());
+        return tokenProvider.generateToken(response.getId(), response.getEmail(), true);
     }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {

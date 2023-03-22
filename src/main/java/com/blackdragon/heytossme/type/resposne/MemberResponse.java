@@ -11,7 +11,10 @@ public enum MemberResponse {
     SIGN_IN("successfully signed up"),
     SEND_EMAIL("successfully email sent"),
     MATCH_CODE("successfully authorized"),
-    RESET_PASSWORD("successfully reset password");
+    RESET_PASSWORD("successfully reset password"),
+    SIGN_IN("successfully signed up"),
+    SIGN_OUT("LOGOUT");
+
 
     MemberResponse(String message) {
         this.message = message;
