@@ -62,4 +62,8 @@ com:
       secret: {필수 입력}
     kakao:
       key: {필수 입력}
+    upload:
+          path: C:\\upload
+
+
 
