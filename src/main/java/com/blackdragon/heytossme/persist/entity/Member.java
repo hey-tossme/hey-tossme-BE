@@ -44,4 +44,8 @@ public class Member extends BaseTimeEntity {
     private String account;
 
     private String bankName;
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
