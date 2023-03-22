@@ -8,9 +8,11 @@ import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
+import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Address;
+import com.blackdragon.heytossme.persist.entity.History;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.type.Category;
 import com.blackdragon.heytossme.type.ItemStatus;
@@ -44,6 +46,8 @@ public class ItemService {
     private static final String API_KEY_PREFIX = "KakaoAK ";
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+    private final HistoryRepository historyRepository;
+
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
 
@@ -82,16 +86,17 @@ public class ItemService {
         AddressInfo addressInfo = getData(request.getAddress());
 //        log.info("address = {}", address);
         Item item = Item.builder()
-                .member(memberRepository.findById(sellerId)
+                .seller(memberRepository.findById(sellerId)
                         .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)))
                 .category(Category.findBy(request.getCategory()))
                 .title(request.getTitle())
                 .contents(request.getContents())
+                .price(request.getPrice())
                 .dueDate(dueDate)
                 .latitude(addressInfo.getY())
                 .longitude(addressInfo.getX())
                 .imageUrl(request.getImageUrl())
-                .status(ItemStatus.SALE.name())
+                .status(ItemStatus.SALE)
                 .build();
         Address address = Address.builder()
                 .item(item)
@@ -144,7 +149,81 @@ public class ItemService {
         return listPage.map(Response::new);
     }
 
-    public Long modify(Long sellerId, ItemRequest request) {
-        return sellerId + Long.parseLong(String.valueOf(request.getPrice()));
+    public Response modify(Long itemId, Long sellerId, ItemRequest request) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        if (!item.getSeller().getId().equals(sellerId)) {
+            System.out.println(sellerId);
+            System.out.println(item.getSeller().getId());
+            throw new ItemException(ItemErrorCode.SELLER_MISMATCH);
+        }
+        Address address = item.getAddress();
+        if (request.getCategory() != null) {
+            item.setCategory(Category.findBy(request.getCategory()));
+        }
+        if (request.getTitle() != null) {
+            item.setTitle(request.getTitle());
+        }
+        if (request.getPrice() != 0) {
+            item.setPrice(request.getPrice());
+        }
+        if (request.getDueDate() != null) {
+            LocalDateTime dueDate = parseToDateType(request.getDueDate());
+            item.setDueDate(dueDate);
+        }
+        if (request.getContents() != null) {
+            item.setContents(request.getContents());
+        }
+        if (request.getAddress() != null) {
+            AddressInfo addressInfo = getData(request.getAddress());
+            address.setSidoArea(addressInfo.getRegion_1depth_name());
+            address.setSigunArea(addressInfo.getRegion_2depth_name());
+            address.setLotRoadAddress(addressInfo.getRegion_3depth_name());
+            item.setAddress(address);
+        }
+        if (request.getAddressDetail() != null) {
+            address.setDetailAddress(request.getAddressDetail());
+        }
+        if (request.getImageUrl() != null) {
+            item.setImageUrl(request.getImageUrl());
+        }
+
+        return new Response(item);
+    }
+
+    public Response getDetail(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+
+        return new Response(item);
+    }
+
+    public void deleteItem(Long itemId, Long sellerId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        if (!item.getSeller().getId().equals(sellerId)) {
+            System.out.println(sellerId);
+            System.out.println(item.getSeller().getId());
+            throw new ItemException(ItemErrorCode.SELLER_MISMATCH);
+        }
+        item.setStatus(ItemStatus.HIDDEN);
+    }
+
+    public Response dealConfirm(Long itemId, Long sellerId, Long buyerId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+        if (!item.getSeller().getId().equals(sellerId)) {
+            System.out.println(sellerId);
+            System.out.println(item.getSeller().getId());
+            throw new ItemException(ItemErrorCode.SELLER_MISMATCH);
+        }
+
+        item.setStatus(ItemStatus.DONE);
+        historyRepository.save(History.builder()
+                .item(item)
+                .buyer(memberRepository.findById(buyerId)
+                        .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND)))
+                .build());
+        return new Response(item);
     }
 }

@@ -2,7 +2,7 @@ package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
-import com.blackdragon.heytossme.type.ChatRoomResponse;
+import com.blackdragon.heytossme.type.resposne.ChatRoomResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

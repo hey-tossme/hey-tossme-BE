@@ -32,28 +32,31 @@ public class TokenInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		if (!tokenProvider.validateToken(accessToken)) {	//access만료
-			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())) {	//refresh정상
+		if (!tokenProvider.validateToken(accessToken, true)) {	//access만료
+			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())) {	//refresh만료
+				response.sendRedirect(request.getContextPath()
+																+ "/members/logout/" + accessToken);
+				return false;
+			} else {	//refresh정상
 				accessToken = this.updateAccessToken(authResponse.getRefreshToken());
-				userId = tokenProvider.getUserId(accessToken);
-			} else {	//refresh만료
-				response.sendRedirect(request.getContextPath() + "/member/logout/auth");
+				userId = tokenProvider.getUserId(accessToken, true);
 			}
 		} else {	//access 정상
-			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())){	//refresh정상
-				userId = tokenProvider.getUserId(accessToken);
-			} else {	//refresh만료
-				response.sendRedirect(request.getContextPath() + "/member/logout/auth");
+			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())){	//refresh만료
+				response.sendRedirect(request.getContextPath()
+																+ "/members/logout/" + accessToken);
+				return false;
+			} else {	//refresh정상
+				userId = tokenProvider.getUserId(accessToken, true);
 			}
 		}
-
 		request.setAttribute("userId", userId);
 		request.setAttribute("accessToken", accessToken);
 		return true;
 	}
 
 	public String updateAccessToken(String refreshToken) {
-		Claims claims = tokenProvider.getUserInfo(refreshToken);
+		Claims claims = tokenProvider.getUserInfo(refreshToken, false);
 		String email = claims.getSubject();
 		Long id = Long.valueOf(String.valueOf( claims.get("id")));
 		return tokenProvider.generateToken(id, email, true);

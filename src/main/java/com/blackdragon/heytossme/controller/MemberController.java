@@ -1,5 +1,8 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
+import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
+import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
@@ -8,31 +11,37 @@ import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
-import com.blackdragon.heytossme.type.MemberResponse;
+import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
 @Slf4j
-//@CookieValue
 public class MemberController {
 
     private final MemberService memberService;
 
     @PostMapping
-    public ResponseEntity<ResponseForm> signUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
         var data = memberService.signUp(request);
-        return ResponseEntity.ok(new ResponseForm(MemberResponse.SING_UP.getMessage(), data));
+        return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
     }
 
     @PostMapping("/signIn")
@@ -52,22 +61,76 @@ public class MemberController {
 
         return ResponseEntity.ok()
                 .body(new ResponseForm(
-                        MemberResponse.SING_UP.getMessage(), data, tokens.getAccessToken()));
+                        MemberResponse.SIGN_UP.getMessage(), data, tokens.getAccessToken()));
     }
 
-    @PostMapping("/logout/auth")
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
+//    @PostMapping("/logout/auth")
+//    public ResponseEntity<ResponseForm> logout(HttpServletRequest request, HttpServletResponse response) {
+//        System.out.println("들어오는지?");
+//        Long userId = (Long) request.getAttribute("userId");
+//        String token = (String) request.getAttribute("accessToken");
+//
+//        SignOutResponse data = memberService.signOut(userId);
+//
+//        Cookie cookie = memberService.deleteCookie();
+//        response.addCookie(cookie);
+//
+//        return ResponseEntity.ok(
+//                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token)
+//        );
+//    }
 
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
+    /**
+     * Interceptor로부터 넘어오는 로그아웃 API
+     * @return
+     */
+    @GetMapping("/logout/{accessToken}")
+    public ResponseEntity<ResponseForm> logout(
+                                                @PathVariable("accessToken") String token) {
+        System.out.println("logout들어옴");
+//        SignOutResponse data = memberService.signOut(userId);
+        SignOutResponse data = null;
 
-        SignOutResponse data = memberService.signOut(userId);
+        //response객체를 만들기 위함
+        HttpServletResponse response
+                = ((ServletRequestAttributes) RequestContextHolder
+                                            .currentRequestAttributes()).getResponse();
 
         Cookie cookie = memberService.deleteCookie();
         response.addCookie(cookie);
 
         return ResponseEntity.ok(
-                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token)
-        );
+                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token));
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
+        long id = (long) httpServletRequest.getAttribute("id");
+        Response response = memberService.getInfo(id);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.FIND_INFO.getMessage(), response));
+    }
+
+    @PatchMapping
+    public ResponseEntity<ResponseForm> modifyInfo(HttpServletRequest httpServletRequest,
+            @Valid @RequestBody ModifyRequest request) {
+
+        long id = (long) httpServletRequest.getAttribute("id");
+        Response response = memberService.modifyInfo(id, request);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.CHANGE_INFO.getMessage(), response));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
+            @Valid @RequestBody DeleteRequest request) {
+
+        long id = (long) httpServletRequest.getAttribute("id");
+        memberService.deleteUser(id, request);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.DELETE_USER.getMessage(), null));
     }
 }

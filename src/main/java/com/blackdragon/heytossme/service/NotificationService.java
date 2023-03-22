@@ -35,7 +35,7 @@ public class NotificationService {
 		Notification notification = Notification.builder()
 				.message("임영웅 콘서트 티켓이 업로드되었습니다")
 				.readOrNot(false)
-				.type(Type.KEYWORD)
+				.type(Type.KEYWORD.getToKorean())
 				.item(item)
 				.member(member)
 				.build();

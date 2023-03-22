@@ -7,9 +7,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum BookmarkErrorCode implements BaseErrorCodeImpl {
+public enum MailErrorCode implements BaseErrorCodeImpl {
 
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Bookmark not found");
+    ALREADY_EXIST_EMAIL(HttpStatus.CONFLICT, "Already exist Email"),
+    INCORRECT_CODE(HttpStatus.UNAUTHORIZED, "Incorrect authorize code");
 
     private final HttpStatus httpStatus;
     private final String message;

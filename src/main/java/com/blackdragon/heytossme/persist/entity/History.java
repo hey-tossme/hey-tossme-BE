@@ -1,7 +1,6 @@
 package com.blackdragon.heytossme.persist.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,32 +10,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
-@Setter
-@Builder
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Address {
+@Builder
+public class History extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private String sidoArea;
-
-    private String sigunArea;
-
-    private String lotRoadAddress;
-
-    private String detailAddress;
-
+    @OneToOne
+    @JoinColumn(name = "buyer_id")
+    private Member buyer;
 }

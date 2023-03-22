@@ -26,46 +26,46 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class KeywordController {
 
-	private final KeywordService keywordService;
-	private final MemberRepository memberRepository;
+    private final KeywordService keywordService;
+    private final MemberRepository memberRepository;
 
-	@GetMapping("/auth")
-	public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
+    @GetMapping("/auth")
+    public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
 
-		Long userId = (Long)request.getAttribute("userId");
-		String token = (String) request.getAttribute("accessToken");
-		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-		List<Response> data = keywordService.getKeywordList(member.getId());
+        Long userId = (Long) request.getAttribute("userId");
+        String token = (String) request.getAttribute("accessToken");
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        List<Response> data = keywordService.getKeywordList(member.getId());
 
-		return ResponseEntity.ok(
-				new ResponseForm(KeywordResponse.GET_KEYWORD_LIST.getMessage(), data, token));
-	}
+        return ResponseEntity.ok(
+                new ResponseForm(KeywordResponse.GET_KEYWORD_LIST.getMessage(), data, token));
+    }
 
-	@PostMapping("/auth")
-	public ResponseEntity<ResponseForm> registerKeyword(
-							HttpServletRequest request, @RequestParam("keyword") String keyword) {
+    @PostMapping("/auth")
+    public ResponseEntity<ResponseForm> registerKeyword(
+            HttpServletRequest request, @RequestParam("keyword") String keyword) {
 
-		Long userId = (Long)request.getAttribute("userId");
-		String token = (String) request.getAttribute("accessToken");
-		Member member = memberRepository.findById(userId)
-				.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-		Response data = keywordService.registerKeyword(member.getId(), keyword);
+        Long userId = (Long) request.getAttribute("userId");
+        String token = (String) request.getAttribute("accessToken");
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Response data = keywordService.registerKeyword(member.getId(), keyword);
 
-		return ResponseEntity.ok(
-				new ResponseForm(KeywordResponse.REGISTER_KEYWORD.getMessage(), data, token));
-	}
+        return ResponseEntity.ok(
+                new ResponseForm(KeywordResponse.REGISTER_KEYWORD.getMessage(), data, token));
+    }
 
-	@DeleteMapping("/{keyword}/auth")
-	public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
-													,@PathVariable("keyword") String keyword) {
-		Long userId = (Long)request.getAttribute("userId");
-		String token = (String) request.getAttribute("accessToken");
-		Keyword savedKeyword = keywordService.getKeyword(keyword);
+    @DeleteMapping("/{keyword}/auth")
+    public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
+            , @PathVariable("keyword") String keyword) {
+        Long userId = (Long) request.getAttribute("userId");
+        String token = (String) request.getAttribute("accessToken");
+        Keyword savedKeyword = keywordService.getKeyword(keyword);
 
-		Response data = keywordService.deleteKeyword(savedKeyword.getKeyword());
+        Response data = keywordService.deleteKeyword(savedKeyword.getKeyword());
 
-		return ResponseEntity.ok(
-				new ResponseForm(KeywordResponse.DELETE_KEYWORD.getMessage(), data, token));
-	}
+        return ResponseEntity.ok(
+                new ResponseForm(KeywordResponse.DELETE_KEYWORD.getMessage(), data, token));
+    }
 }
