@@ -26,6 +26,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        
     - name: Gradle Caching
       uses: actions/cache@v3
       with:
@@ -36,14 +37,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
           
-    - name: make application.yml
-      if: contains(github.ref, 'main')
+    - name: Make application.yml
       run: |
           cd ./src/main/resources
           touch ./application.yml
-          echo "${{ secrets.PROPERTIES_PROD }}" > ./application.properties
+          echo "${{ secrets.PROPERTIES_PROD }}" > ./application.yml
       shell: bash
-    - name: make gradle excutable
+      
+    - name: Make gradle excutable
       run: chmod +x ./gradlew
       
     - name: Build with gradle
@@ -54,6 +55,7 @@ jobs:
           docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
+          
           
 #     - name: Deploy to ec2
 #       uses: appleboy/ssh-action@master
@@ -66,5 +68,6 @@ jobs:
 #           script: |
 #               sudo dockere rm -f ${docker ps -qa)
 #               sudo docker pull ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+#               sudo docker netwokr create heytossme_net
 #               docker-compose up -d
 #               docer image prune -f
