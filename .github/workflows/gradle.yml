@@ -44,10 +44,10 @@ jobs:
           echo "${{ secrets.PROPERTIES_PROD }}" > ./application.properties
       shell: bash
     - name: make gradle excutable
-      run: chmod +x ./gradlew.bat
+      run: chmod +x ./gradlew
       
     - name: Build with gradle
-      run: ./gradlew.bat clean build -x test
+      run: ./gradlew clean build -x test
       
     - name: Docker build & push to repo
       run: | 
