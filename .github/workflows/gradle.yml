@@ -66,4 +66,6 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
               whoami
+              touch ./docker-compose.yml
+              echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
               ls -al
