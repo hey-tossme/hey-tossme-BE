@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -243,12 +244,12 @@ public class ItemService {
         return new DealListResponse(buyList, saleList);
     }
 
-    public HashMap<String, ArrayList<String>> getAddressList() {
+    public HashMap<String, HashSet<String>> getAddressList() {
         var list = addressRepository.findDistinct();
-        HashMap<String, ArrayList<String>> addressMap = new HashMap<>();
+        HashMap<String, HashSet<String>> addressMap = new HashMap<>();
         for (List<String> item : list) {
-            ArrayList<String> sigunList = addressMap.getOrDefault(item.get(0), new ArrayList<>());
-            sigunList.add(item.get(1));
+            HashSet<String> sigunList = addressMap.getOrDefault(item.get(0), new HashSet<>());
+            sigunList.add(item.get(1).split(" ")[0]);
             addressMap.put(item.get(0), sigunList);
         }
 
