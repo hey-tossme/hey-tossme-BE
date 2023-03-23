@@ -41,7 +41,10 @@ jobs:
       run: |
           touch ./src/main/resources/application.yml
           echo "${{ secrets.PROPERTIES_PROD }}" > ./src/main/resources/application.yml
-      shell: bash
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application.yml
+        path: ./src/main/resources/application.yml
       
     - name: Make gradle excutable
       run: chmod +x ./gradlew
@@ -67,7 +70,5 @@ jobs:
               ls -al
               touch ./docker-compose.yml
               echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-              sudo docker rm - f ${{ secrets.DOCKER_REPO }}Application
-              sudo docker image rm ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}
               sudo docker compose up -d
     
