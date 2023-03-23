@@ -7,17 +7,18 @@
 
 name: Gradle Package
 
-on:
-  release:
-    types: [created]
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-    permissions:
+on:  
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+permissions:
       contents: read
-
+      
+jobs:
+  CI-CD:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
