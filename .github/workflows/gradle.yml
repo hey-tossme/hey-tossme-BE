@@ -64,7 +64,7 @@ jobs:
       with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          pasword: ${{ secrets.EC2_PASSWORD }}
+          password: ${{ secrets.EC2_PASSWORD }}
           script: |
               whoami
               touch ./docker-compose.yml
