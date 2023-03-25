@@ -2,20 +2,20 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
 
-name: Java CI with Gradle
+name: Gradle Package
 
-on:
+on:  
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
+    
 permissions:
-  contents: read
-
+      contents: read
+      
 jobs:
   CI-CD:
     runs-on: ubuntu-latest
@@ -36,13 +36,15 @@ jobs:
         key: ${{ runner.os}}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-          
+
     - name: Make application.yml
       run: |
-          cd ./src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.PROPERTIES_PROD }}" > ./application.yml
-      shell: bash
+          touch ./src/main/resources/application.yml
+          echo "${{ secrets.PROPERTIES_PROD }}" > ./src/main/resources/application.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application.yml
+        path: ./src/main/resources/application.yml
       
     - name: Make gradle excutable
       run: chmod +x ./gradlew
@@ -56,7 +58,6 @@ jobs:
           docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
           
-          
     - name: Deploy to ec2
       uses: appleboy/ssh-action@master
       id: deploy-prod
@@ -66,9 +67,8 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
               whoami
+              ls -al
               touch ./docker-compose.yml
               echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-              sudo docker rm - f ${{ secrets.DOCKER_REPO }}Application
-              sudo docker image rm ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}
               sudo docker compose up -d
-              ls -al
+    
