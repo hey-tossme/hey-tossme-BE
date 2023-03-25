@@ -32,11 +32,15 @@ dependencies {
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'com.google.firebase:firebase-admin:6.8.1'
     implementation 'org.modelmapper:modelmapper:3.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'net.coobird:thumbnailator:0.4.19'
+    testImplementation 'org.testng:testng:7.1.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 
 }
 

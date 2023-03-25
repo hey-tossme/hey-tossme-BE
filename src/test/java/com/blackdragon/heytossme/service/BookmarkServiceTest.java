@@ -1,4 +1,4 @@
-package com.blackdragon.heytossme.controller;
+package com.blackdragon.heytossme.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
-import com.blackdragon.heytossme.exception.MemberException;
-import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.BookmarkRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
@@ -29,11 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkControllerTest {
+class BookmarkServiceTest {
 
 	@Mock
 	private BookmarkRepository bookmarkRepository;

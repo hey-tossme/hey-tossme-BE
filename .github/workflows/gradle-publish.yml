@@ -1,0 +1,74 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Gradle Package
+
+on:  
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+permissions:
+      contents: read
+      
+jobs:
+  CI-CD:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os}}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Make application.yml
+      run: |
+          touch ./src/main/resources/application.yml
+          echo "${{ secrets.PROPERTIES_PROD }}" > ./src/main/resources/application.yml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: application.yml
+        path: ./src/main/resources/application.yml
+      
+    - name: Make gradle excutable
+      run: chmod +x ./gradlew
+      
+    - name: Build with gradle
+      run: ./gradlew clean build -x test
+      
+    - name: Docker build & push to repo
+      run: | 
+          docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
+          docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
+          
+    - name: Deploy to ec2
+      uses: appleboy/ssh-action@master
+      id: deploy-prod
+      with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          script: |
+              whoami
+              ls -al
+              touch ./docker-compose.yml
+              echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+              sudo docker compose up -d
+    

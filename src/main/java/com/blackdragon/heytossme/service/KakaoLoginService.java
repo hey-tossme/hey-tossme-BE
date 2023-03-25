@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
@@ -49,12 +48,11 @@ public class KakaoLoginService {
         response.setId(member.getId());
         response.setEmail(member.getEmail());
 
-        return tokenProvider.generateToken(response.getId(), response.getEmail());
+        return tokenProvider.generateToken(response.getId(), response.getEmail(), true);
     }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
-        Optional<Member> memberOptional = Optional.ofNullable(
-                memberRepository.findByEmail(kakaoInfo.get("email")));
+        Optional<Member> memberOptional = memberRepository.findByEmail(kakaoInfo.get("email"));
 
         if (memberOptional.isPresent()) {
             return memberOptional.get();
@@ -98,8 +96,6 @@ public class KakaoLoginService {
             }
             payload = result;
 
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -163,11 +159,7 @@ public class KakaoLoginService {
             br.close();
             bw.close();
 
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
         return kakaoToken;
