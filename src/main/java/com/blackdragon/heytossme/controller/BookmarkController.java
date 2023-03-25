@@ -45,6 +45,7 @@ public class BookmarkController {
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
+        //북마크 알림발송
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
     }
@@ -56,6 +57,7 @@ public class BookmarkController {
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
+        //북마크
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.DELETE_BOOKMARK.getMessage(), data, accessToken));
     }

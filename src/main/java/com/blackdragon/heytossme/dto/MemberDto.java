@@ -71,7 +71,6 @@ public class MemberDto {
         private String status;
         private String account;
         private String bankName;
-        private String token;
 
         public Response(Member member) {
             this.id = member.getId();
