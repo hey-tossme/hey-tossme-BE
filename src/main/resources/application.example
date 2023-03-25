@@ -59,11 +59,14 @@ cloud:
 com:
   blackdragon:
     jwt:
-      secret: {필수 입력}
+      accesskey: YWNjZXNzdG9rZW4K
+      refreshkey: cmVmcmVzaHRva2VuCg==
     kakao:
       key: {필수 입력}
+    fcm:
+      key: heytossme-ed900-firebase-adminsdk-eemln-8406da0942.json
     upload:
-          path: C:\\upload
+      path: C:\\upload
 
 
 
