@@ -31,9 +31,9 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class KakaoLoginService {
 
-    @Value("com.blackdragon.kakao.redirectUri")
+    @Value("${com.blackdragon.kakao.redirectUri}")
     private String redirectUri;
-    @Value("com.blackdragon.kakao.clientId")
+    @Value("${com.blackdragon.kakao.clientId}")
     private String clientId;
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
@@ -137,8 +137,8 @@ public class KakaoLoginService {
             //getOutputStream() -> 메시지 바디에 포함
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             String sb = "grant_type=authorization_code"
-                    + "&clientId=" + clientId // REST_API 키 본인이 발급받은 key 넣어주기
-                    + "&redirectUri=" + redirectUri // REDIRECT_URI 본인이 설정한 주소 넣어주기
+                    + "&client_id=" + clientId // REST_API 키 본인이 발급받은 key 넣어주기
+                    + "&redirect_uri=" + redirectUri // REDIRECT_URI 본인이 설정한 주소 넣어주기
                     + "&code=" + authorizationCode;
             bw.write(sb);
             bw.flush();
