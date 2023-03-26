@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/notification")
+@RequestMapping("/v1/notification")
 @RequiredArgsConstructor
 @RestController
 public class NotificationController {
@@ -26,7 +26,7 @@ public class NotificationController {
 //	private final FCMService fcmService;
 
 	//테스트용(알람저장) TODO
-	@PostMapping("/auth")
+	@PostMapping
 	public ResponseEntity<ResponseForm> saveNotification(HttpServletRequest request) {
 
 		Long userId = (Long) request.getAttribute("userId");
@@ -35,7 +35,7 @@ public class NotificationController {
 				new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));
 	}
 
-	@GetMapping("/auth")
+	@GetMapping
 	public ResponseEntity<ResponseForm> getNotification(HttpServletRequest request) {
 		Long userId = (Long) request.getAttribute("userId");
 		List<NotificationDto.Response> data = notificationService.getNotification();
@@ -43,7 +43,7 @@ public class NotificationController {
 				new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));
 	}
 
-	@PatchMapping("/{notification-id}/auth")
+	@PatchMapping("/{notification-id}")
 	public ResponseEntity<ResponseForm> statusChangeNotification(HttpServletRequest request,
 										@PathVariable("notification-id") Long notificationId) {
 
@@ -55,7 +55,7 @@ public class NotificationController {
 		new ResponseForm(NotificationResponse.NOTIFICATION_STATUS_CHANGE.getMessage(), data, token));
 	}
 
-	@DeleteMapping("/{notification-id}/auth")
+	@DeleteMapping("/{notification-id}")
 	public ResponseEntity<ResponseForm> deleteNotification(HttpServletRequest request,
 														@PathVariable("notification-id") Long id) {
 
@@ -65,13 +65,4 @@ public class NotificationController {
 				new ResponseForm(NotificationResponse.DELETE_NOTIFIACTION.getMessage(), data)
 		);
 	}
-
-//	@PostMapping("/send-notification")
-//	public void sendNotification(@RequestParam("token") String token,
-//								@RequestParam("title") String title,
-//								@RequestParam("body") String body) throws FirebaseMessagingException{
-//
-//		fcmService.sendNotification(token, title, body);
-//
-//	}
 }

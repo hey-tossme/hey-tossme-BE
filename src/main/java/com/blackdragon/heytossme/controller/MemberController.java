@@ -46,9 +46,10 @@ public class MemberController {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
-                                                            HttpServletResponse response) {
+                                    @RequestBody String messageToken,
+                                    HttpServletResponse response) {
 
-        Member member = memberService.signIn(request);
+        Member member = memberService.signIn(request, messageToken);
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         Cookie cookie = memberService.generateCookie(tokens.getRefreshToken());
 
@@ -67,7 +68,7 @@ public class MemberController {
     /**
      * Interceptor로부터 넘어오는 로그아웃 API
      */
-    @GetMapping("/logout/{accessToken}/{userId}")
+    @GetMapping("/v2/logout/{accessToken}/{userId}")
 //    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token) {
     public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
                                                 @PathVariable("userId") Object _userId) {
@@ -83,8 +84,6 @@ public class MemberController {
         response.addCookie(cookie);
 
         SignOutResponse data = memberService.signOut(userId);
-
-        //fcm토큰 삭제(로그아웃되었으니 삭제)
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token));
