@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/chat/rooms")
+@RequestMapping("v1/chat/rooms")
 @RequiredArgsConstructor
 public class ChatRoomController {
 
     private final ChatService chatService;
     private final String USER_ID = "userId";
 
-    @GetMapping("/auth")
+    @GetMapping
     public ResponseEntity<ResponseForm> getChatRoomList(HttpServletRequest httpRequest) {
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomList(userId);
@@ -31,7 +31,7 @@ public class ChatRoomController {
         );
     }
 
-    @PostMapping("/auth")
+    @PostMapping
     public ResponseEntity<ResponseForm> createChatRoomList(HttpServletRequest httpRequest,
             @RequestParam("item-id") Long itemId) {
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
