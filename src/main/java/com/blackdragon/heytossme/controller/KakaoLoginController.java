@@ -19,24 +19,13 @@ public class KakaoLoginController {
 
     private final KakaoLoginService kakaoLoginService;
 
-//    추후 삭제 예정
-//    @GetMapping()
-//    public String kakaoLogin() {
-//
-//        String url = "https://kauth.kakao.com/oauth/authorize?client_id=" + clientId
-//                + "&redirect_uri=" + redirectUrl +
-//                "&response_type=code";
-//
-//        return url;
-//    }
-
     @GetMapping("/login")
-    public ResponseEntity<?> oauthKakaoLogin(
+    public ResponseEntity<ResponseForm> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code) {
 
-        String accessToken = kakaoLoginService.getAccessToken(code);
+        String token = kakaoLoginService.getAccessToken(code);
 
         return ResponseEntity.ok(
-                new ResponseForm(KakaoResponse.LOG_IN.getMessage(), accessToken));
+                new ResponseForm(KakaoResponse.LOG_IN.getMessage(), null, token));
     }
 }
