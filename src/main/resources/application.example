@@ -62,7 +62,8 @@ com:
       accesskey: YWNjZXNzdG9rZW4K
       refreshkey: cmVmcmVzaHRva2VuCg==
     kakao:
-      key: {필수 입력}
+      redirectUrl: http://localhost:5173/auth/callback/kakao
+      clientId: dff000965fae8a573afe2461d55a9256
     fcm:
       key: heytossme-ed900-firebase-adminsdk-eemln-8406da0942.json
     upload:
