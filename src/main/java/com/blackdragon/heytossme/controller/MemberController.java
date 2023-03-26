@@ -64,32 +64,15 @@ public class MemberController {
                         MemberResponse.SIGN_UP.getMessage(), data, tokens.getAccessToken()));
     }
 
-//    @PostMapping("/logout/auth")
-//    public ResponseEntity<ResponseForm> logout(HttpServletRequest request, HttpServletResponse response) {
-//        System.out.println("들어오는지?");
-//        Long userId = (Long) request.getAttribute("userId");
-//        String token = (String) request.getAttribute("accessToken");
-//
-//        SignOutResponse data = memberService.signOut(userId);
-//
-//        Cookie cookie = memberService.deleteCookie();
-//        response.addCookie(cookie);
-//
-//        return ResponseEntity.ok(
-//                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token)
-//        );
-//    }
-
     /**
      * Interceptor로부터 넘어오는 로그아웃 API
-     * @return
      */
-    @GetMapping("/logout/{accessToken}")
-    public ResponseEntity<ResponseForm> logout(
-                                                @PathVariable("accessToken") String token) {
-        System.out.println("logout들어옴");
-//        SignOutResponse data = memberService.signOut(userId);
-        SignOutResponse data = null;
+    @GetMapping("/logout/{accessToken}/{userId}")
+//    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token) {
+    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
+                                                @PathVariable("userId") Object _userId) {
+
+        Long userId = Long.valueOf(String.valueOf(_userId));
 
         //response객체를 만들기 위함
         HttpServletResponse response
@@ -98,6 +81,10 @@ public class MemberController {
 
         Cookie cookie = memberService.deleteCookie();
         response.addCookie(cookie);
+
+        SignOutResponse data = memberService.signOut(userId);
+
+        //fcm토큰 삭제(로그아웃되었으니 삭제)
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token));

@@ -20,45 +20,43 @@ public class TokenInterceptor implements HandlerInterceptor {
 	private final TokenProvider tokenProvider;
 	private final AuthExtractor authExtractor;
 
+
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) throws Exception {
 
 		Object userId = null;
 		String accessToken = authExtractor.extractAccessToken(request, "Bearer");
-		AuthResponse authResponse =  authExtractor.extractRefreshToken(request);
+		AuthResponse authResponse = authExtractor.extractRefreshToken(request);
 
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
 
-		if (!tokenProvider.validateToken(accessToken, true)) {	//access만료
-			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())) {	//refresh만료
-				response.sendRedirect(request.getContextPath()
-																+ "/members/logout/" + accessToken);
-				return false;
-			} else {	//refresh정상
-				accessToken = this.updateAccessToken(authResponse.getRefreshToken());
-				userId = tokenProvider.getUserId(accessToken, true);
-			}
-		} else {	//access 정상
-			if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())){	//refresh만료
-				response.sendRedirect(request.getContextPath()
-																+ "/members/logout/" + accessToken);
-				return false;
-			} else {	//refresh정상
-				userId = tokenProvider.getUserId(accessToken, true);
-			}
+		if (!tokenProvider.validateToken(accessToken, true)) {//access만료
+			accessToken = this.updateAccessToken(authResponse.getRefreshToken());
+			userId = tokenProvider.getUserId(accessToken, true);
+		} else {	//만료 안됐다면 userID를 꺼내기 위함
+			userId = tokenProvider.getUserId(accessToken, true);
 		}
+
+		if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())) {    //refresh만료
+			response.sendRedirect(request.getContextPath()
+					+ "/members/logout/" + accessToken + "/" + userId);
+			return false;
+		}
+
 		request.setAttribute("userId", userId);
 		request.setAttribute("accessToken", accessToken);
+
 		return true;
 	}
 
 	public String updateAccessToken(String refreshToken) {
-		Claims claims = tokenProvider.getUserInfo(refreshToken, false);
+		Claims claims = tokenProvider.getUserInfo(refreshToken, false);//만료됐으면?
 		String email = claims.getSubject();
-		Long id = Long.valueOf(String.valueOf( claims.get("id")));
+		Long id = Long.valueOf(String.valueOf(claims.get("id")));
 		return tokenProvider.generateToken(id, email, true);
 	}
 }
