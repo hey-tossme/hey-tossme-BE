@@ -60,8 +60,8 @@ jobs:
         id: deploy
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          usrname: ${{ secrets.USERNAME }}
+          pssword: ${{ secrets.PASSWORD }}
           port: 22
           script: |
             ls -al
