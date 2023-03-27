@@ -60,6 +60,14 @@ public class MemberDto {
     }
 
     @Data
+    public static class PasswordRequest {
+        @Email
+        private String email;
+        private String password;
+        private String code;
+    }
+
+    @Data
     @NoArgsConstructor
     public static class Response {
 
@@ -125,4 +133,6 @@ public class MemberDto {
         private Cookie cookie;
 
     }
+
+
 }

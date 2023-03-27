@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 @Entity
 @Getter
@@ -29,14 +30,14 @@ public class Address {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
+    @Exclude
     private Item item;
 
-    private String sidoArea;
+    private String firstDepthRegion;
+    private String secondDepthRegion;
+    private String thirdDepthRegion;
 
-    private String sigunArea;
-
-    private String lotRoadAddress;
-
-    private String detailAddress;
+    private String firstDetailAddress;
+    private String secondDetailAddress;
 
 }

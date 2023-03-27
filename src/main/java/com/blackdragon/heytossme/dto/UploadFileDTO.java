@@ -8,7 +8,7 @@ public class UploadFileDTO {
     @Data
     public static class Request {
 
-        private MultipartFile files;
+        private MultipartFile file;
     }
 
     @Data

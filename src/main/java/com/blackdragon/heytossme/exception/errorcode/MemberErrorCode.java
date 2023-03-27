@@ -17,8 +17,8 @@ public enum MemberErrorCode implements BaseErrorCodeImpl {
     SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
     INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "Incorrect current password"),
     INCORRECT_PATH(HttpStatus.BAD_REQUEST, "Incorrect logout api path"),
-    MATCH_PREVIOUS_PASSWORD(HttpStatus.CONFLICT, "Different password required");
-
+    MATCH_PREVIOUS_PASSWORD(HttpStatus.CONFLICT, "Different password required"),
+    INCORRECT_CODE(HttpStatus.UNAUTHORIZED, "Incorrect authorize code");
 
     private final HttpStatus httpStatus;
     private final String message;

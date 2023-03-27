@@ -50,4 +50,8 @@ public class Member extends BaseTimeEntity {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void setPwAuthKey(String pwAuthKey) {
+        this.pwAuthKey = pwAuthKey;
+    }
 }

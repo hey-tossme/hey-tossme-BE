@@ -1,19 +1,15 @@
 package com.blackdragon.heytossme.exception;
 
 import com.blackdragon.heytossme.exception.errorcode.MailErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.impl.BaseErrorCodeImpl;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class MailException extends RuntimeException {
+public class MailException extends BaseException {
 
-    private final MailErrorCode mailErrorCode;
-    private final HttpStatus httpStatus;
 
-    public MailException(MailErrorCode mailErrorCode) {
-        super(mailErrorCode.getMessage());
-        this.mailErrorCode = mailErrorCode;
-        this.httpStatus = mailErrorCode.getHttpStatus();
+    public MailException(BaseErrorCodeImpl errorCode) {
+        super(errorCode);
     }
-
 }

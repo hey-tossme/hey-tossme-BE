@@ -3,6 +3,7 @@ package com.blackdragon.heytossme.controller;
 import com.blackdragon.heytossme.dto.MessageDto;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.ChatService;
+import com.blackdragon.heytossme.type.resposne.ChatRoomResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +25,14 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final RabbitTemplate template;
 
-    @GetMapping("/chat/message/{roomId}/auth")
+    @GetMapping("/v1/chat/message/{roomId}")
     public ResponseEntity<ResponseForm> getMessageList(HttpServletRequest httpRequest,
             @PathVariable Long roomId) {
         String USER_ID = "userId";
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomMessage(roomId, userId);
 
-        return ResponseEntity.ok(new ResponseForm("ok", data));
+        return ResponseEntity.ok(new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
     }
 
     @MessageMapping("chat.message.{roomId}")
