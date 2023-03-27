@@ -51,9 +51,9 @@ public class ChatRoomController {
         );
     }
 
-    @PostMapping("/{room-id}/account-share/{status}")
+    @PostMapping("/{room-id}/account-share")
     public ResponseEntity<ResponseForm> convertAccountTransferStatus(HttpServletRequest httpRequest,
-            @PathVariable("room-id") Long roomId, @PathVariable("status") boolean status) {
+            @PathVariable("room-id") Long roomId, @RequestParam("status") boolean status) {
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.convertAccountTransferStatus(userId, roomId, status);
         return ResponseEntity.ok(
