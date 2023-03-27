@@ -12,7 +12,7 @@ public class TestController {
 
     @GetMapping
     public String test() {
-        log.info("Hello World! is processing...");
+        log.info("Hello World! is processing...(cd test)");
 
         return "Hello world!";
     }
