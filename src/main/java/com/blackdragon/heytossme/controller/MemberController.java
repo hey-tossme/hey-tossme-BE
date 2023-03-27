@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -48,18 +47,18 @@ public class MemberController {
 
     @PostMapping("/signIn")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
-                                                            HttpServletResponse response) {
+            HttpServletResponse response) {
 
         Member member = memberService.signIn(request);
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
-        Cookie cookie = memberService.generateCookie(tokens.getRefreshToken());
+        var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
                 .account(member.getAccount())
                 .build();
 
-        response.addCookie(cookie);
+        response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok()
                 .body(new ResponseForm(
@@ -71,15 +70,15 @@ public class MemberController {
      */
     @GetMapping("/logout/{accessToken}/{userId}")
 //    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token) {
-    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
-                                                @PathVariable("userId") Object _userId) {
+    public ResponseEntity<ResponseForm> logout(@PathVariable("accessToken") String token,
+            @PathVariable("userId") Object _userId) {
 
         Long userId = Long.valueOf(String.valueOf(_userId));
 
         //response객체를 만들기 위함
         HttpServletResponse response
                 = ((ServletRequestAttributes) RequestContextHolder
-                                            .currentRequestAttributes()).getResponse();
+                .currentRequestAttributes()).getResponse();
 
         Cookie cookie = memberService.deleteCookie();
         response.addCookie(cookie);

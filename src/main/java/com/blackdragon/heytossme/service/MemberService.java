@@ -28,6 +28,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -149,7 +150,6 @@ public class MemberService {
     }
 
 
-
     public ResponseToken generateToken(Long id, String email) {
 
         String accessToken = tokenProvider.generateToken(id, email, true);
@@ -161,15 +161,15 @@ public class MemberService {
                 .build();
     }
 
-    public Cookie generateCookie(String refreshToken) {
+    public ResponseCookie generateCookie(String refreshToken) {
 
-        Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setPath("/");
-        cookie.setMaxAge(86400000);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-
-        return cookie;
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .path("/")
+                .sameSite("Lax")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(86400)
+                .build();
     }
 
     public Cookie deleteCookie() {
@@ -199,11 +199,12 @@ public class MemberService {
                     memberRepository.save(member);
                 });
     }
+
     public void checkAuthCode(PasswordRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new MemberException(MEMBER_NOT_FOUND));
 
-        if(!member.getPwAuthKey().equals(request.getCode())){
+        if (!member.getPwAuthKey().equals(request.getCode())) {
             throw new MemberException(INCORRECT_CODE);
         }
     }
