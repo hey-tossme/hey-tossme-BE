@@ -38,12 +38,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Make application.yml
         run: |
-          touch ./src/main/resources/application.yml
-          echo "${{ secrets.PROPERTIES_PROD }}" > ./src/main/resources/application.yml
-      - uses: actions/upload-artifact@v3
-        with:
-          name: application.yml
-          path: ./src/main/resources/application.yml
+          cd ./src/main/resources
+          touch ./application.yml 
+          echo "${{ secrets.PROPERTIES }}" > ./application.yml 
+          ls -al
 
       - name: Make gradle excutable
         run: chmod +x ./gradlew
@@ -51,22 +49,25 @@ jobs:
       - name: Build with gradle
         run: ./gradlew clean build -x test
 
-#       - name: Docker build & push to repo
-#         run: |
-#           docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
-#           docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
-#           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
+      - name: Docker build & push to repo
+        run: |
+          docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
+          docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
 
       - name: Deploy to ec2
-        uses: appleboy/ssh-action@v0.1.8
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          script: |
-            ls -al
-            touch ./docker-compose.yml
-            echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-            docker compose up -d
-            docker image prune -f 
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          
+          passwordpassword: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: whoami
+#          script: |
+#            ls -al
+#            touch ./docker-compose.yml
+#            echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+#            docker compose up -d
+#            docker image prune -f 
     
