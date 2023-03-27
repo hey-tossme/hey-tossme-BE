@@ -56,7 +56,8 @@ jobs:
           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
 
       - name: Deploy to ec2
-        uses: appleboy/ssh-action@v0.1.8
+        uses: appleboy/ssh-action@master
+        id: deploy
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
