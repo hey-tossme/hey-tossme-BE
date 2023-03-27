@@ -91,7 +91,10 @@ public class MemberController {
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
+
         Long id = (Long) httpServletRequest.getAttribute("id");
+
+
         Response response = memberService.getInfo(id);
 
         return ResponseEntity.ok(
