@@ -168,7 +168,7 @@ public class MemberService {
                 .sameSite("Lax")
                 .httpOnly(true)
                 .secure(false)
-                .maxAge(86400)
+                .maxAge(1)
                 .build();
     }
 

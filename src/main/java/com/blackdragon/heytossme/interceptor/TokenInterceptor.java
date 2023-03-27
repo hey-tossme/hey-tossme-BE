@@ -42,8 +42,9 @@ public class TokenInterceptor implements HandlerInterceptor {
 		}
 
 		if (!tokenProvider.isExpiredRefreshToken(authResponse.getRefreshToken())) {    //refresh만료
-			response.sendRedirect(request.getContextPath()
-					+ "/members/logout/" + accessToken + "/" + userId);
+			log.info("interceptor check");
+//			response.sendRedirect(request.getContextPath()
+//					+ "/members/logout/" + accessToken + "/" + userId);
 			return false;
 		}
 
