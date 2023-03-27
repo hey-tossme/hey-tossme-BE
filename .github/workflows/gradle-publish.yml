@@ -49,22 +49,23 @@ jobs:
       - name: Build with gradle
         run: ./gradlew clean build -x test
 
-#       - name: Docker build & push to repo
-#         run: |
-#           docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
-#           docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
-#           docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
+      - name: Docker build & push to repo
+        run: |
+          docker login -u ${{ secrets.DOCKER_HOST }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest .
+          docker push ${{ secrets.DOCKER_HOST }}/${{ secrets.DOCKER_REPO }}:latest
 
-#       - name: Deploy to ec2
-#         uses: appleboy/ssh-action@v0.1.8
-#         with:
-#           host: ${{ secrets.EC2_HOST }}
-#           username: ${{ secrets.EC2_USERNAME }}
-#           password: ${{ secrets.EC2_PASSWORD }}
-#           script: |
-#             ls -al
-#             touch ./docker-compose.yml
-#             echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-#             docker compose up -d
-#             docker image prune -f 
+      - name: Deploy to ec2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            ls -al
+#            touch ./docker-compose.yml
+#            echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+#            docker compose up -d
+#            docker image prune -f 
     
