@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,14 +67,12 @@ public class MemberController {
     /**
      * Interceptor로부터 넘어오는 로그아웃 API
      */
-    @GetMapping("/v2/members/logout/{accessToken}/{userId}")
-//    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token) {
-    public ResponseEntity<ResponseForm> logout(@PathVariable("accessToken") String token,
-            @PathVariable("userId") Object _userId) {
+    @GetMapping("/v2/members/logout/{refreshToken}/{userId}")
+    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
+                                                @PathVariable("userId") Object _userId) {
 
         Long userId = Long.valueOf(String.valueOf(_userId));
 
-        //response객체를 만들기 위함
         HttpServletResponse response
                 = ((ServletRequestAttributes) RequestContextHolder
                 .currentRequestAttributes()).getResponse();
@@ -82,8 +81,6 @@ public class MemberController {
         response.addCookie(cookie);
 
         SignOutResponse data = memberService.signOut(userId);
-
-        //fcm토큰 삭제(로그아웃되었으니 삭제)
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token));
@@ -122,6 +119,17 @@ public class MemberController {
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.DELETE_USER.getMessage(), null));
     }
+
+    //Access토큰 재발급
+    @GetMapping("/v2/members/token/re-create/{userId}")
+    public ResponseEntity<ResponseForm> recreateToken(HttpServletRequest request,
+            HttpServletResponse response,@PathVariable Long userId) {
+
+        String generatedToken = memberService.reCreateAccessToken(request, response, userId);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.RE_CREATED_ACCESS_TOKEN.getMessage(),
+                        null, generatedToken));
 
     @PostMapping("/v2/members/reset-password")
     public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody PasswordRequest request) {

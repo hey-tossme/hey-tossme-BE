@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/bookmarks")
+@RequestMapping("/v1/bookmarks")
 @RestController
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @GetMapping("/auth")
+    @GetMapping
     public ResponseEntity<ResponseForm> getBookmarks(
             HttpServletRequest request,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
@@ -38,19 +38,18 @@ public class BookmarkController {
                 new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data, accessToken));
     }
 
-    @PostMapping("/auth")
+    @PostMapping
     public ResponseEntity<ResponseForm> registerBookmarks(
             HttpServletRequest request, @RequestParam("item-id") Long itemId) {
 
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
-        //북마크 알림발송
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
     }
 
-    @DeleteMapping("/{item-id}/auth")
+    @DeleteMapping("/{item-id}")
     public ResponseEntity<ResponseForm> deleteBookmarks(
             HttpServletRequest request, @PathVariable("item-id") Long itemId) {
 

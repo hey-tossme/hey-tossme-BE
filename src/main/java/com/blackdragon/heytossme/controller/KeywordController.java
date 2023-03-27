@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping("/keyword")
+@RequestMapping("/v1/keyword")
 @RequiredArgsConstructor
 @Controller
 public class KeywordController {
@@ -29,7 +29,7 @@ public class KeywordController {
     private final KeywordService keywordService;
     private final MemberRepository memberRepository;
 
-    @GetMapping("/auth")
+    @GetMapping
     public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
 
         Long userId = (Long) request.getAttribute("userId");
@@ -42,7 +42,7 @@ public class KeywordController {
                 new ResponseForm(KeywordResponse.GET_KEYWORD_LIST.getMessage(), data, token));
     }
 
-    @PostMapping("/auth")
+    @PostMapping
     public ResponseEntity<ResponseForm> registerKeyword(
             HttpServletRequest request, @RequestParam("keyword") String keyword) {
 
@@ -56,7 +56,7 @@ public class KeywordController {
                 new ResponseForm(KeywordResponse.REGISTER_KEYWORD.getMessage(), data, token));
     }
 
-    @DeleteMapping("/{keyword}/auth")
+    @DeleteMapping("/{keyword}")
     public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
             , @PathVariable("keyword") String keyword) {
         Long userId = (Long) request.getAttribute("userId");

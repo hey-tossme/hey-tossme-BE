@@ -6,9 +6,11 @@ import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCO
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
+import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.MailComponent;
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
+import com.blackdragon.heytossme.dto.MemberDto.AuthResponse;
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
@@ -24,6 +26,9 @@ import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.MemberSocialType;
 import com.blackdragon.heytossme.type.MemberStatus;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,6 +47,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
+    private final AuthExtractor authExtractor;
     private final MailComponent mailComponent;
 
 
@@ -74,6 +80,8 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
+
+//        member.setMessageToken(messageToken);   //fcm토큰을 db에저장하고 서버측에서 관리
 
         return member;
     }
@@ -185,8 +193,35 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
+        member.setMessageToken(""); //fcm 토큰을 빈값으로 변경
+
         return MemberDto.SignOutResponse.from(member);
     }
+
+    public String reCreateAccessToken(HttpServletRequest request
+            , HttpServletResponse response, Long userId) {
+
+        AuthResponse auth = authExtractor.extractRefreshToken(request);
+        String refreshToken = auth.getRefreshToken();
+
+        if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {    //refresh만료여부
+            try {
+                response.sendRedirect(request.getContextPath()
+                        + "/v2/members/logout/" + refreshToken + "/" + userId);
+            } catch (IOException e) {
+                throw new MemberException(MemberErrorCode.INCORRECT_PATH);
+            }
+        }
+        return tokenProvider.updateAccessToken(refreshToken);
+    }
+
+    //FCM토큰 가져오기
+    public String getFcmToken(Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return member.getMessageToken();
+        }
 
     public void sendEmail(PasswordRequest request) {
 
@@ -217,5 +252,6 @@ public class MemberService {
         memberRepository.save(updatedMember);
 
         return modelMapper.map(updatedMember, Response.class);
+
     }
 }

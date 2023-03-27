@@ -57,9 +57,9 @@ public class TokenProvider {
 		} catch (SignatureException e) {
 			log.info(" >>>>>>SignatureException" + e.getMessage());
 			log.info(" >>>>>>SignatureException" + e.getCause());
-			throw new MemberException(MemberErrorCode.INVALID_KEY);
+			throw new MemberException(MemberErrorCode.INVALID_SIGNATURE);
 		} catch (ExpiredJwtException e) {
-			return false;
+			throw new MemberException(MemberErrorCode.INVALID_KEY);
 		} catch (Exception e) {
 			log.info(" >>>>>>>Exception" + e.getMessage());
 			log.info(" >>>>>>>Exception" + e.getCause());
@@ -69,7 +69,16 @@ public class TokenProvider {
 	}
 
 	public boolean isExpiredRefreshToken(String refreshKey) {
-		return this.validateToken(refreshKey, false);
+		if (!StringUtils.hasText(refreshKey)) return false;
+		Claims claims;
+		try {
+			claims = this.getClaims(refreshKey, false);
+		} catch (SignatureException e) {
+			throw new MemberException(MemberErrorCode.INVALID_SIGNATURE);
+		} catch (ExpiredJwtException e) {
+			return false;
+		}
+		return !claims.getExpiration().before(new Date());
 	}
 
 	public Claims getUserInfo(String token, boolean isAccessKey) {
@@ -80,4 +89,10 @@ public class TokenProvider {
 		return Long.valueOf(String.valueOf( this.getClaims(token, isAccessKey).get("id")));
 	}
 
+	public String updateAccessToken(String refreshToken) {
+		Claims claims = this.getUserInfo(refreshToken, false);//만료됐으면?
+		String email = claims.getSubject();
+		Long id = Long.valueOf(String.valueOf(claims.get("id")));
+		return this.generateToken(id, email, true);
+	}
 }
