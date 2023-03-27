@@ -90,7 +90,7 @@ public class TokenProvider {
 	}
 
 	public String updateAccessToken(String refreshToken) {
-		Claims claims = this.getUserInfo(refreshToken, false);//만료됐으면?
+		Claims claims = this.getUserInfo(refreshToken, false);
 		String email = claims.getSubject();
 		Long id = Long.valueOf(String.valueOf(claims.get("id")));
 		return this.generateToken(id, email, true);
