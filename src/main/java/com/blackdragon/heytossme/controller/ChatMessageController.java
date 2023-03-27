@@ -24,7 +24,7 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final RabbitTemplate template;
 
-    @GetMapping("/chat/message/{roomId}/auth")
+    @GetMapping("/v1/chat/message/{roomId}/auth")
     public ResponseEntity<ResponseForm> getMessageList(HttpServletRequest httpRequest,
             @PathVariable Long roomId) {
         String USER_ID = "userId";
