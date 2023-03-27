@@ -57,14 +57,14 @@ jobs:
 
       - name: Deploy to ec2
         uses: appleboy/ssh-action@master
-        id: deploy
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.key }}
-          port: 22
-          script: |
-            ls -al
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: whoami
+#          script: |
+#            ls -al
 #            touch ./docker-compose.yml
 #            echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
 #            docker compose up -d
