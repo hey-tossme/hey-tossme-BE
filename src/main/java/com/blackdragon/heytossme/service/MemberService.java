@@ -1,14 +1,17 @@
 package com.blackdragon.heytossme.service;
 
 
+import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_CODE;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
+import com.blackdragon.heytossme.component.MailComponent;
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
+import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
@@ -38,6 +41,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
+    private final MailComponent mailComponent;
 
 
     public MemberDto.Response signUp(SignUpRequest request) {
@@ -73,7 +77,7 @@ public class MemberService {
         return member;
     }
 
-    public Response getInfo(long userId) {
+    public Response getInfo(Long userId) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -81,7 +85,7 @@ public class MemberService {
         return modelMapper.map(member, Response.class);
     }
 
-    public Response modifyInfo(long userId, ModifyRequest request) {
+    public Response modifyInfo(Long userId, ModifyRequest request) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -117,7 +121,7 @@ public class MemberService {
         return modelMapper.map(updatedMember, Response.class);
     }
 
-    public void deleteUser(long userId, DeleteRequest request) {
+    public void deleteUser(Long userId, DeleteRequest request) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -143,6 +147,8 @@ public class MemberService {
 
         memberRepository.save(updateStatus);
     }
+
+
 
     public ResponseToken generateToken(Long id, String email) {
 
@@ -180,5 +186,35 @@ public class MemberService {
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         return MemberDto.SignOutResponse.from(member);
+    }
+
+    public void sendEmail(PasswordRequest request) {
+
+        String email = request.getEmail();
+        String authKey = mailComponent.createKey();
+        mailComponent.send(email, authKey);
+        memberRepository.findByEmail(email).ifPresent(
+                member -> {
+                    member.setPwAuthKey(authKey);
+                    memberRepository.save(member);
+                });
+    }
+    public void checkAuthCode(PasswordRequest request) {
+        Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new MemberException(MEMBER_NOT_FOUND));
+
+        if(!member.getPwAuthKey().equals(request.getCode())){
+            throw new MemberException(INCORRECT_CODE);
+        }
+    }
+
+    public Response resetNewPassword(PasswordRequest request) {
+        Member updatedMember = memberRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new MemberException(MEMBER_NOT_FOUND));
+
+        updatedMember.setPassword(passwordEncoder.encode(request.getPassword()));
+        memberRepository.save(updatedMember);
+
+        return modelMapper.map(updatedMember, Response.class);
     }
 }

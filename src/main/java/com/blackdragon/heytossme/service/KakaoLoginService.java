@@ -23,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,6 +31,10 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class KakaoLoginService {
 
+    @Value("${com.blackdragon.kakao.redirectUri}")
+    private String redirectUri;
+    @Value("${com.blackdragon.kakao.clientId}")
+    private String clientId;
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
 
@@ -120,8 +125,6 @@ public class KakaoLoginService {
 
         String requestURL = "https://kauth.kakao.com/oauth/token";
         String kakaoToken = "";
-        String client_id = "5e7a808a1af99e1088e5d4eb40239800";
-        String redirect_uri = "http://localhost:8080/login/oauth2/kakao";
 
         try {
             URL url = new URL(requestURL);
@@ -134,8 +137,8 @@ public class KakaoLoginService {
             //getOutputStream() -> 메시지 바디에 포함
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             String sb = "grant_type=authorization_code"
-                    + "&client_id=" + client_id // REST_API 키 본인이 발급받은 key 넣어주기
-                    + "&redirect_uri=" + redirect_uri // REDIRECT_URI 본인이 설정한 주소 넣어주기
+                    + "&client_id=" + clientId // REST_API 키 본인이 발급받은 key 넣어주기
+                    + "&redirect_uri=" + redirectUri // REDIRECT_URI 본인이 설정한 주소 넣어주기
                     + "&code=" + authorizationCode;
             bw.write(sb);
             bw.flush();

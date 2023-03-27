@@ -2,6 +2,7 @@ package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
+import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -119,5 +121,33 @@ public class MemberController {
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.DELETE_USER.getMessage(), null));
+    }
+
+    @PostMapping("reset-password")
+    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody PasswordRequest request) {
+
+        memberService.sendEmail(request);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.SEND_EMAIL.getMessage(), request));
+    }
+
+    @PostMapping("reset-password/check")
+    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody PasswordRequest request) {
+
+        memberService.checkAuthCode(request);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.MATCH_CODE.getMessage(), null));
+    }
+
+    @PatchMapping("reset-password")
+    public ResponseEntity<ResponseForm> resetNewPassword(
+            @Valid @RequestBody PasswordRequest request) {
+
+        Response response = memberService.resetNewPassword(request);
+
+        return ResponseEntity.ok(
+                new ResponseForm(MemberResponse.RESET_PASSWORD.getMessage(), response));
     }
 }
