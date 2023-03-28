@@ -28,6 +28,7 @@ import com.blackdragon.heytossme.type.MemberStatus;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -188,6 +189,7 @@ public class MemberService {
         return cookie;
     }
 
+    @Transactional
     public SignOutResponse signOut(Long userId) {
 
         Member member = memberRepository.findById(userId)
@@ -207,7 +209,7 @@ public class MemberService {
         if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {    //refresh만료여부
             try {
                 response.sendRedirect(request.getContextPath()
-                        + "/v2/members/logout/" + refreshToken + "/" + userId);
+                        + "/v2/members/logout/" + userId);
             } catch (IOException e) {
                 throw new MemberException(MemberErrorCode.INCORRECT_PATH);
             }

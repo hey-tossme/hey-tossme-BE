@@ -52,7 +52,6 @@ public class MemberController {
         Member member = memberService.signIn(request);
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
-
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
                 .account(member.getAccount())
@@ -68,9 +67,8 @@ public class MemberController {
     /**
      * Interceptor로부터 넘어오는 로그아웃 API
      */
-    @GetMapping("/v2/members/logout/{refreshToken}/{userId}")
-    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
-                                                @PathVariable("userId") Object _userId) {
+    @GetMapping("/v2/members/logout/{userId}")
+    public ResponseEntity<ResponseForm> logout( @PathVariable("userId") Object _userId) {
 
         Long userId = Long.valueOf(String.valueOf(_userId));
 
@@ -84,8 +82,14 @@ public class MemberController {
         SignOutResponse data = memberService.signOut(userId);
 
         return ResponseEntity.ok(
-                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data, token));
+                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data));
     }
+
+    /**
+     *
+     * @param httpServletRequest
+     * @return
+     */
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
