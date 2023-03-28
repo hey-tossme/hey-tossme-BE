@@ -1,8 +1,8 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
-import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
 import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
@@ -44,7 +44,7 @@ public class MemberController {
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
     }
 
-    @PostMapping("/v1/members/signIn")
+    @PostMapping("/v2/members/signIn")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
@@ -88,10 +88,7 @@ public class MemberController {
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
-
         Long id = (Long) httpServletRequest.getAttribute("id");
-
-
         Response response = memberService.getInfo(id);
 
         return ResponseEntity.ok(
@@ -130,9 +127,10 @@ public class MemberController {
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.RE_CREATED_ACCESS_TOKEN.getMessage(),
                         null, generatedToken));
+    }
 
     @PostMapping("/v2/members/reset-password")
-    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody PasswordRequest request) {
+    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.sendEmail(request);
 
@@ -141,7 +139,7 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password/check")
-    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody PasswordRequest request) {
+    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.checkAuthCode(request);
 
@@ -151,7 +149,7 @@ public class MemberController {
 
     @PatchMapping("/v2/members/reset-password")
     public ResponseEntity<ResponseForm> resetNewPassword(
-            @Valid @RequestBody PasswordRequest request) {
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         Response response = memberService.resetNewPassword(request);
 

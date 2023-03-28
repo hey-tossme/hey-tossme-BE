@@ -24,7 +24,6 @@ public class TokenInterceptor implements HandlerInterceptor {
 
 		Object userId;
 		String accessToken = authExtractor.extractAccessToken(request, "Bearer");
-
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
