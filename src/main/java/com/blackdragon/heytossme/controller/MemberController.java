@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +36,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class MemberController {
 
     private final MemberService memberService;
+    private static final String USER_ID = "userId";
+    private static final String ACCESS_TOKEN = "accessToken";
 
     @PostMapping("/v2/members/")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -44,7 +45,7 @@ public class MemberController {
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
     }
 
-    @PostMapping("/v2/members/signIn")
+    @PostMapping("/v2/members/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
@@ -88,7 +89,7 @@ public class MemberController {
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         Response response = memberService.getInfo(id);
 
         return ResponseEntity.ok(
@@ -99,7 +100,7 @@ public class MemberController {
     public ResponseEntity<ResponseForm> modifyInfo(HttpServletRequest httpServletRequest,
             @Valid @RequestBody ModifyRequest request) {
 
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         Response response = memberService.modifyInfo(id, request);
 
         return ResponseEntity.ok(
@@ -110,7 +111,7 @@ public class MemberController {
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
             @Valid @RequestBody DeleteRequest request) {
 
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         memberService.deleteUser(id, request);
 
         return ResponseEntity.ok(
