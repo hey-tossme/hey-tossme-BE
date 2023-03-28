@@ -22,7 +22,7 @@ public class UploadService {
 
     private final MemberRepository memberRepository;
 
-    public String uploadImage(long id, Request request) {
+    public String uploadImage(Long id, Request request) {
 
         String uploadedFilePaths = localUploader.uploadLocal(request.getFile());
 
