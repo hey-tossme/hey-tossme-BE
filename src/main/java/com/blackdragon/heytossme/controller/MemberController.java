@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,13 +37,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/v2/members/")
+    @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
         var data = memberService.signUp(request);
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
     }
 
-    @PostMapping("/v2/members/signIn")
+    @PostMapping("/v2/members/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
@@ -68,8 +67,8 @@ public class MemberController {
      * Interceptor로부터 넘어오는 로그아웃 API
      */
     @GetMapping("/v2/members/logout/{refreshToken}/{userId}")
-    public ResponseEntity<ResponseForm> logout( @PathVariable("accessToken") String token,
-                                                @PathVariable("userId") Object _userId) {
+    public ResponseEntity<ResponseForm> logout(@PathVariable("accessToken") String token,
+            @PathVariable("userId") Object _userId) {
 
         Long userId = Long.valueOf(String.valueOf(_userId));
 
@@ -120,7 +119,7 @@ public class MemberController {
     //Access토큰 재발급
     @GetMapping("/v2/members/token/re-create/{userId}")
     public ResponseEntity<ResponseForm> recreateToken(HttpServletRequest request,
-            HttpServletResponse response,@PathVariable Long userId) {
+            HttpServletResponse response, @PathVariable Long userId) {
 
         String generatedToken = memberService.reCreateAccessToken(request, response, userId);
 
@@ -130,7 +129,8 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password")
-    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody MemberDto.PasswordRequest request) {
+    public ResponseEntity<ResponseForm> sendResetMail(
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.sendEmail(request);
 
@@ -139,7 +139,8 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password/check")
-    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody MemberDto.PasswordRequest request) {
+    public ResponseEntity<ResponseForm> checkAuthCode(
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.checkAuthCode(request);
 
