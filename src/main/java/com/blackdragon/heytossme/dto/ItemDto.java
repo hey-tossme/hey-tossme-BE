@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.dto;
 
+import com.blackdragon.heytossme.persist.entity.Address;
 import com.blackdragon.heytossme.persist.entity.Item;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class ItemDto {
         private String title;
         private String contents;
         private int price;
+        private String address;
         private LocalDateTime createdAt;
         private LocalDateTime dueTime;
         private float latitude;
@@ -43,6 +45,7 @@ public class ItemDto {
             this.title = item.getTitle();
             this.contents = item.getContents();
             this.price = item.getPrice();
+            this.address = convertAddress(item.getAddress());
             this.createdAt = item.getCreatedAt();
             this.dueTime = item.getDueDate();
             this.latitude = item.getLatitude();
@@ -50,16 +53,27 @@ public class ItemDto {
             this.imageUrl = item.getImageUrl();
             this.status = item.getStatus().name();
         }
+
+        public String convertAddress(Address address) {
+
+            return address.getFirstDepthRegion() + " "
+                    + address.getSecondDepthRegion()
+                    + " "
+                    + address.getThirdDepthRegion()
+                    + " "
+                    + address.getFirstDetailAddress()
+                    + " "
+                    + address.getSecondDetailAddress();
+        }
     }
 
     @Data
     public static class DealListResponse {
-        private Page<Response> sale;
-        private Page<Response> buy;
 
-        public DealListResponse(Page<Response> buyList, Page<Response> saleList) {
-            this.sale = saleList;
-            this.buy = buyList;
+        private Page<Response> list;
+
+        public DealListResponse(Page<Response> list) {
+            this.list = list;
         }
     }
 }

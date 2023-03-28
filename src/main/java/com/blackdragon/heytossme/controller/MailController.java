@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/mail")
+@RequestMapping("/v2/mail")
 @RequiredArgsConstructor
 public class MailController {
 

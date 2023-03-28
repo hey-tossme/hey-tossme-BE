@@ -24,7 +24,7 @@ public class UploadService {
 
     public String uploadImage(long id, Request request) {
 
-        String uploadedFilePaths = localUploader.uploadLocal(request.getFiles());
+        String uploadedFilePaths = localUploader.uploadLocal(request.getFile());
 
         String url = s3Uploader.upload(uploadedFilePaths);
 

@@ -14,20 +14,18 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/items")
 @Slf4j
 public class ItemController {
 
     private final ItemService itemService;
     private final String USER_ID = "userId";
 
-    @GetMapping
+    @GetMapping("/v2/items")
     public ResponseEntity<ResponseForm> getList(
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer size,
@@ -42,14 +40,14 @@ public class ItemController {
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ITEM_LIST.getMessage(), data));
     }
 
-    @GetMapping("/{item-id}")
+    @GetMapping("/v2/items/{item-id}")
     public ResponseEntity<ResponseForm> getDetail(@PathVariable("item-id") Long itemId) {
         var data = itemService.getDetail(itemId);
 
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_DETAIL.getMessage(), data));
     }
 
-    @PostMapping("/auth")
+    @PostMapping("/v1/items")
     public ResponseEntity<ResponseForm> register(HttpServletRequest httpRequest,
             @RequestBody ItemRequest request) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
@@ -58,40 +56,57 @@ public class ItemController {
         return ResponseEntity.ok(new ResponseForm(ItemResponse.REGISTER_ITEM.getMessage(), data));
     }
 
-    @PatchMapping("/{item-id}/auth")
+    @PatchMapping("/v1/items/{item-id}")
     public ResponseEntity<ResponseForm> modify(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId, @RequestBody ItemRequest request) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.modify(itemId, sellerId, request);
 
-        return ResponseEntity.ok(new ResponseForm("abc", data));
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.MODIFY_DETAIL.getMessage(), data));
     }
 
-    @DeleteMapping("/{item-id}/auth")
+    @DeleteMapping("/v1/items/{item-id}")
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         itemService.deleteItem(itemId, sellerId);
 
-        return ResponseEntity.ok(new ResponseForm("cde", null));
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.DELETE_ITEM.getMessage(), null));
     }
 
-    @PostMapping("/{item-id}/transaction-confirm/auth")
+    @PostMapping("/v1/items/{item-id}/transaction-confirm")
     public ResponseEntity<ResponseForm> deal(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId, @RequestParam("buyer-id") Long buyerId) {
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.dealConfirm(itemId, sellerId, buyerId);
 
-        return ResponseEntity.ok(new ResponseForm("abc", data));
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.DEAL_CONFIRM.getMessage(), data));
     }
 
-    @GetMapping("/complete/auth")
-    public ResponseEntity<ResponseForm> checkDealList(HttpServletRequest httpRequest,
+    @GetMapping("/v1/items/complete/buy")
+    public ResponseEntity<ResponseForm> checkBuyList(HttpServletRequest httpRequest,
             @PathVariable(name = "page-num", required = false) Integer pageNum,
             @PathVariable(name = "size", required = false) Integer size) {
         Long memberId = (Long) httpRequest.getAttribute(USER_ID);
-        var data = itemService.getDealList(memberId, pageNum, size);
+        var data = itemService.getBuyList(memberId, pageNum, size);
 
-        return ResponseEntity.ok(new ResponseForm("abc", data));
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_BUY_LIST.getMessage(), data));
+    }
+
+    @GetMapping("/v1/items/complete/sell")
+    public ResponseEntity<ResponseForm> checkSellList(HttpServletRequest httpRequest,
+            @PathVariable(name = "page-num", required = false) Integer pageNum,
+            @PathVariable(name = "size", required = false) Integer size) {
+        Long memberId = (Long) httpRequest.getAttribute(USER_ID);
+        var data = itemService.getSellList(memberId, pageNum, size);
+
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_SELL_LIST.getMessage(), data));
+    }
+
+    @GetMapping("/v2/items/address")
+    public ResponseEntity<ResponseForm> getAddressList() {
+        var data = itemService.getAddressList();
+
+        return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ADDRESS_LIST.getMessage(), data));
     }
 }

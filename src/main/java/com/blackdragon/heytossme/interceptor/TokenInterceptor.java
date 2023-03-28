@@ -27,7 +27,7 @@ public class TokenInterceptor implements HandlerInterceptor {
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
-
+    
 		if (!tokenProvider.validateToken(accessToken, true)) {//Access토큰만료
 			return false;
 		}
