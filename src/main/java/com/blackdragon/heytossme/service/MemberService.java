@@ -108,6 +108,8 @@ public class MemberService {
             member.setBankName(request.getBankName());
         }
 
+        memberRepository.save(member);
+
         return modelMapper.map(member, Response.class);
     }
 
