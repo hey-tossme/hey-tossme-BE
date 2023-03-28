@@ -36,6 +36,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class MemberController {
 
     private final MemberService memberService;
+    private static final String USER_ID = "userId";
 
     @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -87,7 +88,7 @@ public class MemberController {
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         Response response = memberService.getInfo(id);
 
         return ResponseEntity.ok(
@@ -98,7 +99,8 @@ public class MemberController {
     public ResponseEntity<ResponseForm> modifyInfo(HttpServletRequest httpServletRequest,
             @Valid @RequestBody ModifyRequest request) {
 
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
+        log.info(String.valueOf(id));
         Response response = memberService.modifyInfo(id, request);
 
         return ResponseEntity.ok(
@@ -109,7 +111,7 @@ public class MemberController {
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
             @Valid @RequestBody DeleteRequest request) {
 
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         memberService.deleteUser(id, request);
 
         return ResponseEntity.ok(
