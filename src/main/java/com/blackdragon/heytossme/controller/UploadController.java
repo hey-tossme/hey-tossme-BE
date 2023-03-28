@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v2/image")
+@RequestMapping("/v1/image")
 @RequiredArgsConstructor
 @Log4j2
 public class UploadController {
