@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.MemberDto;
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
@@ -126,9 +127,10 @@ public class MemberController {
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.RE_CREATED_ACCESS_TOKEN.getMessage(),
                         null, generatedToken));
+    }
 
     @PostMapping("/v2/members/reset-password")
-    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody PasswordRequest request) {
+    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.sendEmail(request);
 
@@ -137,7 +139,7 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password/check")
-    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody PasswordRequest request) {
+    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.checkAuthCode(request);
 
@@ -147,7 +149,7 @@ public class MemberController {
 
     @PatchMapping("/v2/members/reset-password")
     public ResponseEntity<ResponseForm> resetNewPassword(
-            @Valid @RequestBody PasswordRequest request) {
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         Response response = memberService.resetNewPassword(request);
 
