@@ -46,6 +46,7 @@ public class Member extends BaseTimeEntity {
     private String account;
 
     private String bankName;
+    private String messageToken;    //fcm token
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;

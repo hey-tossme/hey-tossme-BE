@@ -12,6 +12,7 @@ public enum MemberResponse {
     SEND_EMAIL("successfully email sent"),
     MATCH_CODE("successfully authorized"),
     RESET_PASSWORD("successfully reset password"),
+    RE_CREATED_ACCESS_TOKEN("successfully re-created token"),
     SIGN_OUT("LOGOUT");
 
 

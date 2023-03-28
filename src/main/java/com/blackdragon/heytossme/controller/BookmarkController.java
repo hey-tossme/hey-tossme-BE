@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +40,6 @@ public class BookmarkController {
     @PostMapping
     public ResponseEntity<ResponseForm> registerBookmarks(
             HttpServletRequest request, @RequestParam("item-id") Long itemId) {
-
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
@@ -49,12 +47,13 @@ public class BookmarkController {
                 new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
     }
 
-    @DeleteMapping("/{item-id}")
+    @DeleteMapping
     public ResponseEntity<ResponseForm> deleteBookmarks(
-            HttpServletRequest request, @PathVariable("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
 
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
+        System.out.println("itemid : " + itemId);
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
         //북마크
         return ResponseEntity.ok(

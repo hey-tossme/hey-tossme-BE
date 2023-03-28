@@ -61,7 +61,6 @@ public class MemberController {
 
         response.addHeader("Set-cookie", cookie.toString());
 
-
         return ResponseEntity.ok()
                 .body(new ResponseForm(
                         MemberResponse.SIGN_UP.getMessage(), data, tokens.getAccessToken()));
