@@ -29,11 +29,14 @@ public class KeywordController {
     private final KeywordService keywordService;
     private final MemberRepository memberRepository;
 
+    private static final String USER_ID = "userId";
+    private static final String ACCESS_TOKEN = "accessToken";
+
     @GetMapping
     public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
 
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         List<Response> data = keywordService.getKeywordList(member.getId());
@@ -46,11 +49,9 @@ public class KeywordController {
     public ResponseEntity<ResponseForm> registerKeyword(
             HttpServletRequest request, @RequestParam("keyword") String keyword) {
 
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Response data = keywordService.registerKeyword(member.getId(), keyword);
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
+        Response data = keywordService.registerKeyword(userId, keyword);
 
         return ResponseEntity.ok(
                 new ResponseForm(KeywordResponse.REGISTER_KEYWORD.getMessage(), data, token));
@@ -59,8 +60,8 @@ public class KeywordController {
     @DeleteMapping("/{keyword}")
     public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
             , @PathVariable("keyword") String keyword) {
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
         Keyword savedKeyword = keywordService.getKeyword(keyword);
 
         Response data = keywordService.deleteKeyword(savedKeyword.getKeyword());
