@@ -22,14 +22,14 @@ public class UploadService {
 
     private final MemberRepository memberRepository;
 
-    public String uploadImage(long id, Request request) {
+    public String uploadImage(Long id, Request request) {
 
         String uploadedFilePaths = localUploader.uploadLocal(request.getFile());
 
-        String url = s3Uploader.upload(uploadedFilePaths);
-
         Member member = memberRepository.findById(id).orElseThrow(() ->
                 new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        String url = s3Uploader.upload(uploadedFilePaths);
 
         member.setImageUrl(url);
 

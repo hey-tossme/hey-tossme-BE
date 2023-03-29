@@ -38,16 +38,7 @@ public class MemberDto {
     @Data
     public static class ModifyRequest {
 
-        @Email
-        private String email;
-        @NotBlank
-        private String name;
-        @NotBlank
-        private String curPassword;
-        @NotBlank
-        private String password;
         private String imageUrl;
-        private String socialType;
         private String account;
         private String bankName;
     }

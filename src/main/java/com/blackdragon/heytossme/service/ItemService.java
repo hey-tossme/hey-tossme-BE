@@ -22,6 +22,7 @@ import com.blackdragon.heytossme.type.ItemStatus;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transactional;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -70,7 +71,7 @@ public class ItemService {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 8 : size);
         Specification<Item> search = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("status"), ItemStatus.SALE.name())); // 판매 중인 상품
+            predicates.add(cb.equal(root.get("status"), ItemStatus.SALE)); // 판매 중인 상품
             if (StringUtils.isNotBlank(searchTitle)) {
                 predicates.add(cb.like(root.get("title"), "%" + searchTitle + "%"));
             }
@@ -99,6 +100,7 @@ public class ItemService {
         return listPage.map(Response::new);
     }
 
+    @Transactional
     public Response modify(Long itemId, Long sellerId, ItemRequest request) {
         Item item = findItemById(itemId);
         Address address = item.getAddress();
@@ -137,6 +139,7 @@ public class ItemService {
         }
 
         item.setAddress(address);
+        itemRepository.save(item);
 
         return new Response(item);
     }
@@ -147,6 +150,7 @@ public class ItemService {
         return new Response(item);
     }
 
+    @Transactional
     public void deleteItem(Long itemId, Long sellerId) {
         Item item = findItemById(itemId);
 
@@ -157,6 +161,7 @@ public class ItemService {
         item.setStatus(ItemStatus.HIDDEN);
     }
 
+    @Transactional
     public Response dealConfirm(Long itemId, Long sellerId, Long buyerId) {
         Item item = findItemById(itemId);
         if (!item.getSeller().getId().equals(sellerId)) {

@@ -39,7 +39,7 @@ public class MemberController {
     private static final String USER_ID = "userId";
     private static final String ACCESS_TOKEN = "accessToken";
 
-    @PostMapping("/v2/members/")
+    @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
         var data = memberService.signUp(request);
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
@@ -52,6 +52,7 @@ public class MemberController {
         Member member = memberService.signIn(request);
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
+
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
                 .account(member.getAccount())
@@ -105,6 +106,7 @@ public class MemberController {
             @Valid @RequestBody ModifyRequest request) {
 
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
+        log.info(String.valueOf(id));
         Response response = memberService.modifyInfo(id, request);
 
         return ResponseEntity.ok(
@@ -125,7 +127,7 @@ public class MemberController {
     //Access토큰 재발급
     @GetMapping("/v2/members/token/re-create/{userId}")
     public ResponseEntity<ResponseForm> recreateToken(HttpServletRequest request,
-            HttpServletResponse response,@PathVariable Long userId) {
+            HttpServletResponse response, @PathVariable Long userId) {
 
         String generatedToken = memberService.reCreateAccessToken(request, response, userId);
 
@@ -135,7 +137,8 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password")
-    public ResponseEntity<ResponseForm> sendResetMail(@Valid @RequestBody MemberDto.PasswordRequest request) {
+    public ResponseEntity<ResponseForm> sendResetMail(
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.sendEmail(request);
 
@@ -144,7 +147,8 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/reset-password/check")
-    public ResponseEntity<ResponseForm> checkAuthCode(@Valid @RequestBody MemberDto.PasswordRequest request) {
+    public ResponseEntity<ResponseForm> checkAuthCode(
+            @Valid @RequestBody MemberDto.PasswordRequest request) {
 
         memberService.checkAuthCode(request);
 
