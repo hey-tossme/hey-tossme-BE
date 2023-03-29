@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -160,7 +161,7 @@ public class MemberService {
                 .sameSite("Lax")
                 .httpOnly(false)
                 .secure(false)
-                .maxAge(1)
+                .maxAge(Duration.ofHours(3))
                 .build();
     }
 
