@@ -158,7 +158,7 @@ public class MemberService {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .path("/")
                 .sameSite("Lax")
-                .httpOnly(true)
+                .httpOnly(false)
                 .secure(false)
                 .maxAge(1)
                 .build();
