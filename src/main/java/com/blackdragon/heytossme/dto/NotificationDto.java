@@ -1,6 +1,6 @@
 package com.blackdragon.heytossme.dto;
 
-import com.blackdragon.heytossme.persist.entity.Notification1;
+import com.blackdragon.heytossme.persist.entity.Notification;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -20,7 +20,7 @@ public class NotificationDto {
 		private boolean readOrNot;
 		private LocalDateTime createdAt;
 
-		public static Response from(Notification1 notification) {
+		public static Response from(Notification notification) {
 			return Response.builder()
 					.id(notification.getId())
 					.itemId(notification.getItem().getId())
@@ -32,8 +32,16 @@ public class NotificationDto {
 	}
 
 	@Data
-	public static class statusChangeResponse{
+	public static class StatusChangeResponse{
 		private Long notificationId;
 		private boolean readOrNot;
+	}
+
+	@Data
+	public static class NotificationRequest {
+
+		private String token;
+		private String title;
+		private String message;
 	}
 }

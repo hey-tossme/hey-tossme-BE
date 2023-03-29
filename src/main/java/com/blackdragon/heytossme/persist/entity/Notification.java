@@ -1,6 +1,9 @@
 package com.blackdragon.heytossme.persist.entity;
 
+import com.blackdragon.heytossme.type.Type;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Builder
 @Entity
-public class Notification1 {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +33,9 @@ public class Notification1 {
     @NotNull
     private String message;
 
-    //    @NotNull
-//    @Enumerated(EnumType.STRING)    ///type enum 정리
-    private String type;
+    @NotNull
+    @Enumerated(EnumType.STRING)    ///type enum 정리
+    private Type type;
     private boolean readOrNot;
 
     @NotNull
