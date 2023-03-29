@@ -3,7 +3,6 @@ package com.blackdragon.heytossme.service;
 
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_CODE;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
-import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MATCH_PREVIOUS_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
 import com.blackdragon.heytossme.component.AuthExtractor;
@@ -28,7 +27,9 @@ import com.blackdragon.heytossme.type.MemberStatus;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -99,35 +100,19 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        log.info(passwordEncoder.encode(request.getCurPassword()));
-        // 사용자 비밀번호 확인
-        if (!passwordEncoder.matches(request.getCurPassword(), member.getPassword())) {
-            throw new MemberException(INCORRECT_PASSWORD);
+        if (request.getImageUrl() != null) {
+            member.setImageUrl(request.getImageUrl());
         }
-        // 변경 후 비밀번호가 변경 전 비밀번호와 같을때
-        if (passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(MATCH_PREVIOUS_PASSWORD);
+        if (request.getAccount() != null) {
+            member.setAccount(request.getAccount());
+        }
+        if (request.getBankName() != null) {
+            member.setBankName(request.getBankName());
         }
 
-        Member updatedMember = Member.builder()
-                .id(member.getId())
-                .email(request.getEmail() != null ? request.getEmail() : member.getEmail())
-                .name(request.getName() != null ? request.getName() : member.getName())
-                .password(request.getPassword() != null ?
-                        passwordEncoder.encode(request.getPassword()) : member.getPassword())
-                .imageUrl(request.getImageUrl() != null ? request.getImageUrl()
-                        : member.getImageUrl())
-                .socialLoginType(request.getSocialType() != null ? request.getSocialType()
-                        : member.getSocialLoginType())
-                .account(request.getAccount() != null ? request.getAccount() : member.getAccount())
-                .bankName(request.getBankName() != null ? request.getBankName()
-                        : member.getBankName())
-                .status(member.getStatus())
-                .build();
+        memberRepository.save(member);
 
-        memberRepository.save(updatedMember);
-
-        return modelMapper.map(updatedMember, Response.class);
+        return modelMapper.map(member, Response.class);
     }
 
     public void deleteUser(Long userId, DeleteRequest request) {
@@ -174,9 +159,9 @@ public class MemberService {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .path("/")
                 .sameSite("Lax")
-                .httpOnly(true)
+                .httpOnly(false)
                 .secure(false)
-                .maxAge(1)
+                .maxAge(Duration.ofHours(3))
                 .build();
     }
 
@@ -188,6 +173,7 @@ public class MemberService {
         return cookie;
     }
 
+    @Transactional
     public SignOutResponse signOut(Long userId) {
 
         Member member = memberRepository.findById(userId)
@@ -204,10 +190,10 @@ public class MemberService {
         AuthResponse auth = authExtractor.extractRefreshToken(request);
         String refreshToken = auth.getRefreshToken();
 
-        if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {    //refresh만료여부
+        if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {    //refresh 만료여부
             try {
                 response.sendRedirect(request.getContextPath()
-                        + "/v2/members/logout/" + refreshToken + "/" + userId);
+                        + "/v2/members/logout/" + userId);
             } catch (IOException e) {
                 throw new MemberException(MemberErrorCode.INCORRECT_PATH);
             }
@@ -215,13 +201,13 @@ public class MemberService {
         return tokenProvider.updateAccessToken(refreshToken);
     }
 
-    //FCM토큰 가져오기
+    //FCM 토큰 가져오기
     public String getFcmToken(Long userId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return member.getMessageToken();
-        }
+    }
 
     public void sendEmail(PasswordRequest request) {
 

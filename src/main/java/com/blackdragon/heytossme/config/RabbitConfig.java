@@ -21,12 +21,12 @@ public class RabbitConfig {
 
     @Bean
     public Queue queue() {
-        return new Queue(CHAT_QUEUE_NAME, false);
+        return new Queue(CHAT_QUEUE_NAME, true);
     }
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange(CHAT_EXCHANGE_NAME);
+        return new TopicExchange(CHAT_EXCHANGE_NAME, true, false);
     }
 
     @Bean
