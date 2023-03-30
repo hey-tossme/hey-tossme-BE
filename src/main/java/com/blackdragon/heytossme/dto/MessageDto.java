@@ -10,6 +10,8 @@ public class MessageDto {
 
         private Long chatRoomId;
         private Long senderId;
+        private String userName;
+        private String profileUrl;
         private String message;
     }
 
