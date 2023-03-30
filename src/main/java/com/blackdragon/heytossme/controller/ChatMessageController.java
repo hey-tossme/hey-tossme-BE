@@ -25,7 +25,7 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final RabbitTemplate template;
 
-    @GetMapping("/v1/chat/message/{roomId}")
+    @GetMapping("/v1/chat/{roomId}/messages")
     public ResponseEntity<ResponseForm> getMessageList(HttpServletRequest httpRequest,
             @PathVariable Long roomId) {
         log.info("getMessageList start");
@@ -37,7 +37,7 @@ public class ChatMessageController {
         return ResponseEntity.ok(new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
     }
 
-    @MessageMapping("chat.message.{roomId}")
+    @MessageMapping("chat.{roomId}.messages")
     public void sendMessage(@Payload MessageDto.SendMessage request,
             @DestinationVariable String roomId) {
         log.info("sendMessage start");
