@@ -12,6 +12,7 @@ import com.blackdragon.heytossme.type.KeywordResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/v1/keywords")
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class KeywordController {
 
     private final KeywordService keywordService;
@@ -34,6 +36,7 @@ public class KeywordController {
 
     @GetMapping
     public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
+        log.info("getKeywords start");
 
         Long userId = (Long) request.getAttribute(USER_ID);
         String token = (String) request.getAttribute(ACCESS_TOKEN);
@@ -48,6 +51,7 @@ public class KeywordController {
     @PostMapping
     public ResponseEntity<ResponseForm> registerKeyword(
             HttpServletRequest request, @RequestParam("keyword") String keyword) {
+        log.info("registerKeyword start");
 
         Long userId = (Long) request.getAttribute(USER_ID);
         String token = (String) request.getAttribute(ACCESS_TOKEN);
@@ -60,6 +64,8 @@ public class KeywordController {
     @DeleteMapping("/{keyword}")
     public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
             , @PathVariable("keyword") String keyword) {
+        log.info("deleteKeyword start");
+
         Long userId = (Long) request.getAttribute(USER_ID);
         String token = (String) request.getAttribute(ACCESS_TOKEN);
         Keyword savedKeyword = keywordService.getKeyword(keyword);

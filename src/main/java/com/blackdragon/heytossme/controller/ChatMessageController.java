@@ -28,6 +28,8 @@ public class ChatMessageController {
     @GetMapping("/v1/chat/message/{roomId}")
     public ResponseEntity<ResponseForm> getMessageList(HttpServletRequest httpRequest,
             @PathVariable Long roomId) {
+        log.info("getMessageList start");
+
         String USER_ID = "userId";
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomMessage(roomId, userId);
@@ -38,6 +40,8 @@ public class ChatMessageController {
     @MessageMapping("chat.message.{roomId}")
     public void sendMessage(@Payload MessageDto.SendMessage request,
             @DestinationVariable String roomId) {
+        log.info("sendMessage start");
+
         log.info("message = {}", request.toString());
         chatService.sendMessage(request);
         template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId, request);

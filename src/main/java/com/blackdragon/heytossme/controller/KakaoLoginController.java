@@ -22,6 +22,8 @@ public class KakaoLoginController {
     @GetMapping("/login")
     public ResponseEntity<ResponseForm> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code) {
+        log.info("item oauthKakaoLogin start");
+
 
         String token = kakaoLoginService.getAccessToken(code);
 
