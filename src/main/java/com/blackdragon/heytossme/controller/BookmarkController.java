@@ -39,7 +39,7 @@ public class BookmarkController {
 
     @PostMapping
     public ResponseEntity<ResponseForm> registerBookmarks(
-            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("itemId") Long itemId) {
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
@@ -49,7 +49,7 @@ public class BookmarkController {
 
     @DeleteMapping
     public ResponseEntity<ResponseForm> deleteBookmarks(
-            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("itemId") Long itemId) {
 
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
