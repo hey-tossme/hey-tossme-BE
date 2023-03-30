@@ -83,7 +83,7 @@ public class ItemService {
             }
             if (StringUtils.isNotBlank(category)) {
                 predicates.add(
-                        cb.equal(root.get("category"), Category.valueOf(category.toUpperCase())));
+                        cb.equal(root.get("category"), Category.findBy(category)));
             }
             if (StringUtils.isNotBlank(region)) {
                 Join<Item, Address> itemAddressJoin = root.join("address");
