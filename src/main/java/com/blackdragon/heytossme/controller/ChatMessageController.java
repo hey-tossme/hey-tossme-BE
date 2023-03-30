@@ -41,8 +41,9 @@ public class ChatMessageController {
     public void sendMessage(@Payload MessageDto.SendMessage request,
             @DestinationVariable String roomId) {
         log.info("sendMessage start");
+        request.setChatRoomId(Long.parseLong(roomId));
 
-        log.info("message = {}", request.toString());
+        log.info("message = {}", request);
         chatService.sendMessage(request);
         template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId, request);
     }
