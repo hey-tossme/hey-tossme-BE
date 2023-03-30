@@ -95,6 +95,7 @@ public class ItemService {
                 predicates.add(cb.equal(itemAddressJoin.get("firstDepthRegion"), address[0]));
                 predicates.add(cb.like(itemAddressJoin.get("secondDepthRegion"), address[1] + "%"));
             }
+            log.info("predicates = {}", predicates);
 
             Predicate[] p = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(p));
