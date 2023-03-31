@@ -65,7 +65,7 @@ public class BookmarkService {
     public DeleteResponse deleteBookmark(Long userId, Long itemId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Bookmark bookmark = bookmarkRepository.findByItemId(itemId)
+        Bookmark bookmark = bookmarkRepository.findByItemIdAndMemberId(member.getId(), itemId)
                 .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
         bookmark.getMember().setId(member.getId());
         bookmarkRepository.deleteById(bookmark.getId());
