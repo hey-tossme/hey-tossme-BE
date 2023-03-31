@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 @RequiredArgsConstructor
@@ -70,12 +72,12 @@ public class MemberController {
     }
 
     /**
-     * 로그아웃 API
+     * Interceptor로부터 넘어오는 로그아웃 API
      */
     @PostMapping("/v2/members/logout/{userId}")
     public ResponseEntity<ResponseForm> logout( @PathVariable("userId") Long _userId
                                                 ,HttpServletResponse response) {
-
+        log.info("member logout start");
         Long userId = Long.valueOf(String.valueOf(_userId));
 
         Cookie cookie = memberService.deleteCookie();
@@ -96,6 +98,8 @@ public class MemberController {
 
     @GetMapping("/v1/members")
     public ResponseEntity<ResponseForm> getInfo(HttpServletRequest httpServletRequest) {
+        log.info("member getInfo start");
+
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         Response response = memberService.getInfo(id);
 
@@ -106,6 +110,7 @@ public class MemberController {
     @PatchMapping("/v1/members")
     public ResponseEntity<ResponseForm> modifyInfo(HttpServletRequest httpServletRequest,
             @Valid @RequestBody ModifyRequest request) {
+        log.info("member modifyInfo start");
 
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         log.info(String.valueOf(id));
@@ -118,6 +123,7 @@ public class MemberController {
     @DeleteMapping("/v1/members")
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
             @Valid @RequestBody DeleteRequest request) {
+        log.info("member delete start");
 
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
         memberService.deleteUser(id, request);
@@ -130,8 +136,8 @@ public class MemberController {
     @GetMapping("/v2/members/token/re-create/{userId}")
     public ResponseEntity<ResponseForm> recreateToken(HttpServletRequest request,
             HttpServletResponse response, @PathVariable Long userId) {
+        log.info("member recreateToken start");
 
-        //refresh만료시 405에러, refresh만료 안되면 200
         String generatedToken = memberService.reCreateAccessToken(request, response, userId);
 
         return ResponseEntity.ok(
@@ -142,6 +148,7 @@ public class MemberController {
     @PostMapping("/v2/members/reset-password")
     public ResponseEntity<ResponseForm> sendResetMail(
             @Valid @RequestBody MemberDto.PasswordRequest request) {
+        log.info("member sendResetMail start");
 
         memberService.sendEmail(request);
 
@@ -152,6 +159,7 @@ public class MemberController {
     @PostMapping("/v2/members/reset-password/check")
     public ResponseEntity<ResponseForm> checkAuthCode(
             @Valid @RequestBody MemberDto.PasswordRequest request) {
+        log.info("member checkAuthCode start");
 
         memberService.checkAuthCode(request);
 
@@ -162,6 +170,7 @@ public class MemberController {
     @PatchMapping("/v2/members/reset-password")
     public ResponseEntity<ResponseForm> resetNewPassword(
             @Valid @RequestBody MemberDto.PasswordRequest request) {
+        log.info("member resetNewPassword start");
 
         Response response = memberService.resetNewPassword(request);
 

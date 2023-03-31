@@ -35,6 +35,8 @@ public class ItemController {
             @RequestParam(name = "searchTitle", required = false) String searchTitle,
             @RequestParam(name = "category", required = false) String category
     ) {
+        log.info("getItemList start");
+
         var data = itemService.getList(pageNum, size, region, startDue, endDue, searchTitle,
                 category);
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ITEM_LIST.getMessage(), data));
@@ -42,6 +44,8 @@ public class ItemController {
 
     @GetMapping("/v2/items/{item-id}")
     public ResponseEntity<ResponseForm> getDetail(@PathVariable("item-id") Long itemId) {
+        log.info("getItemDetail start");
+
         var data = itemService.getDetail(itemId);
 
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_DETAIL.getMessage(), data));
@@ -50,6 +54,8 @@ public class ItemController {
     @PostMapping("/v1/items")
     public ResponseEntity<ResponseForm> register(HttpServletRequest httpRequest,
             @RequestBody ItemRequest request) {
+        log.info("itemRegister start");
+
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
 //        log.info("request.getSellerId() = {}", sellerId);
         var data = itemService.createItem(sellerId, request);
@@ -59,6 +65,8 @@ public class ItemController {
     @PatchMapping("/v1/items/{item-id}")
     public ResponseEntity<ResponseForm> modify(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId, @RequestBody ItemRequest request) {
+        log.info("itemModify start");
+
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.modify(itemId, sellerId, request);
 
@@ -68,6 +76,8 @@ public class ItemController {
     @DeleteMapping("/v1/items/{item-id}")
     public ResponseEntity<ResponseForm> delete(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId) {
+        log.info("itemDelete start");
+
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         itemService.deleteItem(itemId, sellerId);
 
@@ -77,6 +87,8 @@ public class ItemController {
     @PostMapping("/v1/items/{item-id}/transaction-confirm")
     public ResponseEntity<ResponseForm> deal(HttpServletRequest httpRequest,
             @PathVariable("item-id") Long itemId, @RequestParam("buyer-id") Long buyerId) {
+        log.info("item deal start");
+
         Long sellerId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.dealConfirm(itemId, sellerId, buyerId);
 
@@ -87,6 +99,8 @@ public class ItemController {
     public ResponseEntity<ResponseForm> checkBuyList(HttpServletRequest httpRequest,
             @PathVariable(name = "page-num", required = false) Integer pageNum,
             @PathVariable(name = "size", required = false) Integer size) {
+        log.info("item checkBuyList start");
+
         Long memberId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.getBuyList(memberId, pageNum, size);
 
@@ -97,6 +111,8 @@ public class ItemController {
     public ResponseEntity<ResponseForm> checkSellList(HttpServletRequest httpRequest,
             @PathVariable(name = "page-num", required = false) Integer pageNum,
             @PathVariable(name = "size", required = false) Integer size) {
+        log.info("item checkSellList start");
+
         Long memberId = (Long) httpRequest.getAttribute(USER_ID);
         var data = itemService.getSellList(memberId, pageNum, size);
 
@@ -105,6 +121,8 @@ public class ItemController {
 
     @GetMapping("/v2/items/address")
     public ResponseEntity<ResponseForm> getAddressList() {
+        log.info("item getAddressList start");
+
         var data = itemService.getAddressList();
 
         return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ADDRESS_LIST.getMessage(), data));

@@ -73,24 +73,29 @@ public class ItemService {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("status"), ItemStatus.SALE)); // 판매 중인 상품
             if (StringUtils.isNotBlank(searchTitle)) {
+                log.info("title = {}", searchTitle);
                 predicates.add(cb.like(root.get("title"), "%" + searchTitle + "%"));
             }
             if (StringUtils.isNotBlank(endDue)) {
+                log.info("endDue = {}", endDue);
                 LocalDateTime endDueDate = parseToDateType(endDue);
                 predicates.add(cb.between(root.get("dueDate"),
                         StringUtils.isBlank(startDue) ? endDueDate : parseToDateType(startDue),
                         endDueDate.withHour(23).withMinute(59).withSecond(59)));
             }
             if (StringUtils.isNotBlank(category)) {
+                log.info("category = {}", category);
                 predicates.add(
-                        cb.equal(root.get("category"), Category.valueOf(category.toUpperCase())));
+                        cb.equal(root.get("category"), Category.findBy(category)));
             }
             if (StringUtils.isNotBlank(region)) {
+                log.info("region = {}", region);
                 Join<Item, Address> itemAddressJoin = root.join("address");
                 String[] address = region.split(" ");
-                predicates.add(cb.equal(itemAddressJoin.get("sidoArea"), address[0]));
-                predicates.add(cb.equal(itemAddressJoin.get("sigunArea"), address[1]));
+                predicates.add(cb.equal(itemAddressJoin.get("firstDepthRegion"), address[0]));
+                predicates.add(cb.like(itemAddressJoin.get("secondDepthRegion"), address[1] + "%"));
             }
+            log.info("predicates = {}", predicates);
 
             Predicate[] p = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(p));
