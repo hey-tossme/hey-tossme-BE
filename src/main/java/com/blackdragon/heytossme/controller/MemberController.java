@@ -9,13 +9,9 @@ import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignOutResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
-import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
-import com.blackdragon.heytossme.service.ItemService;
 import com.blackdragon.heytossme.service.MemberService;
-import com.blackdragon.heytossme.service.NotificationService;
-import com.blackdragon.heytossme.type.NotificationType;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,11 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final NotificationService notificationService;
-    private final ItemService itemService;
     private static final String USER_ID = "userId";
     private static final String ACCESS_TOKEN = "accessToken";
-    private static final String REGISTRATION_TOKEN = "cfqV4n0Igq0k-ivFELexIc:APA91bE7uxSNiQVc2LIUqqrwqxGiysWcLHP6Jr-kmIuqvkfcjk3CLmGaMOKP7MGWrUea64K2Dvb02BbMTfIIPa0Yfb2Z6-CWKMBRfqAMhCmLOdo3RbYq-BizmqqE8wlCrHjWqVENGW7D";
 
     @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -52,21 +45,12 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/signin")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequest request, //fcmToken온다
+    public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
-        Member member = memberService.signIn(request, REGISTRATION_TOKEN);  //TODO 등록토큰 바꿔치기
+        Member member = memberService.signIn(request, request.getRegistrationToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
-
-        NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(member.getRegistrationToken())
-                .title("북마크알림")
-                .body("고객님의 제품이 북마크 처리되었습니다")
-                .type(NotificationType.BOOKMARK)
-//                .item()
-                .member(member)
-                .build();
 
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
