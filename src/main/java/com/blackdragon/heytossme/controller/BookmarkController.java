@@ -59,9 +59,7 @@ public class BookmarkController {
 
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
-        System.out.println("itemid : " + itemId);
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
-        //북마크
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.DELETE_BOOKMARK.getMessage(), data, accessToken));
     }
