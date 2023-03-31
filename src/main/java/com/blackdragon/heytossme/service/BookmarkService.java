@@ -50,7 +50,7 @@ public class BookmarkService {
 
         NotificationRequest notificationInfo = NotificationRequest.builder()
                 .registrationToken(member.getRegistrationToken())
-                .title("북마크알림")
+                .title("BOOKMARK")
                 .body("고객님의 제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
                 .item(item)

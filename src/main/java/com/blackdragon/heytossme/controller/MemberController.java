@@ -9,11 +9,13 @@ import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignOutResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
+import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.ItemService;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.service.NotificationService;
+import com.blackdragon.heytossme.type.NotificationType;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,23 +55,18 @@ public class MemberController {
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request, //fcmToken온다
             HttpServletResponse response) {
 
-        Member member = memberService.signIn(request);
-//        memberService.saveRegistrationToken(member.getId(), request.getFcmToken());   //fcmtoken오면 db에 저장
+        Member member = memberService.signIn(request, REGISTRATION_TOKEN);  //TODO 등록토큰 바꿔치기
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
-
         NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(REGISTRATION_TOKEN)
-//                .registrationToken(member.getRegistrationToken())
+                .registrationToken(member.getRegistrationToken())
                 .title("북마크알림")
                 .body("고객님의 제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
 //                .item()
                 .member(member)
                 .build();
-        notificationService.initializer();//로그인 성공하면 fcm토큰을 해당유저정보에 set
-        notificationService.sendPushTest(notificationInfo);
 
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
@@ -84,7 +81,7 @@ public class MemberController {
     }
 
     /**
-     * Interceptor로부터 넘어오는 로그아웃 API
+     * 로그아웃 API
      */
     @PostMapping("/v2/members/logout/{userId}")
     public ResponseEntity<ResponseForm> logout(@PathVariable("userId") Long _userId
@@ -149,6 +146,7 @@ public class MemberController {
             HttpServletResponse response, @PathVariable Long userId) {
         log.info("member recreateToken start");
 
+        //refresh만료시 405에러, refresh만료 안되면 200
         String generatedToken = memberService.reCreateAccessToken(request, response, userId);
 
         return ResponseEntity.ok(

@@ -1,6 +1,9 @@
 package com.blackdragon.heytossme.dto;
 
+import com.blackdragon.heytossme.persist.entity.Item;
+import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.persist.entity.Notification;
+import com.blackdragon.heytossme.type.NotificationType;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -45,8 +48,9 @@ public class NotificationDto {
 		private String title;
 		private String body;
 		private NotificationType type;
-		private Item item;
 		private Member member;
+		private Item item;
+		private String message;
 
 	}
 }

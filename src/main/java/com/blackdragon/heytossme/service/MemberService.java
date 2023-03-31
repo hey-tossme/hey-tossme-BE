@@ -73,7 +73,8 @@ public class MemberService {
         return new Response(member);
     }
 
-    public Member signIn(SignInRequest request) {
+    @Transactional
+    public Member signIn(SignInRequest request, String registrationToken) {
 
         Optional<Member> byEmail = memberRepository.findByEmail(request.getEmail());
 
@@ -82,7 +83,8 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
-
+        notificationService.initializer();
+        member.setRegistrationToken(registrationToken);
         return member;
     }
 
