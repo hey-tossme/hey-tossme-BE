@@ -313,7 +313,7 @@ public class ItemService {
         //거래완료되었을때 두사람에게 모두 알람을 보낸다
         NotificationRequest sellerPush = NotificationRequest.builder()
                 .registrationToken(seller.getRegistrationToken())
-                .title("거래완료 알림")
+                .title("판매완료 알림")
                 .body("거래가 정상적으로 완료되었습니다")
                 .type(NotificationType.DEAL)
                 .item(item)
@@ -321,7 +321,7 @@ public class ItemService {
                 .build();
         NotificationRequest buyerPush = NotificationRequest.builder()
                 .registrationToken(buyer.getRegistrationToken())
-                .title("거래완료 알림")
+                .title("구매완료 알림")
                 .body("거래가 정상적으로 완료되었습니다")
                 .type(NotificationType.DEAL)
                 .item(item)
