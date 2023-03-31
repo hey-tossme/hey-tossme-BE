@@ -1,6 +1,6 @@
 package com.blackdragon.heytossme.persist.entity;
 
-import com.blackdragon.heytossme.type.Type;
+import com.blackdragon.heytossme.type.NotificationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,7 +35,7 @@ public class Notification {
 
     @NotNull
     @Enumerated(EnumType.STRING)    ///type enum 정리
-    private Type type;
+    private NotificationType type;
     private boolean readOrNot;
 
     @NotNull
