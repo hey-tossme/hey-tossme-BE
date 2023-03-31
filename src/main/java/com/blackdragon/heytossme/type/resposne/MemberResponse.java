@@ -13,6 +13,7 @@ public enum MemberResponse {
     MATCH_CODE("successfully authorized"),
     RESET_PASSWORD("successfully reset password"),
     RE_CREATED_ACCESS_TOKEN("successfully re-created token"),
+    SIGN_OUT_EXPIRED_TOKEN("LOGOUT - exfired refreshtoken token"),
     SIGN_OUT("LOGOUT");
 
 

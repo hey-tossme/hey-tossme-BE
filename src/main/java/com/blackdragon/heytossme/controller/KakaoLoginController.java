@@ -24,7 +24,6 @@ public class KakaoLoginController {
             @RequestParam(value = "code", required = false) String code) {
         log.info("item oauthKakaoLogin start");
 
-
         String token = kakaoLoginService.getAccessToken(code);
 
         return ResponseEntity.ok(

@@ -9,7 +9,6 @@ import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.MailComponent;
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
-import com.blackdragon.heytossme.dto.MemberDto.AuthResponse;
 import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
@@ -33,6 +32,7 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,6 +50,7 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final AuthExtractor authExtractor;
     private final MailComponent mailComponent;
+    private final NotificationService notificationService;
 
 
     public MemberDto.Response signUp(SignUpRequest request) {
@@ -81,8 +82,6 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
-
-//        member.setMessageToken(messageToken);   //fcm토큰을 db에저장하고 서버측에서 관리
 
         return member;
     }
@@ -174,23 +173,30 @@ public class MemberService {
     }
 
     @Transactional
-    public SignOutResponse signOut(Long userId) {
+    public SignOutResponse removeToken(Long userId) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        member.setMessageToken(""); //fcm 토큰을 빈값으로 변경
+        member.setRegistrationToken(Strings.EMPTY); //fcm등록토큰을 빈값으로 변경
 
         return MemberDto.SignOutResponse.from(member);
+    }
+
+    //fcm 서버 초기화 + fcm등록토큰 db에 추가
+    @Transactional
+    public void saveRegistrationToken(Long userId, String token) {
+        notificationService.initializer();
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        member.setRegistrationToken(token);
     }
 
     public String reCreateAccessToken(HttpServletRequest request
             , HttpServletResponse response, Long userId) {
 
-        AuthResponse auth = authExtractor.extractRefreshToken(request);
-        String refreshToken = auth.getRefreshToken();
-
-        if (!tokenProvider.isExpiredRefreshToken(refreshToken)) {    //refresh 만료여부
+        if (!tokenProvider.isExpiredRefreshToken(request, false)) {    //refresh 만료여부
             try {
                 response.sendRedirect(request.getContextPath()
                         + "/v2/members/logout/" + userId);
@@ -198,6 +204,9 @@ public class MemberService {
                 throw new MemberException(MemberErrorCode.INCORRECT_PATH);
             }
         }
+
+        String refreshToken = authExtractor.extractRefreshToken(request).getRefreshToken();
+
         return tokenProvider.updateAccessToken(refreshToken);
     }
 
@@ -206,7 +215,7 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return member.getMessageToken();
+        return member.getRegistrationToken();
     }
 
     public void sendEmail(PasswordRequest request) {

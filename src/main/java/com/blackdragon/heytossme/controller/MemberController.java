@@ -12,6 +12,7 @@ import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
+import com.blackdragon.heytossme.service.NotificationService;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +29,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,13 +36,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class MemberController {
 
     private final MemberService memberService;
+    private final NotificationService notificationService;
     private static final String USER_ID = "userId";
     private static final String ACCESS_TOKEN = "accessToken";
+    private static final String REGISTRATION_TOKEN = "cfqV4n0Igq0k-ivFELexIc:APA91bE7uxSNiQVc2LIUqqrwqxGiysWcLHP6Jr-kmIuqvkfcjk3CLmGaMOKP7MGWrUea64K2Dvb02BbMTfIIPa0Yfb2Z6-CWKMBRfqAMhCmLOdo3RbYq-BizmqqE8wlCrHjWqVENGW7D";
 
     @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
-        log.info("member signUp start");
-
         var data = memberService.signUp(request);
         return ResponseEntity.ok(new ResponseForm(MemberResponse.SIGN_UP.getMessage(), data));
     }
@@ -50,7 +50,6 @@ public class MemberController {
     @PostMapping("/v2/members/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
-        log.info("member signIn start");
 
         Member member = memberService.signIn(request);
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
@@ -71,27 +70,23 @@ public class MemberController {
     /**
      * Interceptor로부터 넘어오는 로그아웃 API
      */
-    @GetMapping("/v2/members/logout/{userId}")
-    public ResponseEntity<ResponseForm> logout( @PathVariable("userId") Object _userId) {
+    @PostMapping("/v2/members/logout/{userId}")
+    public ResponseEntity<ResponseForm> logout(@PathVariable("userId") Long _userId
+            , HttpServletResponse response) {
         log.info("member logout start");
-
         Long userId = Long.valueOf(String.valueOf(_userId));
-
-        HttpServletResponse response
-                = ((ServletRequestAttributes) RequestContextHolder
-                .currentRequestAttributes()).getResponse();
 
         Cookie cookie = memberService.deleteCookie();
         response.addCookie(cookie);
 
-        SignOutResponse data = memberService.signOut(userId);
+        SignOutResponse data = memberService.removeToken(userId);   //fcm토큰 초기화
 
-        return ResponseEntity.ok(
-                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data));
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
+                new ResponseForm(MemberResponse.SIGN_OUT.getMessage(), data)
+        );
     }
 
     /**
-     *
      * @param httpServletRequest
      * @return
      */

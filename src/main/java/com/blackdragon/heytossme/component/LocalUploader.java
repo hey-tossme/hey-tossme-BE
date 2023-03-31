@@ -18,12 +18,12 @@ public class LocalUploader {
 
     public String uploadLocal(MultipartFile multipartFile) {
 
-        if(multipartFile == null || multipartFile.isEmpty()) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             return null;
         }
 
         String uuid = UUID.randomUUID().toString();
-        String saveFileName = uuid+"_"+ multipartFile.getOriginalFilename();
+        String saveFileName = uuid + "_" + multipartFile.getOriginalFilename();
 
         Path savePath = Paths.get(uploadPath, saveFileName);
 
@@ -35,6 +35,6 @@ public class LocalUploader {
             log.error("ERROR: " + e.getMessage());
             e.printStackTrace();
         }
-        return savePath.toString()   ;
+        return savePath.toString();
     }
 }
