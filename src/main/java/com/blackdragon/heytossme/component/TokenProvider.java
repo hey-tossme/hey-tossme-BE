@@ -30,7 +30,7 @@ public class TokenProvider {
 
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L;    //1시간
     //	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L ;	//1초
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000;    //3시간
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L;    //3시간
 //	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L;	//1초
 
     public String generateToken(Long id, String email, boolean isAccessToken) {
