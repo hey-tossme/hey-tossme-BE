@@ -24,20 +24,19 @@ public class TokenInterceptor implements HandlerInterceptor {
 
 		Object userId;
 		String accessToken = authExtractor.extractAccessToken(request, "Bearer");
+		userId = tokenProvider.getUserId(accessToken, true);
+
 		if (!StringUtils.hasText(accessToken)) {
 			return false;
 		}
-    
+
 		if (!tokenProvider.validateToken(accessToken, true)) {//Access토큰만료
 			return false;
 		}
-
-		userId = tokenProvider.getUserId(accessToken, true);
 
 		request.setAttribute("userId", userId);
 		request.setAttribute("accessToken", accessToken);
 
 		return true;
 	}
-
 }
