@@ -19,6 +19,7 @@ public class S3Uploader {
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
+
     public String upload(String filePath) {
 
         File file = new File(filePath);

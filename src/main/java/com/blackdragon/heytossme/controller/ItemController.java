@@ -125,6 +125,7 @@ public class ItemController {
 
         var data = itemService.getAddressList();
 
-        return ResponseEntity.ok(new ResponseForm(ItemResponse.GET_ADDRESS_LIST.getMessage(), data));
+        return ResponseEntity.ok(
+                new ResponseForm(ItemResponse.GET_ADDRESS_LIST.getMessage(), data));
     }
 }

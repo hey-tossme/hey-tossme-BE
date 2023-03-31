@@ -34,7 +34,8 @@ public class ChatMessageController {
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomMessage(roomId, userId);
 
-        return ResponseEntity.ok(new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
+        return ResponseEntity.ok(
+                new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
     }
 
     @MessageMapping("chat.{roomId}.messages")

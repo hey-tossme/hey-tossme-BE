@@ -13,20 +13,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class FCMInitializer {
 
-	private static final String PATH = "firebase-service-account.json";
+    private static final String PATH = "firebase-service-account.json";
 
-	@PostConstruct
-	public void initialize() throws IOException {
-		try {
-			FirebaseOptions options = new FirebaseOptions.Builder()
-					.setCredentials(GoogleCredentials.fromStream(
-							new ClassPathResource(PATH).getInputStream())).build();
-			if (FirebaseApp.getApps().isEmpty()) {
-				FirebaseApp.initializeApp(options);
-				log.info("Firebase application has been initialized");
-			}
-		} catch (IOException e) {
-			log.error(e.getMessage());
-		}
-	}
+    @PostConstruct
+    public void initialize() throws IOException {
+        try {
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(
+                            new ClassPathResource(PATH).getInputStream())).build();
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options);
+                log.info("Firebase application has been initialized");
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
 }

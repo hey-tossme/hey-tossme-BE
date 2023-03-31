@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum NotificationErrorCode implements BaseErrorCodeImpl {
 
-	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Notification not found"),
-	BAD_REQUEST(HttpStatus.BAD_REQUEST, "Notification - bad request");
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Notification not found"),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "Notification - bad request");
 
-	private final HttpStatus httpStatus;
-	private final String message;
+    private final HttpStatus httpStatus;
+    private final String message;
 }

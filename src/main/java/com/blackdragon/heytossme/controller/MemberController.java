@@ -9,12 +9,10 @@ import com.blackdragon.heytossme.dto.MemberDto.SignInRequest;
 import com.blackdragon.heytossme.dto.MemberDto.SignInResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignOutResponse;
 import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
-import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.service.NotificationService;
-import com.blackdragon.heytossme.type.NotificationType;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +29,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,8 +71,8 @@ public class MemberController {
      * Interceptor로부터 넘어오는 로그아웃 API
      */
     @PostMapping("/v2/members/logout/{userId}")
-    public ResponseEntity<ResponseForm> logout( @PathVariable("userId") Long _userId
-                                                ,HttpServletResponse response) {
+    public ResponseEntity<ResponseForm> logout(@PathVariable("userId") Long _userId
+            , HttpServletResponse response) {
         log.info("member logout start");
         Long userId = Long.valueOf(String.valueOf(_userId));
 
@@ -91,7 +87,6 @@ public class MemberController {
     }
 
     /**
-     *
      * @param httpServletRequest
      * @return
      */

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FcmService {
 
-	private static final Logger logger = LoggerFactory.getLogger(FcmService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FcmService.class);
 //
 //	public void send(final NotificationRequest notificationRequest)
 //			throws InterruptedException, ExecutionException {
