@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum MemberErrorCode implements BaseErrorCodeImpl {
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "Member not found"),
-    INVALID_KEY(HttpStatus.UNAUTHORIZED, "Invalid token"),
+    INVALID_KEY(HttpStatus.UNAUTHORIZED, "Expired token"),
     INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED, "Invalid JWT signature"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Expired access token supplied"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Logout - refresh token expired"),

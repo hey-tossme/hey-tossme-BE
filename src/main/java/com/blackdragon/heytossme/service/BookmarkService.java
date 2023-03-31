@@ -3,19 +3,20 @@ package com.blackdragon.heytossme.service;
 import com.blackdragon.heytossme.dto.BookmarkDto;
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
+import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.BookmarkException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.MemberException;
 import com.blackdragon.heytossme.exception.errorcode.BookmarkErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
-import com.blackdragon.heytossme.fcm.FcmService;
 import com.blackdragon.heytossme.persist.BookmarkRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Bookmark;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
+import com.blackdragon.heytossme.type.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +30,7 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
-    private final FcmService fcmService;
+    private final NotificationService notificationService;
 
     public Page<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
@@ -47,7 +48,17 @@ public class BookmarkService {
                 .member(member)
                 .build());
 
-//        fcmService.send("cfqV4n0Igq0k-ivFELexIc:APA91bGxWS_OlRl7158n8oPp2eGDQHCoI9-t1n-Oi7SENttfJYR8LkQjOF8vSIYJxR5Lho-b1SQUL-NLPVmxoMaob1qZ3FGQi9uvDFvcQmnGRFGFEjY5G3YZvkYEls2fD-tcjEUTYNDe");
+        NotificationRequest notificationInfo = NotificationRequest.builder()
+                .registrationToken(member.getRegistrationToken())
+                .title("북마크알림")
+                .body("고객님의 제품이 북마크 처리되었습니다")
+                .type(NotificationType.BOOKMARK)
+                .item(item)
+                .member(member)
+                .build();
+
+        notificationService.sendPush(notificationInfo);
+
         return BookmarkDto.CreateResponse.from(bookmark);
     }
 

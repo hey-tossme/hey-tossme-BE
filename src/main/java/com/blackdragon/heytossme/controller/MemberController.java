@@ -12,6 +12,7 @@ import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
+import com.blackdragon.heytossme.service.ItemService;
 import com.blackdragon.heytossme.service.MemberService;
 import com.blackdragon.heytossme.service.NotificationService;
 import com.blackdragon.heytossme.type.NotificationType;
@@ -39,6 +40,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final NotificationService notificationService;
+    private final ItemService itemService;
     private static final String USER_ID = "userId";
     private static final String ACCESS_TOKEN = "accessToken";
     private static final String REGISTRATION_TOKEN = "cfqV4n0Igq0k-ivFELexIc:APA91bE7uxSNiQVc2LIUqqrwqxGiysWcLHP6Jr-kmIuqvkfcjk3CLmGaMOKP7MGWrUea64K2Dvb02BbMTfIIPa0Yfb2Z6-CWKMBRfqAMhCmLOdo3RbYq-BizmqqE8wlCrHjWqVENGW7D";
@@ -50,12 +52,26 @@ public class MemberController {
     }
 
     @PostMapping("/v2/members/signin")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
+    public ResponseEntity<?> signIn(@RequestBody SignInRequest request, //fcmToken온다
             HttpServletResponse response) {
 
         Member member = memberService.signIn(request);
+//        memberService.saveRegistrationToken(member.getId(), request.getFcmToken());   //fcmtoken오면 db에 저장
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
+
+
+        NotificationRequest notificationInfo = NotificationRequest.builder()
+                .registrationToken(REGISTRATION_TOKEN)
+//                .registrationToken(member.getRegistrationToken())
+                .title("북마크알림")
+                .body("고객님의 제품이 북마크 처리되었습니다")
+                .type(NotificationType.BOOKMARK)
+//                .item()
+                .member(member)
+                .build();
+        notificationService.initializer();//로그인 성공하면 fcm토큰을 해당유저정보에 set
+        notificationService.sendPushTest(notificationInfo);
 
         SignInResponse data = SignInResponse.builder()
                 .id(member.getId())
