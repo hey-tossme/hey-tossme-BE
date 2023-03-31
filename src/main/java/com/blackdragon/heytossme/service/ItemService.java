@@ -5,10 +5,13 @@ import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
 import com.blackdragon.heytossme.dto.Kakao;
 import com.blackdragon.heytossme.dto.Kakao.AddressInfo;
+import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
+import com.blackdragon.heytossme.exception.MemberException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
 import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
@@ -19,6 +22,7 @@ import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.Category;
 import com.blackdragon.heytossme.type.ItemStatus;
+import com.blackdragon.heytossme.type.NotificationType;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -55,6 +59,7 @@ public class ItemService {
     private final MemberRepository memberRepository;
     private final HistoryRepository historyRepository;
     private final AddressRepository addressRepository;
+    private final NotificationService notificationService;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -178,6 +183,9 @@ public class ItemService {
                 .item(item)
                 .buyer(findMember(buyerId))
                 .build());
+
+        this.sendNotificationPush(sellerId, buyerId, item);
+
         return new Response(item);
     }
 
@@ -293,5 +301,34 @@ public class ItemService {
     private Item findItemById(Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+    }
+
+    private void sendNotificationPush(Long sellerId, Long buyerId, Item item) {
+        Member seller = memberRepository.findById(sellerId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member buyer = memberRepository.findById(buyerId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+
+        //거래완료되었을때 두사람에게 모두 알람을 보낸다
+        NotificationRequest sellerPush = NotificationRequest.builder()
+                .registrationToken(seller.getRegistrationToken())
+                .title("거래완료 알림")
+                .body("거래가 정상적으로 완료되었습니다")
+                .type(NotificationType.DEAL)
+                .item(item)
+                .member(seller)
+                .build();
+        NotificationRequest buyerPush = NotificationRequest.builder()
+                .registrationToken(buyer.getRegistrationToken())
+                .title("거래완료 알림")
+                .body("거래가 정상적으로 완료되었습니다")
+                .type(NotificationType.DEAL)
+                .item(item)
+                .member(buyer)
+                .build();
+
+        notificationService.sendPush(sellerPush);
+        notificationService.sendPush(buyerPush);
     }
 }

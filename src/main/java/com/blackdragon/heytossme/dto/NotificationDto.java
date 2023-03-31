@@ -1,6 +1,9 @@
 package com.blackdragon.heytossme.dto;
 
+import com.blackdragon.heytossme.persist.entity.Item;
+import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.persist.entity.Notification;
+import com.blackdragon.heytossme.type.NotificationType;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -31,18 +34,23 @@ public class NotificationDto {
         }
     }
 
-    @Data
-    public static class StatusChangeResponse {
+	@Data
+	public static class StatusChangeResponse{
+		private Long notificationId;
+		private boolean readOrNot;
+	}
 
-        private Long notificationId;
-        private boolean readOrNot;
-    }
+	@Data
+	@Builder
+	public static class NotificationRequest {
 
-    @Data
-    public static class NotificationRequest {
+		private String registrationToken;
+		private String title;
+		private String body;
+		private NotificationType type;
+		private Member member;
+		private Item item;
+		private String message;
 
-        private String token;
-        private String title;
-        private String message;
-    }
+	}
 }

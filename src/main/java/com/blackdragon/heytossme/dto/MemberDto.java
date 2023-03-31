@@ -33,6 +33,7 @@ public class MemberDto {
         private String email;
         @NotBlank
         private String password;
+        private String registrationToken;
     }
 
     @Data

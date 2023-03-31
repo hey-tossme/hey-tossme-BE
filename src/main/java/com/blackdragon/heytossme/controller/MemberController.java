@@ -12,7 +12,6 @@ import com.blackdragon.heytossme.dto.MemberDto.SignUpRequest;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.service.MemberService;
-import com.blackdragon.heytossme.service.NotificationService;
 import com.blackdragon.heytossme.type.resposne.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,10 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final NotificationService notificationService;
     private static final String USER_ID = "userId";
     private static final String ACCESS_TOKEN = "accessToken";
-    private static final String REGISTRATION_TOKEN = "cfqV4n0Igq0k-ivFELexIc:APA91bE7uxSNiQVc2LIUqqrwqxGiysWcLHP6Jr-kmIuqvkfcjk3CLmGaMOKP7MGWrUea64K2Dvb02BbMTfIIPa0Yfb2Z6-CWKMBRfqAMhCmLOdo3RbYq-BizmqqE8wlCrHjWqVENGW7D";
 
     @PostMapping("/v2/members")
     public ResponseEntity<ResponseForm> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -51,7 +48,7 @@ public class MemberController {
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
-        Member member = memberService.signIn(request);
+        Member member = memberService.signIn(request, request.getRegistrationToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
@@ -68,7 +65,7 @@ public class MemberController {
     }
 
     /**
-     * Interceptor로부터 넘어오는 로그아웃 API
+     * 로그아웃 API
      */
     @PostMapping("/v2/members/logout/{userId}")
     public ResponseEntity<ResponseForm> logout(@PathVariable("userId") Long _userId
@@ -133,6 +130,7 @@ public class MemberController {
             HttpServletResponse response, @PathVariable Long userId) {
         log.info("member recreateToken start");
 
+        //refresh만료시 405에러, refresh만료 안되면 200
         String generatedToken = memberService.reCreateAccessToken(request, response, userId);
 
         return ResponseEntity.ok(
