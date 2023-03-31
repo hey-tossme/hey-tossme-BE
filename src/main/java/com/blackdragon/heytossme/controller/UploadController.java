@@ -24,6 +24,7 @@ public class UploadController {
     @PostMapping
     public ResponseEntity<ResponseForm> uploadImage(HttpServletRequest httpServletRequest,
             Request request) {
+        log.info("uploadImage start");
 
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
 

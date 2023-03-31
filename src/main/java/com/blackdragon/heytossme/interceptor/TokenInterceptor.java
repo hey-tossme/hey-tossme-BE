@@ -15,28 +15,28 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
 
-	private final TokenProvider tokenProvider;
-	private final AuthExtractor authExtractor;
+    private final TokenProvider tokenProvider;
+    private final AuthExtractor authExtractor;
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) {
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) {
 
-		Object userId;
-		String accessToken = authExtractor.extractAccessToken(request, "Bearer");
-		userId = tokenProvider.getUserId(accessToken, true);
+        Object userId;
+        String accessToken = authExtractor.extractAccessToken(request, "Bearer");
+        userId = tokenProvider.getUserId(accessToken, true);
 
-		if (!StringUtils.hasText(accessToken)) {
-			return false;
-		}
+        if (!StringUtils.hasText(accessToken)) {
+            return false;
+        }
 
-		if (!tokenProvider.validateToken(accessToken, true)) {//Access토큰만료
-			return false;
-		}
+        if (!tokenProvider.validateToken(accessToken, true)) {//Access토큰만료
+            return false;
+        }
 
-		request.setAttribute("userId", userId);
-		request.setAttribute("accessToken", accessToken);
+        request.setAttribute("userId", userId);
+        request.setAttribute("accessToken", accessToken);
 
-		return true;
-	}
+        return true;
+    }
 }

@@ -25,20 +25,26 @@ public class ChatMessageController {
     private final ChatService chatService;
     private final RabbitTemplate template;
 
-    @GetMapping("/v1/chat/message/{roomId}")
+    @GetMapping("/v1/chat/{roomId}/messages")
     public ResponseEntity<ResponseForm> getMessageList(HttpServletRequest httpRequest,
             @PathVariable Long roomId) {
+        log.info("getMessageList start");
+
         String USER_ID = "userId";
         Long userId = (Long) httpRequest.getAttribute(USER_ID);
         var data = chatService.getChatRoomMessage(roomId, userId);
 
-        return ResponseEntity.ok(new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
+        return ResponseEntity.ok(
+                new ResponseForm(ChatRoomResponse.GET_MESSAGE_LIST.getMessage(), data));
     }
 
-    @MessageMapping("chat.message.{roomId}")
+    @MessageMapping("chat.{roomId}.messages")
     public void sendMessage(@Payload MessageDto.SendMessage request,
             @DestinationVariable String roomId) {
-        log.info("message = {}", request.toString());
+        log.info("sendMessage start");
+        request.setChatRoomId(Long.parseLong(roomId));
+
+        log.info("message = {}", request);
         chatService.sendMessage(request);
         template.convertAndSend(CHAT_EXCHANGE_NAME, "room." + roomId, request);
     }

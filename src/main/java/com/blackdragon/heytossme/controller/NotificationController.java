@@ -8,6 +8,7 @@ import com.blackdragon.heytossme.type.NotificationResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,39 +20,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/notification")
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class NotificationController {
 
-	private final NotificationService notificationService;
-//	private final FCMService fcmService;
-	private static final String USER_ID = "userId";
-	private static final String ACCESS_TOKEN = "accessToken";
+    private final NotificationService notificationService;
+    //	private final FCMService fcmService;
+    private static final String USER_ID = "userId";
+    private static final String ACCESS_TOKEN = "accessToken";
 
-	@GetMapping
-	public ResponseEntity<ResponseForm> getNotification() {
-		List<NotificationDto.Response> data = notificationService.getNotification();
-		return ResponseEntity.ok(
-				new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));
-	}
+    @GetMapping
+    public ResponseEntity<ResponseForm> getNotification() {
+        log.info("getNotification start");
 
-	@PatchMapping("/{notification-id}")
-	public ResponseEntity<ResponseForm> statusChangeNotification(HttpServletRequest request,
-										@PathVariable("notification-id") Long notificationId) {
+        List<NotificationDto.Response> data = notificationService.getNotification();
+        return ResponseEntity.ok(
+                new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));
+    }
 
-		String token = (String) request.getAttribute(ACCESS_TOKEN);
-		Response data = notificationService.changeStatus(notificationId);
+    @PatchMapping("/{notification-id}")
+    public ResponseEntity<ResponseForm> statusChangeNotification(HttpServletRequest request,
+            @PathVariable("notification-id") Long notificationId) {
+        log.info("statusChangeNotification start");
 
-		return ResponseEntity.ok(
-		new ResponseForm(NotificationResponse.NOTIFICATION_STATUS_CHANGE.getMessage(), data, token));
-	}
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
+        Response data = notificationService.changeStatus(notificationId);
 
-	@DeleteMapping("/{notification-id}")
-	public ResponseEntity<ResponseForm> deleteNotification(HttpServletRequest request,
-														@PathVariable("notification-id") Long id) {
+        return ResponseEntity.ok(
+                new ResponseForm(NotificationResponse.NOTIFICATION_STATUS_CHANGE.getMessage(), data,
+                        token));
+    }
 
-		Response data = notificationService.deleteNotification(id);
+    @DeleteMapping("/{notification-id}")
+    public ResponseEntity<ResponseForm> deleteNotification(HttpServletRequest request,
+            @PathVariable("notification-id") Long id) {
+        log.info("deleteNotification start");
 
-		return ResponseEntity.ok(
-				new ResponseForm(NotificationResponse.DELETE_NOTIFIACTION.getMessage(), data)
-		);
-	}
+        Response data = notificationService.deleteNotification(id);
+
+        return ResponseEntity.ok(
+                new ResponseForm(NotificationResponse.DELETE_NOTIFIACTION.getMessage(), data)
+        );
+    }
 }

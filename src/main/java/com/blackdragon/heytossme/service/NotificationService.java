@@ -18,6 +18,7 @@ import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import java.io.IOException;
 import java.io.InputStream;
+import com.blackdragon.heytossme.type.NotificationType;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationService {
 
-	private final NotificationRepository notificationRepository;
-	private final MemberRepository memberRepository;	//TODO
-	private final ItemRepository itemRepository; 	//TODO
+    private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;    //TODO
+    private final ItemRepository itemRepository;    //TODO
 
 	//테스트용 TODO
 //	public Response saveNoti() {
@@ -50,24 +51,40 @@ public class NotificationService {
 //		Notification save = notificationRepository.save(notification);
 //		return Response.from(save);
 //	}
+    //테스트용 TODO
+    public Response saveNoti() {
 
-	public List<Response> getNotification() {
-		List<Notification> notificationList = notificationRepository.findAll();
-		return notificationList.stream().map(Response::from).collect(Collectors.toList());
-	}
+        Item item = itemRepository.findById(1L).get();
+        Member member = memberRepository.findById(1L).get();
 
-	public Response changeStatus(Long notificationId) {
-		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new NotificationException(NotificationErrorCode.UNAUTHORIZED));
-		notification.setReadOrNot(true);
-		Notification savedNotification = notificationRepository.save(notification);
+        Notification notification = Notification.builder()
+                .message("임영웅 콘서트 티켓이 업로드되었습니다")
+                .readOrNot(false)
+                .type(NotificationType.KEYWORD)
+                .item(item)
+                .member(member)
+                .build();
+        Notification save = notificationRepository.save(notification);
+        return Response.from(save);
+    }
 
-		return Response.from(savedNotification);
-	}
+    public List<Response> getNotification() {
+        List<Notification> notificationList = notificationRepository.findAll();
+        return notificationList.stream().map(Response::from).collect(Collectors.toList());
+    }
 
-	public Response deleteNotification(Long notificationId) {
-		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new NotificationException(NotificationErrorCode.UNAUTHORIZED));
+    public Response changeStatus(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotificationException(NotificationErrorCode.UNAUTHORIZED));
+        notification.setReadOrNot(true);
+        Notification savedNotification = notificationRepository.save(notification);
+
+        return Response.from(savedNotification);
+    }
+
+    public Response deleteNotification(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotificationException(NotificationErrorCode.UNAUTHORIZED));
 
 		notificationRepository.deleteById(notification.getId());
 		return Response.from(notification);

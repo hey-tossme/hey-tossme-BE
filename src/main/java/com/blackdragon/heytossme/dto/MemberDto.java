@@ -53,6 +53,7 @@ public class MemberDto {
 
     @Data
     public static class PasswordRequest {
+
         @Email
         private String email;
         private String password;
@@ -120,7 +121,8 @@ public class MemberDto {
 
     @Data
     @AllArgsConstructor
-    public static class AuthResponse{
+    public static class AuthResponse {
+
         private String refreshToken;
         private Cookie cookie;
 

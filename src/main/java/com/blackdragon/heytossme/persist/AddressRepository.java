@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
-    @Query(nativeQuery = true, value = "select distinct sido_area, sigun_area from address as a")
+    @Query(nativeQuery = true, value = "select distinct first_depth_region, second_depth_region from address as a")
     List<List<String>> findDistinct();
 }
