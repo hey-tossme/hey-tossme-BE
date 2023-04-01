@@ -37,9 +37,6 @@ public class Notification extends BaseTimeEntity{
     private NotificationType type;
     private boolean readOrNot;
 
-//    @NotNull
-//    private LocalDateTime createdAt;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")

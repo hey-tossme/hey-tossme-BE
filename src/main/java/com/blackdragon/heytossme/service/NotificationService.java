@@ -30,8 +30,8 @@ public class NotificationService {
 
 	private final NotificationRepository notificationRepository;
 
-    public List<Response> getNotification() {
-        List<Notification> notificationList = notificationRepository.findAll();
+    public List<Response> getNotification(Long userId) {
+		List<Notification> notificationList = notificationRepository.findAllByMemberId(userId);
         return notificationList.stream().map(Response::from).collect(Collectors.toList());
     }
 

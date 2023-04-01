@@ -29,10 +29,11 @@ public class NotificationController {
     private static final String ACCESS_TOKEN = "accessToken";
 
     @GetMapping
-    public ResponseEntity<ResponseForm> getNotification() {
+    public ResponseEntity<ResponseForm> getNotification(HttpServletRequest request) {
         log.info("getNotification start");
 
-        List<NotificationDto.Response> data = notificationService.getNotification();
+        Long userId = (Long) request.getAttribute(USER_ID);
+        List<NotificationDto.Response> data = notificationService.getNotification(userId);
         return ResponseEntity.ok(
                 new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));
     }

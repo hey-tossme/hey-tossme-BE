@@ -9,16 +9,20 @@ import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
+import com.blackdragon.heytossme.persist.KeywordRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Address;
 import com.blackdragon.heytossme.persist.entity.History;
 import com.blackdragon.heytossme.persist.entity.Item;
+import com.blackdragon.heytossme.persist.entity.Keyword;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.Category;
 import com.blackdragon.heytossme.type.ItemStatus;
@@ -60,6 +64,7 @@ public class ItemService {
     private final HistoryRepository historyRepository;
     private final AddressRepository addressRepository;
     private final NotificationService notificationService;
+    private final KeywordRepository keywordRepository;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -67,7 +72,7 @@ public class ItemService {
     public Response createItem(Long sellerId, ItemRequest request) {
         Item item = setItemEntityFromRequest(sellerId, request);
         itemRepository.save(item);
-
+        sendKeywordPush(item);
         return new Response(item);
     }
 
@@ -184,7 +189,7 @@ public class ItemService {
                 .buyer(findMember(buyerId))
                 .build());
 
-        this.sendNotificationPush(sellerId, buyerId, item);
+        this.sendDealPush(sellerId, buyerId, item);
 
         return new Response(item);
     }
@@ -303,7 +308,7 @@ public class ItemService {
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
     }
 
-    private void sendNotificationPush(Long sellerId, Long buyerId, Item item) {
+    private void sendDealPush(Long sellerId, Long buyerId, Item item) {
         Member seller = memberRepository.findById(sellerId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         Member buyer = memberRepository.findById(buyerId)
@@ -330,5 +335,29 @@ public class ItemService {
 
         notificationService.sendPush(sellerPush);
         notificationService.sendPush(buyerPush);
+    }
+
+    //키워드 찾고 있는지확인해서 있으면 발송
+    public List<Keyword> sendKeywordPush(Item item) {
+        List<Keyword> keywordList = keywordRepository.findKeyword(item.getTitle());
+        Item item1 = itemRepository.findById(3L)
+                .orElseThrow(() -> new NotificationException(NotificationErrorCode.BAD_REQUEST));
+
+        if (!keywordList.isEmpty()) {
+            for (int i = 0; i < keywordList.size(); i++) {
+                String body = "'" + keywordList.get(i).getKeyword() + "' 상품이 등록되었습니다:)";
+                NotificationRequest keywordPush = NotificationRequest.builder()
+                        .registrationToken(keywordList.get(i).getMember().getRegistrationToken())
+                        .title("키워드 알림")
+                        .body(body)
+                        .type(NotificationType.KEYWORD)
+                        .item(item1)
+                        .member(keywordList.get(i).getMember())
+                        .build();
+                notificationService.sendPush(keywordPush);
+            }
+        }
+
+        return keywordList;
     }
 }
