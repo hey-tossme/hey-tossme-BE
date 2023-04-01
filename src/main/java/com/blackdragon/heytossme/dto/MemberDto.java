@@ -45,13 +45,6 @@ public class MemberDto {
     }
 
     @Data
-    public static class DeleteRequest {
-
-        @NotBlank
-        private String curPassword;
-    }
-
-    @Data
     public static class PasswordRequest {
 
         @Email
