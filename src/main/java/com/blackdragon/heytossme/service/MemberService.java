@@ -120,15 +120,6 @@ public class MemberService {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        // 사용자 비밀번호 확인
-        if (!passwordEncoder.matches(request.getCurPassword(), member.getPassword())) {
-            throw new MemberException(INCORRECT_PASSWORD);
-        }
-
-        /*
-          회원탈퇴 시 실제 DB 에서 Delete 를 하지 않고 유저 status 값을 탈퇴로 바꾼다
-          탈퇴 처리한 유저가 다시 가입할 경우를 대비하여 이메일을 공백 값으로 둔다.
-         */
 
         Member updateStatus = Member.builder()
                 .id(member.getId())
