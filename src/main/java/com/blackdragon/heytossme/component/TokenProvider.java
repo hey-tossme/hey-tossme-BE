@@ -28,10 +28,10 @@ public class TokenProvider {
     private String refreshKey;
     private final AuthExtractor authExtractor;
 
-    //private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 60;    //1시간
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L ;	//1초
-    //private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 3;    //3시간
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L;	//1초
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 60;    //1시간
+    //private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L ;	//1초
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 3;    //3시간
+    //private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L;	//1초
 
     public String generateToken(Long id, String email, boolean isAccessToken) {
         Claims claims = Jwts.claims().setSubject(email);
