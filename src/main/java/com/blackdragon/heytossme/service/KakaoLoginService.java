@@ -12,6 +12,7 @@ import com.blackdragon.heytossme.type.MemberSocialType;
 import com.blackdragon.heytossme.type.MemberStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,8 +43,10 @@ public class KakaoLoginService {
     private String clientId;
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
+    private final NotificationService notificationService;
 
-    public ResponseForm getAccessToken(String authorizationCode) {
+    @Transactional
+    public ResponseForm  getAccessToken(String authorizationCode) {
 
         //kakao openId 토큰 발급 받기
         String token = getKakaoOpenIdToken(authorizationCode);
@@ -53,6 +56,8 @@ public class KakaoLoginService {
         Map<String, String> kakaoInfo = getUserKakaoInfo(payload);
         //DB 에서 해당 유저 이메일로 찾기
         Member member = getOrSaveUserByEmail(kakaoInfo);
+
+        this.doFcmInitializer(member);
 
         Response response = new Response();
         response.setId(member.getId());
@@ -75,6 +80,13 @@ public class KakaoLoginService {
         responseForm.setToken(kakaoToken);
 
         return responseForm;
+    }
+
+    @Transactional
+    public Member saveFcmToken(Member member) {
+        notificationService.initializer();
+//        member.setRegistrationToken(registrationToken);
+        return member;
     }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
@@ -189,4 +201,8 @@ public class KakaoLoginService {
         return kakaoToken;
     }
 
+    private void doFcmInitializer(Member member) {
+//        notificationService.initializer();
+//        member.setRegistrationToken();
+    }
 }
