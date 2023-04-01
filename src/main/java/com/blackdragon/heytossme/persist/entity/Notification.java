@@ -1,6 +1,9 @@
 package com.blackdragon.heytossme.persist.entity;
 
+import com.blackdragon.heytossme.type.NotificationType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Builder
 @Entity
-public class Notification1 {
+public class Notification extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +32,10 @@ public class Notification1 {
     @NotNull
     private String message;
 
-    //    @NotNull
-//    @Enumerated(EnumType.STRING)    ///type enum 정리
-    private String type;
-    private boolean readOrNot;
-
     @NotNull
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)    ///type enum 정리
+    private NotificationType type;
+    private boolean readOrNot;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

@@ -5,23 +5,32 @@ import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
 import com.blackdragon.heytossme.dto.Kakao;
 import com.blackdragon.heytossme.dto.Kakao.AddressInfo;
+import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
+import com.blackdragon.heytossme.exception.MemberException;
+import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
+import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
+import com.blackdragon.heytossme.persist.KeywordRepository;
 import com.blackdragon.heytossme.persist.MemberRepository;
 import com.blackdragon.heytossme.persist.entity.Address;
 import com.blackdragon.heytossme.persist.entity.History;
 import com.blackdragon.heytossme.persist.entity.Item;
+import com.blackdragon.heytossme.persist.entity.Keyword;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.Category;
 import com.blackdragon.heytossme.type.ItemStatus;
+import com.blackdragon.heytossme.type.NotificationType;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transactional;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -54,6 +63,8 @@ public class ItemService {
     private final MemberRepository memberRepository;
     private final HistoryRepository historyRepository;
     private final AddressRepository addressRepository;
+    private final NotificationService notificationService;
+    private final KeywordRepository keywordRepository;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -61,7 +72,7 @@ public class ItemService {
     public Response createItem(Long sellerId, ItemRequest request) {
         Item item = setItemEntityFromRequest(sellerId, request);
         itemRepository.save(item);
-
+        sendKeywordPush(item);
         return new Response(item);
     }
 
@@ -70,26 +81,31 @@ public class ItemService {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size == null ? 8 : size);
         Specification<Item> search = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("status"), ItemStatus.SALE.name())); // 판매 중인 상품
+            predicates.add(cb.equal(root.get("status"), ItemStatus.SALE)); // 판매 중인 상품
             if (StringUtils.isNotBlank(searchTitle)) {
+                log.info("title = {}", searchTitle);
                 predicates.add(cb.like(root.get("title"), "%" + searchTitle + "%"));
             }
             if (StringUtils.isNotBlank(endDue)) {
+                log.info("endDue = {}", endDue);
                 LocalDateTime endDueDate = parseToDateType(endDue);
                 predicates.add(cb.between(root.get("dueDate"),
                         StringUtils.isBlank(startDue) ? endDueDate : parseToDateType(startDue),
                         endDueDate.withHour(23).withMinute(59).withSecond(59)));
             }
             if (StringUtils.isNotBlank(category)) {
+                log.info("category = {}", category);
                 predicates.add(
-                        cb.equal(root.get("category"), Category.valueOf(category.toUpperCase())));
+                        cb.equal(root.get("category"), Category.findBy(category)));
             }
             if (StringUtils.isNotBlank(region)) {
+                log.info("region = {}", region);
                 Join<Item, Address> itemAddressJoin = root.join("address");
                 String[] address = region.split(" ");
-                predicates.add(cb.equal(itemAddressJoin.get("sidoArea"), address[0]));
-                predicates.add(cb.equal(itemAddressJoin.get("sigunArea"), address[1]));
+                predicates.add(cb.equal(itemAddressJoin.get("firstDepthRegion"), address[0]));
+                predicates.add(cb.like(itemAddressJoin.get("secondDepthRegion"), address[1] + "%"));
             }
+            log.info("predicates = {}", predicates);
 
             Predicate[] p = new Predicate[predicates.size()];
             return cb.and(predicates.toArray(p));
@@ -99,6 +115,7 @@ public class ItemService {
         return listPage.map(Response::new);
     }
 
+    @Transactional
     public Response modify(Long itemId, Long sellerId, ItemRequest request) {
         Item item = findItemById(itemId);
         Address address = item.getAddress();
@@ -137,6 +154,7 @@ public class ItemService {
         }
 
         item.setAddress(address);
+        itemRepository.save(item);
 
         return new Response(item);
     }
@@ -147,6 +165,7 @@ public class ItemService {
         return new Response(item);
     }
 
+    @Transactional
     public void deleteItem(Long itemId, Long sellerId) {
         Item item = findItemById(itemId);
 
@@ -157,6 +176,7 @@ public class ItemService {
         item.setStatus(ItemStatus.HIDDEN);
     }
 
+    @Transactional
     public Response dealConfirm(Long itemId, Long sellerId, Long buyerId) {
         Item item = findItemById(itemId);
         if (!item.getSeller().getId().equals(sellerId)) {
@@ -168,6 +188,9 @@ public class ItemService {
                 .item(item)
                 .buyer(findMember(buyerId))
                 .build());
+
+        this.sendDealPush(sellerId, buyerId, item);
+
         return new Response(item);
     }
 
@@ -283,5 +306,58 @@ public class ItemService {
     private Item findItemById(Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+    }
+
+    private void sendDealPush(Long sellerId, Long buyerId, Item item) {
+        Member seller = memberRepository.findById(sellerId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member buyer = memberRepository.findById(buyerId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+
+        //거래완료되었을때 두사람에게 모두 알람을 보낸다
+        NotificationRequest sellerPush = NotificationRequest.builder()
+                .registrationToken(seller.getRegistrationToken())
+                .title("판매완료 알림")
+                .body("거래가 정상적으로 완료되었습니다")
+                .type(NotificationType.DEAL)
+                .item(item)
+                .member(seller)
+                .build();
+        NotificationRequest buyerPush = NotificationRequest.builder()
+                .registrationToken(buyer.getRegistrationToken())
+                .title("구매완료 알림")
+                .body("거래가 정상적으로 완료되었습니다")
+                .type(NotificationType.DEAL)
+                .item(item)
+                .member(buyer)
+                .build();
+
+        notificationService.sendPush(sellerPush);
+        notificationService.sendPush(buyerPush);
+    }
+
+    //키워드 찾고 있는지확인해서 있으면 발송
+    public List<Keyword> sendKeywordPush(Item item) {
+        List<Keyword> keywordList = keywordRepository.findKeyword(item.getTitle());
+        Item item1 = itemRepository.findById(3L)
+                .orElseThrow(() -> new NotificationException(NotificationErrorCode.BAD_REQUEST));
+
+        if (!keywordList.isEmpty()) {
+            for (int i = 0; i < keywordList.size(); i++) {
+                String body = "'" + keywordList.get(i).getKeyword() + "' 상품이 등록되었습니다:)";
+                NotificationRequest keywordPush = NotificationRequest.builder()
+                        .registrationToken(keywordList.get(i).getMember().getRegistrationToken())
+                        .title("키워드 알림")
+                        .body(body)
+                        .type(NotificationType.KEYWORD)
+                        .item(item1)
+                        .member(keywordList.get(i).getMember())
+                        .build();
+                notificationService.sendPush(keywordPush);
+            }
+        }
+
+        return keywordList;
     }
 }

@@ -2,7 +2,6 @@ package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.KakaoLoginService;
-import com.blackdragon.heytossme.type.KakaoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,8 @@ public class KakaoLoginController {
     @GetMapping("/login")
     public ResponseEntity<ResponseForm> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code) {
+        log.info("item oauthKakaoLogin start");
 
-        String token = kakaoLoginService.getAccessToken(code);
-
-        return ResponseEntity.ok(
-                new ResponseForm(KakaoResponse.LOG_IN.getMessage(), null, token));
+        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code));
     }
 }

@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .order(1)
-                .addPathPatterns("/**/v1/**/");
+                .addPathPatterns("/**/v1/**");
     }
 
     @Override

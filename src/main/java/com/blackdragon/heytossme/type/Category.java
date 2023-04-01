@@ -4,21 +4,21 @@ import lombok.Getter;
 
 @Getter
 public enum Category {
-    ACCOMMODATION("숙박"),
-    RESTAURANT("레스토랑"),
-    BEAUTY("미용실"),
-    CONCERT("전시공연"),
-    ACTIVITY("액티비티");
+    ACCOMMODATION("accommodation"),
+    RESTAURANT("restaurant"),
+    BEAUTY("beauty"),
+    CONCERT("concert"),
+    ACTIVITY("activity");
 
-    Category(String korean) {
-        this.toKorean = korean;
+    Category(String toRealName) {
+        this.toRealName = toRealName;
     }
 
-    final String toKorean;
+    final String toRealName;
 
     public static Category findBy(String arg) {
         for (Category category : values()) {
-            if (arg.equals(category.toKorean)) {
+            if (arg.equals(category.toRealName)) {
                 return category;
             }
         }

@@ -30,32 +30,36 @@ public class BookmarkController {
             HttpServletRequest request,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer size) {
+        log.info("getBookmarks start");
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         Page<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageNum, size);
         return ResponseEntity.ok(
-                new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data, accessToken));
+                new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data,
+                        accessToken));
     }
 
     @PostMapping
     public ResponseEntity<ResponseForm> registerBookmarks(
-            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("itemId") Long itemId) {
+        log.info("registerBookmarks start");
+
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
         return ResponseEntity.ok(
-                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data, accessToken));
+                new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data,
+                        accessToken));
     }
 
     @DeleteMapping
     public ResponseEntity<ResponseForm> deleteBookmarks(
-            HttpServletRequest request, @RequestParam("item-id") Long itemId) {
+            HttpServletRequest request, @RequestParam("itemId") Long itemId) {
+        log.info("deleteBookmarks start");
 
         Long userId = (Long) request.getAttribute("userId");
         String accessToken = (String) request.getAttribute("accessToken");
-        System.out.println("itemid : " + itemId);
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
-        //북마크
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.DELETE_BOOKMARK.getMessage(), data, accessToken));
     }

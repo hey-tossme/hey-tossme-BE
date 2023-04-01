@@ -13,18 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v2/image")
+@RequestMapping("/v1/image")
 @RequiredArgsConstructor
 @Log4j2
 public class UploadController {
 
     private final UploadService uploadService;
+    private static final String USER_ID = "userId";
 
     @PostMapping
     public ResponseEntity<ResponseForm> uploadImage(HttpServletRequest httpServletRequest,
             Request request) {
+        log.info("uploadImage start");
 
-        Long id = (Long) httpServletRequest.getAttribute("id");
+        Long id = (Long) httpServletRequest.getAttribute(USER_ID);
 
         String url = uploadService.uploadImage(id, request);
 

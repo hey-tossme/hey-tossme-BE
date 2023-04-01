@@ -3,7 +3,7 @@ package com.blackdragon.heytossme.type;
 import lombok.Getter;
 
 @Getter
-public enum Type {
+public enum NotificationType {
 
     BOOKMARK("북마크"),    //등록한 상품을 누군가가 북마크처리했을때
     KEYWORD("키워드"),    //키워드로 등록해둔 상품이 업로드 되었을때
@@ -11,7 +11,7 @@ public enum Type {
 
     final String toKorean;
 
-    Type(String toKorean) {
+    NotificationType(String toKorean) {
         this.toKorean = toKorean;
     }
 }

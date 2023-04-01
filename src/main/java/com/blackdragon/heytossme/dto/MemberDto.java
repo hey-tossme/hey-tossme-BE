@@ -33,21 +33,13 @@ public class MemberDto {
         private String email;
         @NotBlank
         private String password;
+        private String registrationToken;
     }
 
     @Data
     public static class ModifyRequest {
 
-        @Email
-        private String email;
-        @NotBlank
-        private String name;
-        @NotBlank
-        private String curPassword;
-        @NotBlank
-        private String password;
         private String imageUrl;
-        private String socialType;
         private String account;
         private String bankName;
     }
@@ -61,6 +53,7 @@ public class MemberDto {
 
     @Data
     public static class PasswordRequest {
+
         @Email
         private String email;
         private String password;
@@ -128,7 +121,8 @@ public class MemberDto {
 
     @Data
     @AllArgsConstructor
-    public static class AuthResponse{
+    public static class AuthResponse {
+
         private String refreshToken;
         private Cookie cookie;
 

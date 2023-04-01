@@ -12,6 +12,7 @@ import com.blackdragon.heytossme.type.KeywordResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,16 +25,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/v1/keywords")
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class KeywordController {
 
     private final KeywordService keywordService;
     private final MemberRepository memberRepository;
 
+    private static final String USER_ID = "userId";
+    private static final String ACCESS_TOKEN = "accessToken";
+
     @GetMapping
     public ResponseEntity<ResponseForm> getKeywords(HttpServletRequest request) {
+        log.info("getKeywords start");
 
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         List<Response> data = keywordService.getKeywordList(member.getId());
@@ -45,12 +51,11 @@ public class KeywordController {
     @PostMapping
     public ResponseEntity<ResponseForm> registerKeyword(
             HttpServletRequest request, @RequestParam("keyword") String keyword) {
+        log.info("registerKeyword start");
 
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Response data = keywordService.registerKeyword(member.getId(), keyword);
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
+        Response data = keywordService.registerKeyword(userId, keyword);
 
         return ResponseEntity.ok(
                 new ResponseForm(KeywordResponse.REGISTER_KEYWORD.getMessage(), data, token));
@@ -59,8 +64,10 @@ public class KeywordController {
     @DeleteMapping("/{keyword}")
     public ResponseEntity<ResponseForm> deleteKeyword(HttpServletRequest request
             , @PathVariable("keyword") String keyword) {
-        Long userId = (Long) request.getAttribute("userId");
-        String token = (String) request.getAttribute("accessToken");
+        log.info("deleteKeyword start");
+
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String token = (String) request.getAttribute(ACCESS_TOKEN);
         Keyword savedKeyword = keywordService.getKeyword(keyword);
 
         Response data = keywordService.deleteKeyword(savedKeyword.getKeyword());
