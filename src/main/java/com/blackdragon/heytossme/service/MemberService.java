@@ -2,14 +2,12 @@ package com.blackdragon.heytossme.service;
 
 
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_CODE;
-import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
 import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.MailComponent;
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
-import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
@@ -116,7 +114,7 @@ public class MemberService {
         return modelMapper.map(member, Response.class);
     }
 
-    public void deleteUser(Long userId, DeleteRequest request) {
+    public void deleteUser(Long userId) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
