@@ -49,7 +49,7 @@ public class BookmarkService {
                 .build());
 
         NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(member.getRegistrationToken())
+                .registrationToken(member.getRegistrationToken())   //item 주인의 fcm토큰값?
                 .title("BOOKMARK")
                 .body("고객님의 제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
@@ -65,7 +65,7 @@ public class BookmarkService {
     public DeleteResponse deleteBookmark(Long userId, Long itemId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Bookmark bookmark = bookmarkRepository.findByItemIdAndMemberId(member.getId(), itemId)
+        Bookmark bookmark = bookmarkRepository.findByItemIdAndMemberId(itemId, member.getId())
                 .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
         bookmark.getMember().setId(member.getId());
         bookmarkRepository.deleteById(bookmark.getId());
