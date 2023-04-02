@@ -337,11 +337,8 @@ public class ItemService {
         notificationService.sendPush(buyerPush);
     }
 
-    //키워드 찾고 있는지확인해서 있으면 발송
     public List<Keyword> sendKeywordPush(Item item) {
         List<Keyword> keywordList = keywordRepository.findKeyword(item.getTitle());
-        Item item1 = itemRepository.findById(3L)
-                .orElseThrow(() -> new NotificationException(NotificationErrorCode.BAD_REQUEST));
 
         if (!keywordList.isEmpty()) {
             for (int i = 0; i < keywordList.size(); i++) {
@@ -351,7 +348,7 @@ public class ItemService {
                         .title("키워드 알림")
                         .body(body)
                         .type(NotificationType.KEYWORD)
-                        .item(item1)
+                        .item(item)
                         .member(keywordList.get(i).getMember())
                         .build();
                 notificationService.sendPush(keywordPush);
