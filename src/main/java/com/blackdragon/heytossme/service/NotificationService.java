@@ -56,11 +56,13 @@ public class NotificationService {
 		try {
 			ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
 			InputStream inputStream = resource.getInputStream();
-
+			log.error("fcm - load error");
 			FirebaseOptions options = FirebaseOptions.builder()
 					.setCredentials(GoogleCredentials.fromStream(inputStream))
 					.build();
+			log.error("fcm - load error2");
 			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options);
+			log.error("fcm - load error3");
 		} catch (IOException e) {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
