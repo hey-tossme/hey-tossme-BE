@@ -39,6 +39,9 @@ public class BookmarkDto {
         private String status;
 
         public static CreateResponse from(Bookmark bookmark) {
+            String address = bookmark.getItem().getAddress().getFirstDepthRegion()
+                    + bookmark.getItem().getAddress().getSecondDepthRegion()
+                    + bookmark.getItem().getAddress().getThirdDepthRegion();
             return CreateResponse.builder()
                     .id(bookmark.getId())
                     .itemId(bookmark.getItem().getId())
@@ -48,8 +51,8 @@ public class BookmarkDto {
                     .contents(bookmark.getItem().getContents())
                     .price(bookmark.getItem().getPrice())
                     .createdAt(bookmark.getCreatedAt())
-                    .address(bookmark.getItem().getAddress().toString())
-                    .addressDetail(bookmark.getItem().getAddress().getFirstDetailAddress())
+                    .address(address)
+                    .addressDetail(bookmark.getItem().getAddress().getSecondDetailAddress())
                     .dueTime(bookmark.getItem().getDueDate())
                     .latitude(bookmark.getItem().getLatitude())
                     .longitude(bookmark.getItem().getLongitude())
