@@ -23,6 +23,7 @@ public class NotificationDto {
         private boolean readOrNot;
         private LocalDateTime createdAt;
 		private NotificationType type;
+		private String title;
 
         public static Response from(Notification notification) {
             return Response.builder()
@@ -31,6 +32,7 @@ public class NotificationDto {
                     .message(notification.getMessage())
                     .readOrNot(notification.isReadOrNot())
 					.type(notification.getType())
+					.title(notification.getItem().getTitle())
                     .createdAt(notification.getCreatedAt())
                     .build();
         }
