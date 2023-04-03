@@ -153,7 +153,7 @@ public class MemberService {
                 .sameSite("Lax")
                 .httpOnly(false)
                 .secure(false)
-                .maxAge(Duration.ofHours(3))
+                .maxAge(Duration.ofDays(3))
                 .build();
     }
 
