@@ -57,10 +57,10 @@ public class BookmarkService {
                 .build());
 
         NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(member.getRegistrationToken())
-//                .registrationToken(item.getSeller().getRegistrationToken())   //item 주인의 fcm토큰값?
+//                .registrationToken(member.getRegistrationToken())
+                .registrationToken(item.getSeller().getRegistrationToken())   //item 주인의 fcm토큰값
                 .title("BOOKMARK")
-                .body("고객님의 제품이 북마크 처리되었습니다")
+                .body(item.getSeller().getName() + "고객님의 제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
                 .item(item)
                 .member(member)
