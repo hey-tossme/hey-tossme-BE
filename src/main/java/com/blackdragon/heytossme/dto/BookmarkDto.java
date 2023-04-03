@@ -39,11 +39,11 @@ public class BookmarkDto {
         private String status;
 
         public static CreateResponse from(Bookmark bookmark) {
-            String address = bookmark.getItem().getAddress().getFirstDepthRegion()
-                    + bookmark.getItem().getAddress().getSecondDepthRegion()
-                    + bookmark.getItem().getAddress().getThirdDepthRegion();
-            String addressDetail = bookmark.getItem().getAddress().getFirstDetailAddress()
-                    + bookmark.getItem().getAddress().getSecondDetailAddress();
+            String address = bookmark.getItem().getAddress().getFirstDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getSecondDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getThirdDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getFirstDetailAddress();
+            String addressDetail = bookmark.getItem().getAddress().getSecondDetailAddress();
             return CreateResponse.builder()
                     .id(bookmark.getId())
                     .itemId(bookmark.getItem().getId())
