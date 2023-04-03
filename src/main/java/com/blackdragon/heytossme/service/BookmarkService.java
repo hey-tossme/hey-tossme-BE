@@ -17,6 +17,7 @@ import com.blackdragon.heytossme.persist.entity.Bookmark;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.NotificationType;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +41,11 @@ public class BookmarkService {
 
     public CreateResponse registerBookmark(Long userId, Long itemId) {
         //북마크 중복 등록을 막기위함
-        bookmarkRepository.findByItemIdAndMemberId(itemId, userId)
-                .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.DUPLICATED));
+        Optional<Bookmark> existedBookmark = bookmarkRepository.findByItemIdAndMemberId(itemId,
+                userId);
+        if (existedBookmark == null) {
+            throw new BookmarkException(BookmarkErrorCode.DUPLICATED);
+        }
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
