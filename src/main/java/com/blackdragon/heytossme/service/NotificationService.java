@@ -32,6 +32,7 @@ public class NotificationService {
 
     public List<Response> getNotification(Long userId) {
 		List<Notification> notificationList = notificationRepository.findAllByMemberId(userId);
+		System.out.println(">>>>>>>> notificationList : " + notificationList);
         return notificationList.stream().map(Response::from).collect(Collectors.toList());
     }
 
@@ -60,13 +61,13 @@ public class NotificationService {
 			FirebaseOptions options = FirebaseOptions.builder()
 					.setCredentials(GoogleCredentials.fromStream(inputStream))
 					.build();
-			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options);
+			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");
 		} catch (IOException e) {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
 			log.error("Failed FCM Initializer");
-			log.error("init erro : " + e.getMessage());
-			log.error("init erro : " + e.getStackTrace());
+			log.error("init error : " + e.getMessage());
+			log.error("init error : " + e.getStackTrace());
 		}
 	}
 
