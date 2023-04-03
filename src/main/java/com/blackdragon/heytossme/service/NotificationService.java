@@ -65,6 +65,8 @@ public class NotificationService {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
 			log.error("Failed FCM Initializer");
+			log.error("init erro : " + e.getMessage());
+			log.error("init erro : " + e.getStackTrace());
 		}
 	}
 
