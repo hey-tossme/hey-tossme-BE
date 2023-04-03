@@ -39,6 +39,10 @@ public class BookmarkService {
     }
 
     public CreateResponse registerBookmark(Long userId, Long itemId) {
+        //북마크 중복 등록을 막기위함
+        bookmarkRepository.findByItemIdAndMemberId(itemId, userId)
+                .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.DUPLICATED));
+
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
         Member member = memberRepository.findById(userId)
@@ -49,7 +53,8 @@ public class BookmarkService {
                 .build());
 
         NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(member.getRegistrationToken())   //item 주인의 fcm토큰값?
+                .registrationToken(member.getRegistrationToken())
+//                .registrationToken(item.getSeller().getRegistrationToken())   //item 주인의 fcm토큰값?
                 .title("BOOKMARK")
                 .body("고객님의 제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
