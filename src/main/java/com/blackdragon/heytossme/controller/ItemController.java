@@ -97,8 +97,8 @@ public class ItemController {
 
     @GetMapping("/v1/items/complete/buy")
     public ResponseEntity<ResponseForm> checkBuyList(HttpServletRequest httpRequest,
-            @PathVariable(name = "page-num", required = false) Integer pageNum,
-            @PathVariable(name = "size", required = false) Integer size) {
+            @RequestParam(name = "pageNum", required = false) Integer pageNum,
+            @RequestParam(name = "size", required = false) Integer size) {
         log.info("item checkBuyList start");
 
         Long memberId = (Long) httpRequest.getAttribute(USER_ID);
@@ -109,8 +109,8 @@ public class ItemController {
 
     @GetMapping("/v1/items/complete/sell")
     public ResponseEntity<ResponseForm> checkSellList(HttpServletRequest httpRequest,
-            @PathVariable(name = "page-num", required = false) Integer pageNum,
-            @PathVariable(name = "size", required = false) Integer size) {
+            @RequestParam(name = "pageNum", required = false) Integer pageNum,
+            @RequestParam(name = "size", required = false) Integer size) {
         log.info("item checkSellList start");
 
         Long memberId = (Long) httpRequest.getAttribute(USER_ID);
