@@ -47,7 +47,7 @@ public class MemberController {
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
 
-        Member member = memberService.signIn(request, request.getRegistrationToken());
+        Member member = memberService.signIn(request, request.getFcmToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
