@@ -49,6 +49,7 @@ public class MemberController {
 
         System.out.println(">>>>>>>>> " + request.getFcmToken());
         Member member = memberService.signIn(request, request.getFcmToken());
+        log.info(">>>>>>>>>>>>> 저장된 fcmtoken : " + member.getRegistrationToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
