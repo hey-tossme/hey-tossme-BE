@@ -58,10 +58,19 @@ public class NotificationService {
 			ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
 			InputStream inputStream = resource.getInputStream();
 
-			FirebaseOptions options = FirebaseOptions.builder()
-					.setCredentials(GoogleCredentials.fromStream(inputStream))
-					.build();
-			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");
+//			FirebaseOptions options = FirebaseOptions.builder()
+//					.setCredentials(GoogleCredentials.fromStream(inputStream))
+//					.build();
+//			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");
+
+			FirebaseApp app = FirebaseApp.getInstance("heytossme2");
+			if (app == null) {
+				FirebaseOptions options = FirebaseOptions.builder()
+						.setCredentials(GoogleCredentials.fromStream(inputStream))
+						.build();
+
+				app = FirebaseApp.initializeApp(options, "heytossme2");
+			}
 		} catch (IOException e) {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
