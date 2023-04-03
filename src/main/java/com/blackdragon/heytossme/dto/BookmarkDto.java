@@ -31,6 +31,8 @@ public class BookmarkDto {
         private int price;
         private LocalDateTime createdAt;
         private LocalDateTime dueTime;
+        private String address;
+        private String addressDetail;
         private float latitude;
         private float longitude;
         private String imageUrl;
@@ -46,6 +48,8 @@ public class BookmarkDto {
                     .contents(bookmark.getItem().getContents())
                     .price(bookmark.getItem().getPrice())
                     .createdAt(bookmark.getCreatedAt())
+                    .address(bookmark.getItem().getAddress().toString())
+                    .addressDetail(bookmark.getItem().getAddress().getFirstDetailAddress())
                     .dueTime(bookmark.getItem().getDueDate())
                     .latitude(bookmark.getItem().getLatitude())
                     .longitude(bookmark.getItem().getLongitude())
