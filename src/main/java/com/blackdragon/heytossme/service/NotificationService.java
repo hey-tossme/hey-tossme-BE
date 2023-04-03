@@ -61,7 +61,7 @@ public class NotificationService {
 //			FirebaseOptions options = FirebaseOptions.builder()
 //					.setCredentials(GoogleCredentials.fromStream(inputStream))
 //					.build();
-//			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");
+//			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");/
 
 			FirebaseApp app = FirebaseApp.getInstance("heytossme2");
 			if (app == null) {
