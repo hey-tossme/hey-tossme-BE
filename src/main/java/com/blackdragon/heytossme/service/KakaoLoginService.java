@@ -79,6 +79,7 @@ public class KakaoLoginService {
 
         ResponseForm responseForm = new ResponseForm(KakaoResponse.LOG_IN.getMessage(), map);
         responseForm.setToken(kakaoToken);
+        responseForm.setRegistrationToken(registrationToken);
 
         return responseForm;
     }

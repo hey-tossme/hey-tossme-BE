@@ -12,6 +12,7 @@ public class ResponseForm {
     private String message;
     private Object data;
     private String token;
+    private String registrationToken;
 
     public ResponseForm(String message, Object data) {
         this.message = message;
