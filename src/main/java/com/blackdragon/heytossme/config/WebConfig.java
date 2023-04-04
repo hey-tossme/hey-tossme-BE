@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
     private static final int MAX_AGE = 1000 * 60 * 60;
     private final TokenInterceptor tokenInterceptor;
     @Value("${com.blackdragon.fcm.path}")
-    private static String fcmPath;
+    private String fcmPath;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
