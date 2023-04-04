@@ -58,7 +58,7 @@ public class KakaoLoginService {
         Member member = getOrSaveUserByEmail(kakaoInfo);
 
         //소셜로그인성공 -> fcm서버초기화 + fcmToken저장
-        this.doFcmInitializer(member, registrationToken);
+//        this.doFcmInitializer(member, registrationToken);
 
         Response response = new Response();
         response.setId(member.getId());
