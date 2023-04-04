@@ -81,8 +81,10 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
+        log.warn(">>>>>>>> memberService : " + registrationToken);
         notificationService.initializer();
         member.setRegistrationToken(registrationToken);
+        log.warn(">>>>>>>> memberService out : " + member.getRegistrationToken());//의심됨
         return member;
     }
 

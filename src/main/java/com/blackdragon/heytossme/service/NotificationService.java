@@ -68,10 +68,11 @@ public class NotificationService {
 		} catch (Exception e) {
 			System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
 		}
+		log.info(">>>>>> fcm 초기화 완료 >>>>>>");
 	}
 
 	public void sendPush(NotificationRequest request) {
-
+		log.info(">>>>>>>>> request : " + request.getRegistrationToken());
 		WebpushConfig webpushConfig = WebpushConfig.builder()
 				.setNotification(new WebpushNotification(request.getTitle(), request.getBody()))
 				.build();
