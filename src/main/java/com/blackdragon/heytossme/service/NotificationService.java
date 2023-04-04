@@ -14,6 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -55,20 +56,18 @@ public class NotificationService {
 
 	public void initializer() {
 		try {
-			ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
-			InputStream inputStream = resource.getInputStream();
+			FileInputStream inputStream =
+					new FileInputStream("src/main/resources/firebase-service-account.json");
 
 			FirebaseOptions options = FirebaseOptions.builder()
 					.setCredentials(GoogleCredentials.fromStream(inputStream))
 					.build();
-			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, "heytossme2");
-
+			FirebaseApp.initializeApp(options);
 		} catch (IOException e) {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
-			log.error("Failed FCM Initializer");
-			log.error("init error : " + e.getMessage());
-			log.error("init error : " + e.getStackTrace());
+			System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
+			System.out.println(">>>>>>>>>> 초기화 에러" + Arrays.toString(e.getStackTrace()));
 		}
 	}
 
