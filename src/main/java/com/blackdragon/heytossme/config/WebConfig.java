@@ -43,6 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public FirebaseApp initializer() {
         try {
+            log.info("initialized start");
             FileInputStream inputStream =
                     new FileInputStream("src/main/resources/firebase-service-account.json");
 
@@ -50,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
                     .setProjectId("heytossme2")
                     .build();
+            log.info("initialized completed");
             return FirebaseApp.initializeApp(options);
         } catch (IOException e) {
             log.error("Failed load FCM file");
