@@ -60,7 +60,7 @@ public class NotificationService {
 			FirebaseOptions options = FirebaseOptions.builder()
 					.setCredentials(GoogleCredentials.fromStream(inputStream))
 					.build();
-			FirebaseApp.initializeApp(options, "heytossme2");
+			FirebaseApp.initializeApp(options);
 		} catch (IOException e) {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
