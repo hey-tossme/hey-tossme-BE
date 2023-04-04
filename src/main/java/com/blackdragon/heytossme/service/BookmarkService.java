@@ -40,9 +40,8 @@ public class BookmarkService {
     }
 
     public CreateResponse registerBookmark(Long userId, Long itemId) {
-        //북마크 중복 등록을 막기위함
-        Optional<Bookmark> existedBookmark = bookmarkRepository.findByItemIdAndMemberId(itemId, userId);
-        if (existedBookmark == null) {
+        boolean existedBookmark = bookmarkRepository.findByItemIdAndMemberId(itemId, userId).isEmpty();
+        if (!existedBookmark) {
             throw new BookmarkException(BookmarkErrorCode.DUPLICATED);
         }
 
