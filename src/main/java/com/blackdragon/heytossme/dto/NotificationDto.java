@@ -11,6 +11,11 @@ import lombok.Data;
 
 public class NotificationDto {
 
+	@Data
+	public static class FCMRequest {
+		private String fcmToken;
+	}
+
     @Builder
     @Data
     public static class Response {

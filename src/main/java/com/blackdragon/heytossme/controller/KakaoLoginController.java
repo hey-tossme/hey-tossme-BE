@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
+import com.blackdragon.heytossme.dto.NotificationDto;
 import com.blackdragon.heytossme.dto.ResponseForm;
 import com.blackdragon.heytossme.service.KakaoLoginService;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,9 @@ public class KakaoLoginController {
     @GetMapping("/login")
     public ResponseEntity<ResponseForm> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code,
-            @RequestBody String fcmToken) {
+            @RequestBody NotificationDto.FCMRequest request) {
         log.info("item oauthKakaoLogin start");
 
-        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code, fcmToken));
+        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code, request.getFcmToken()));
     }
 }
