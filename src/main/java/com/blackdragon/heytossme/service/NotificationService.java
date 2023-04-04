@@ -67,7 +67,6 @@ public class NotificationService {
 			log.error("Failed load FCM file");
 		} catch (Exception e) {
 			System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
-			System.out.println(">>>>>>>>>> 초기화 에러" + Arrays.toString(e.getStackTrace()));
 		}
 	}
 
