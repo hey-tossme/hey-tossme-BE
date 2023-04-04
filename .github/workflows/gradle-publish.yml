@@ -42,6 +42,7 @@ jobs:
           touch ./application.yml 
           echo "${{ secrets.PROPERTIES }}" > ./application.yml 
           ls -al
+          pwd
 
       - name: Make gradle excutable
         run: chmod +x ./gradlew
