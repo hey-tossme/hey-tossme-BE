@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
+    private static final String USER_ID = "userId";
+    private static final String ACCESS_TOKEN = "accessToken";
 
     @GetMapping
     public ResponseEntity<ResponseForm> getBookmarks(
@@ -31,8 +33,8 @@ public class BookmarkController {
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer size) {
         log.info("getBookmarks start");
-        Long userId = (Long) request.getAttribute("userId");
-        String accessToken = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String accessToken = (String) request.getAttribute(ACCESS_TOKEN);
         Page<CreateResponse> data = bookmarkService.getBookmarkList(userId, pageNum, size);
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.GET_BOOKMARK_LIST.getMessage(), data,
@@ -44,8 +46,8 @@ public class BookmarkController {
             HttpServletRequest request, @RequestParam("itemId") Long itemId) {
         log.info("registerBookmarks start");
 
-        Long userId = (Long) request.getAttribute("userId");
-        String accessToken = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String accessToken = (String) request.getAttribute(ACCESS_TOKEN);
         CreateResponse data = bookmarkService.registerBookmark(userId, itemId);
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.REGISTER_BOOKMARK.getMessage(), data,
@@ -57,8 +59,8 @@ public class BookmarkController {
             HttpServletRequest request, @RequestParam("itemId") Long itemId) {
         log.info("deleteBookmarks start");
 
-        Long userId = (Long) request.getAttribute("userId");
-        String accessToken = (String) request.getAttribute("accessToken");
+        Long userId = (Long) request.getAttribute(USER_ID);
+        String accessToken = (String) request.getAttribute(ACCESS_TOKEN);
         DeleteResponse data = bookmarkService.deleteBookmark(userId, itemId);
         return ResponseEntity.ok(
                 new ResponseForm(BookmarkResponse.DELETE_BOOKMARK.getMessage(), data, accessToken));
