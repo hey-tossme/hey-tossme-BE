@@ -333,8 +333,8 @@ public class ItemService {
                 .member(buyer)
                 .build();
 
-        notificationService.sendPush(sellerPush, webConfig.initializer());
-        notificationService.sendPush(buyerPush, webConfig.initializer());
+        notificationService.sendPush(sellerPush);
+        notificationService.sendPush(buyerPush);
     }
 
     public List<Keyword> sendKeywordPush(Item item) {
@@ -351,7 +351,7 @@ public class ItemService {
                         .item(item)
                         .member(keywordList.get(i).getMember())
                         .build();
-                notificationService.sendPush(keywordPush, webConfig.initializer());
+                notificationService.sendPush(keywordPush);
             }
         }
 
