@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.service;
 
+import com.blackdragon.heytossme.config.WebConfig;
 import com.blackdragon.heytossme.dto.ItemDto.DealListResponse;
 import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
@@ -9,11 +10,9 @@ import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.MemberException;
-import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
-import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
@@ -65,6 +64,7 @@ public class ItemService {
     private final AddressRepository addressRepository;
     private final NotificationService notificationService;
     private final KeywordRepository keywordRepository;
+    private final WebConfig webConfig;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -333,8 +333,8 @@ public class ItemService {
                 .member(buyer)
                 .build();
 
-        notificationService.sendPush(sellerPush);
-        notificationService.sendPush(buyerPush);
+        notificationService.sendPush(sellerPush, webConfig.initializer());
+        notificationService.sendPush(buyerPush, webConfig.initializer());
     }
 
     public List<Keyword> sendKeywordPush(Item item) {
@@ -351,7 +351,7 @@ public class ItemService {
                         .item(item)
                         .member(keywordList.get(i).getMember())
                         .build();
-                notificationService.sendPush(keywordPush);
+                notificationService.sendPush(keywordPush, webConfig.initializer());
             }
         }
 

@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.service;
 
+import com.blackdragon.heytossme.config.WebConfig;
 import com.blackdragon.heytossme.dto.BookmarkDto;
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
@@ -34,6 +35,7 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final NotificationService notificationService;
+    private final WebConfig webConfig;
 
     public Page<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
@@ -66,7 +68,7 @@ public class BookmarkService {
                 .member(member)
                 .build();
         log.info(">>>>> 북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
-        notificationService.sendPush(notificationInfo);
+        notificationService.sendPush(notificationInfo, webConfig.initializer());
 
         return BookmarkDto.CreateResponse.from(bookmark);
     }

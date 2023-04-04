@@ -1,6 +1,11 @@
 package com.blackdragon.heytossme.config;
 
 import com.blackdragon.heytossme.interceptor.TokenInterceptor;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import java.io.FileInputStream;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -32,5 +37,23 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(MAX_AGE);
+    }
+
+    public FirebaseApp initializer() {
+        try {
+            FileInputStream inputStream =
+                    new FileInputStream("src/main/resources/firebase-service-account.json");
+
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(inputStream))
+                    .build();
+            return FirebaseApp.initializeApp(options);
+        } catch (IOException e) {
+            log.error("Failed load FCM file");
+        } catch (Exception e) {
+            System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
+        }
+        log.info(">>>>>> fcm 초기화 완료 >>>>>>");
+        return null;
     }
 }
