@@ -48,6 +48,7 @@ public class WebConfig implements WebMvcConfigurer {
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
+                    .setProjectId("heytossme2")
                     .build();
             return FirebaseApp.initializeApp(options);
         } catch (IOException e) {
