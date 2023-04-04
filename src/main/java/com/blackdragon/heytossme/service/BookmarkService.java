@@ -18,6 +18,7 @@ import com.blackdragon.heytossme.persist.entity.Bookmark;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.NotificationType;
+import com.google.firebase.FirebaseApp;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,11 @@ public class BookmarkService {
                 .member(member)
                 .build();
         log.info(">>>>> 북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
-        notificationService.sendPush(notificationInfo, webConfig.initializer());
+
+        //TODO => 이니셜라이저는 별개로하고, FirebaseApp에 값을 넣어주는걸로
+        webConfig.initializer();
+        FirebaseApp heytossme2 = FirebaseApp.initializeApp("heytossme2");
+        notificationService.sendPush(notificationInfo, heytossme2);
 
         return BookmarkDto.CreateResponse.from(bookmark);
     }
