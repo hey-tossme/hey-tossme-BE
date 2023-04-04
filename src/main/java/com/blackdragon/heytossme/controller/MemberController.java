@@ -46,9 +46,9 @@ public class MemberController {
     @PostMapping("/v2/members/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
-
+        log.warn(">>>>>>>>> 프론트에서받은 fcm토큰 " + request.getFcmToken());
         Member member = memberService.signIn(request, request.getFcmToken());
-        log.info(">>>>>>>>>>>>> 저장된 fcmtoken : " + member.getRegistrationToken());
+        log.info(">>>>>>>>> 저장된 fcmtoken : " + member.getRegistrationToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
