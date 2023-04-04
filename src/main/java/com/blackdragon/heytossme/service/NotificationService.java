@@ -52,24 +52,7 @@ public class NotificationService {
 		return Response.from(notification);
 	}
 
-	public void initializer() {
-		try {
-			FileInputStream inputStream =
-					new FileInputStream("src/main/resources/firebase-service-account.json");
-
-			FirebaseOptions options = FirebaseOptions.builder()
-					.setCredentials(GoogleCredentials.fromStream(inputStream))
-					.build();
-			FirebaseApp.initializeApp(options);
-		} catch (IOException e) {
-			log.error("Failed load FCM file");
-		} catch (Exception e) {
-			System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
-		}
-		log.info(">>>>>> fcm 초기화 완료 >>>>>>");
-	}
-
-	public void sendPush(NotificationRequest request) {
+	public void sendPush(NotificationRequest request, FirebaseApp firebaseApp) {
 		log.info(">>>>>>>>> request : " + request.getRegistrationToken());
 		WebpushConfig webpushConfig = WebpushConfig.builder()
 				.setNotification(new WebpushNotification(request.getTitle(), request.getBody()))
@@ -80,9 +63,8 @@ public class NotificationService {
 				.setToken(request.getRegistrationToken())
 				.build();
 
-		FirebaseApp heytossme2 = FirebaseApp.getInstance("heytossme2");
 		try {
-			String response = FirebaseMessaging.getInstance(heytossme2).send(message);
+			String response = FirebaseMessaging.getInstance(firebaseApp).send(message);
 			log.info("response : " + response);
 		} catch (FirebaseMessagingException e) {
 			log.error("fcm을 통한 메시지 push 발송 실패");
