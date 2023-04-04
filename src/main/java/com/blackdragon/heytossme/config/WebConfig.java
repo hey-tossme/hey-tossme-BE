@@ -5,9 +5,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import java.io.FileInputStream;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -21,6 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     private static final int MAX_AGE = 1000 * 60 * 60;
     private final TokenInterceptor tokenInterceptor;
+    @Value("{{com.blackdragon.fcm.path}")
+    private static String fcmPath;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -45,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
         try {
             log.info("initialized start");
             FileInputStream inputStream =
-                    new FileInputStream("src/main/resources/firebase-service-account.json");
+                    new FileInputStream(fcmPath);
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
@@ -53,12 +55,9 @@ public class WebConfig implements WebMvcConfigurer {
                     .build();
             log.info("initialized completed");
             return FirebaseApp.initializeApp(options);
-        } catch (IOException e) {
-            log.error("Failed load FCM file");
         } catch (Exception e) {
-            System.out.println(">>>>>>>>>> 초기화 에러" + e.getMessage());
+            log.error("error message = {}", e.getMessage());
         }
-        log.info(">>>>>> fcm 초기화 완료 >>>>>>");
         return null;
     }
 }
