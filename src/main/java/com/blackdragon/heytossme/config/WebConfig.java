@@ -4,12 +4,13 @@ import com.blackdragon.heytossme.interceptor.TokenInterceptor;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -46,8 +47,8 @@ public class WebConfig implements WebMvcConfigurer {
     public FirebaseApp initializer() {
         try {
             log.info("initialized start");
-            FileInputStream inputStream =
-                    new FileInputStream("file:"+fcmPath);
+            InputStream inputStream =
+                    new ClassPathResource("file:"+fcmPath).getInputStream();
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
