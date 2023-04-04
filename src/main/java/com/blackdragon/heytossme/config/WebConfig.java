@@ -48,7 +48,7 @@ public class WebConfig implements WebMvcConfigurer {
         try {
             log.info("initialized start");
             InputStream inputStream =
-                    new ClassPathResource("jar:file:/" + fcmPath).getInputStream();
+                    new ClassPathResource("jar:file:" + fcmPath).getInputStream();
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
