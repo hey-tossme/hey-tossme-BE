@@ -70,10 +70,7 @@ public class BookmarkService {
                 .build();
         log.info(">>>>> 북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
 
-        //TODO => 이니셜라이저는 별개로하고, FirebaseApp에 값을 넣어주는걸로
-        webConfig.initializer();
-        FirebaseApp heytossme2 = FirebaseApp.initializeApp("heytossme2");
-        notificationService.sendPush(notificationInfo, heytossme2);
+        notificationService.sendPush(notificationInfo);
 
         return BookmarkDto.CreateResponse.from(bookmark);
     }

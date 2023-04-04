@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -39,6 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(MAX_AGE);
     }
 
+    @Bean
     public FirebaseApp initializer() {
         try {
             FileInputStream inputStream =

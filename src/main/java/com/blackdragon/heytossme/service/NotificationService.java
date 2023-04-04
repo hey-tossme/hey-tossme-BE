@@ -52,7 +52,7 @@ public class NotificationService {
 		return Response.from(notification);
 	}
 
-	public void sendPush(NotificationRequest request, FirebaseApp firebaseApp) {
+	public void sendPush(NotificationRequest request) {
 		log.info(">>>>>>>>> request : " + request.getRegistrationToken());
 		WebpushConfig webpushConfig = WebpushConfig.builder()
 				.setNotification(new WebpushNotification(request.getTitle(), request.getBody()))
@@ -64,7 +64,7 @@ public class NotificationService {
 				.build();
 
 		try {
-			String response = FirebaseMessaging.getInstance(firebaseApp).send(message);
+			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("response : " + response);
 		} catch (FirebaseMessagingException e) {
 			log.error("fcm을 통한 메시지 push 발송 실패");
