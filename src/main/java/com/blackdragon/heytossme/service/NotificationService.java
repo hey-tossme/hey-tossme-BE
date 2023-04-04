@@ -63,10 +63,10 @@ public class NotificationService {
 				.setToken(request.getRegistrationToken())
 				.build();
 
-		FirebaseApp heytossme2 = FirebaseApp.getInstance("[DEFAULT]");
+//		FirebaseApp heytossme2 = FirebaseApp.getInstance("[DEFAULT]");
 
 		try {
-			String response = FirebaseMessaging.getInstance(heytossme2).send(message);
+			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("response : " + response);
 		} catch (FirebaseMessagingException e) {
 			log.error("fcm을 통한 메시지 push 발송 실패");
