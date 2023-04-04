@@ -19,11 +19,13 @@ import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.NotificationType;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
@@ -63,7 +65,7 @@ public class BookmarkService {
                 .item(item)
                 .member(member)
                 .build();
-
+        log.info(">>>>> 북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
         notificationService.sendPush(notificationInfo);
 
         return BookmarkDto.CreateResponse.from(bookmark);
