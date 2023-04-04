@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +90,11 @@ public class NotificationService {
 			log.error("fcm을 통한 메시지 push 발송 실패");
 			log.error("error code : " + e.getErrorCode());
 			log.error("error message : " + e.getMessage());
+		} catch (Exception e) {
+			log.error(" >>>>>>>>> error : " + e.getMessage());
+			for (var i : e.getStackTrace()) {
+				log.error(" >>>>>>>>> error : {}", i);
+			}
 		}
 
 		Notification notification = Notification.builder()
