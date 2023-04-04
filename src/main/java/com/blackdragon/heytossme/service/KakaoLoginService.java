@@ -83,12 +83,12 @@ public class KakaoLoginService {
         return responseForm;
     }
 
-    @Transactional
-    public Member saveFcmToken(Member member) {
-        notificationService.initializer();
-//        member.setRegistrationToken(registrationToken);
-        return member;
-    }
+//    @Transactional
+//    public Member saveFcmToken(Member member) {
+//        notificationService.initializer();
+////        member.setRegistrationToken(registrationToken);
+//        return member;
+//    }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
         Optional<Member> memberOptional = memberRepository.findByEmail(kakaoInfo.get("email"));
@@ -202,9 +202,9 @@ public class KakaoLoginService {
         return kakaoToken;
     }
 
-    @Transactional
-    private void doFcmInitializer(Member member, String registrationToken) {
-        notificationService.initializer();
-        member.setRegistrationToken(registrationToken);
-    }
+//    @Transactional
+//    private void doFcmInitializer(Member member, String registrationToken) {
+//        notificationService.initializer();
+//        member.setRegistrationToken(registrationToken);
+//    }
 }
