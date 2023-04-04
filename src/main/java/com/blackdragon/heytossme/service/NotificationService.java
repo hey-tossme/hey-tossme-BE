@@ -63,7 +63,7 @@ public class NotificationService {
 				.setToken(request.getRegistrationToken())
 				.build();
 
-		FirebaseApp heytossme2 = FirebaseApp.getInstance("heytossme2");
+		FirebaseApp heytossme2 = FirebaseApp.getInstance("[DEFAULT]");
 
 		try {
 			String response = FirebaseMessaging.getInstance(heytossme2).send(message);
