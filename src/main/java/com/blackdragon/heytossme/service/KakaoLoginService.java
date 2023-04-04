@@ -57,7 +57,7 @@ public class KakaoLoginService {
         //DB 에서 해당 유저 이메일로 찾기
         Member member = getOrSaveUserByEmail(kakaoInfo);
 
-        //소셜로그인성공 -> fcm서버초기화 + fcmToken저장
+        //소셜로그인성공 -> fcm서버초기화 + fcmToken저장.
 //        this.doFcmInitializer(member, registrationToken);
 
         Response response = new Response();
