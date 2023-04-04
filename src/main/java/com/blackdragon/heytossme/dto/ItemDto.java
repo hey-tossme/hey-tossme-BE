@@ -31,6 +31,7 @@ public class ItemDto {
         private String contents;
         private int price;
         private String address;
+        private String addressDetail;
         private LocalDateTime createdAt;
         private LocalDateTime dueTime;
         private float latitude;
@@ -46,6 +47,7 @@ public class ItemDto {
             this.contents = item.getContents();
             this.price = item.getPrice();
             this.address = convertAddress(item.getAddress());
+            this.addressDetail = item.getAddress().getSecondDetailAddress();
             this.createdAt = item.getCreatedAt();
             this.dueTime = item.getDueDate();
             this.latitude = item.getLatitude();
@@ -61,9 +63,7 @@ public class ItemDto {
                     + " "
                     + address.getThirdDepthRegion()
                     + " "
-                    + address.getFirstDetailAddress()
-                    + " "
-                    + address.getSecondDetailAddress();
+                    + address.getFirstDetailAddress();
         }
     }
 
