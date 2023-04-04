@@ -31,7 +31,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os}}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
@@ -64,9 +64,10 @@ jobs:
           key:  ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            ls -al
             touch ./docker-compose.yml
             echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+            touch ./app/secret/firebase-service-account.json
+            echo "${{ secrets.FIREBASE_SETTING }}" > ./app/secret/firebase-service-account.json
             docker compose stop
             docker compose pull
             docker compose up -d
