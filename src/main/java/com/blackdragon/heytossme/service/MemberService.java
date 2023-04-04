@@ -171,8 +171,6 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        member.setRegistrationToken(Strings.EMPTY); //fcm등록토큰을 빈값으로 변경
-
         return MemberDto.SignOutResponse.from(member);
     }
 
