@@ -54,7 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
                     new ClassPathResource(fcmPath).getInputStream();
 
             InputStreamReader reader = new InputStreamReader(_inputStream);
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder().setLenient().create();
             InputStream inputStream = gson.fromJson(reader, InputStream.class);
             log.warn("gson변환 완료");
 
