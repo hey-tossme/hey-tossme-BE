@@ -68,9 +68,9 @@ public class KeywordController {
 
         Long userId = (Long) request.getAttribute(USER_ID);
         String token = (String) request.getAttribute(ACCESS_TOKEN);
-        Keyword savedKeyword = keywordService.getKeyword(keyword);
+        Keyword savedKeyword = keywordService.getKeyword(keyword, userId);
 
-        Response data = keywordService.deleteKeyword(savedKeyword.getKeyword());
+        Response data = keywordService.deleteKeyword(savedKeyword.getKeyword(), userId);
 
         return ResponseEntity.ok(
                 new ResponseForm(KeywordResponse.DELETE_KEYWORD.getMessage(), data, token));

@@ -19,8 +19,8 @@ public class KeywordService {
     private final KeywordRepository keywordRepository;
     private final MemberRepository memberRepository;
 
-    public Keyword getKeyword(String keyword) {
-        return keywordRepository.findByKeyword(keyword);
+    public Keyword getKeyword(String keyword, Long userId) {
+        return keywordRepository.findByKeywordAndMemberId(keyword, userId);
     }
 
     public List<Response> getKeywordList(Long memberId) {
@@ -41,8 +41,8 @@ public class KeywordService {
         return Response.from(savedKeyword);
     }
 
-    public Response deleteKeyword(String keyword) {
-        Keyword savedKeyword = keywordRepository.findByKeyword(keyword);
+    public Response deleteKeyword(String keyword, Long userId) {
+        Keyword savedKeyword = keywordRepository.findByKeywordAndMemberId(keyword, userId);
         keywordRepository.deleteById(savedKeyword.getId());
         return Response.from(savedKeyword);
     }
