@@ -174,7 +174,6 @@ public class MemberService {
     //fcm 서버 초기화 + fcm등록토큰 db에 추가
     @Transactional
     public void saveRegistrationToken(Long userId, String token) {
-//        notificationService.initializer();
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 

@@ -27,7 +27,7 @@ public class NotificationService {
 
     public List<Response> getNotification(Long userId) {
 		List<Notification> notificationList = notificationRepository.findAllByMemberId(userId);
-		System.out.println(">>>>>>>> notificationList : " + notificationList);
+		System.out.println("notificationList : " + notificationList);
         return notificationList.stream().map(Response::from).collect(Collectors.toList());
     }
 
