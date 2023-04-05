@@ -6,16 +6,12 @@ import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.NotificationRepository;
 import com.blackdragon.heytossme.persist.entity.Notification;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +60,9 @@ public class NotificationService {
 				.build();
 
 //		FirebaseApp heytossme2 = FirebaseApp.getInstance("[DEFAULT]");
+		for (var app : FirebaseApp.getApps()) {
+			log.info("app list = {}", app.getName());
+		}
 
 		try {
 			String response = FirebaseMessaging.getInstance().send(message);
