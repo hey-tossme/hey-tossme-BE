@@ -41,8 +41,6 @@ jobs:
           cd ./src/main/resources
           touch ./application.yml 
           echo "${{ secrets.PROPERTIES }}" > ./application.yml
-          touch ./firebase-service-account.json
-          echo "${{ secrets.FIREBASE_SETTING }}" > ./firebase-service-account.json
           ls -al
 
       - name: Make gradle excutable
