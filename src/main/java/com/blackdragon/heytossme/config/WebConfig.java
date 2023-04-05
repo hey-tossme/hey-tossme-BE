@@ -4,7 +4,10 @@ import com.blackdragon.heytossme.interceptor.TokenInterceptor;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,8 +50,13 @@ public class WebConfig implements WebMvcConfigurer {
     public FirebaseApp initializer() {
         try {
             log.info("initialized start");
-            InputStream inputStream =
+            InputStream _inputStream =
                     new ClassPathResource(fcmPath).getInputStream();
+
+            InputStreamReader reader = new InputStreamReader(_inputStream);
+            Gson gson = new Gson();
+            InputStream inputStream = gson.fromJson(reader, InputStream.class);
+            log.warn("gson변환 완료");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
