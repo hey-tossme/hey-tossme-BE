@@ -23,9 +23,11 @@ public class KakaoLoginController {
     @GetMapping("/login")
     public ResponseEntity<ResponseForm> oauthKakaoLogin(
             @RequestParam(value = "code", required = false) String code,
-            @RequestBody NotificationDto.FCMRequest request) {
+//            @RequestBody NotificationDto.FCMRequest request) {
+            @RequestParam(value = "fcmToken", required = false) String fcmToken) {
         log.info("item oauthKakaoLogin start");
 
-        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code, request.getFcmToken()));
+//        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code, request.getFcmToken()));
+        return ResponseEntity.ok(kakaoLoginService.getAccessToken(code, fcmToken));
     }
 }
