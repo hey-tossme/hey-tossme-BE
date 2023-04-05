@@ -1,6 +1,5 @@
 package com.blackdragon.heytossme.service;
 
-import com.blackdragon.heytossme.config.WebConfig;
 import com.blackdragon.heytossme.dto.BookmarkDto;
 import com.blackdragon.heytossme.dto.BookmarkDto.CreateResponse;
 import com.blackdragon.heytossme.dto.BookmarkDto.DeleteResponse;
@@ -18,8 +17,6 @@ import com.blackdragon.heytossme.persist.entity.Bookmark;
 import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.NotificationType;
-import com.google.firebase.FirebaseApp;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,7 +33,6 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final NotificationService notificationService;
-    private final WebConfig webConfig;
 
     public Page<CreateResponse> getBookmarkList(Long userId, Integer pageNum, Integer size) {
         Pageable pageable = PageRequest.of(pageNum == null ? 0 : pageNum, size);
@@ -68,7 +64,7 @@ public class BookmarkService {
                 .item(item)
                 .member(member)
                 .build();
-        log.info(">>>>> 북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
+        log.info("북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
 
         notificationService.sendPush(notificationInfo);
 

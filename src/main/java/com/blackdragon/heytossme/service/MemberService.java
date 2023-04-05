@@ -30,7 +30,6 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,7 +47,6 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final AuthExtractor authExtractor;
     private final MailComponent mailComponent;
-    private final NotificationService notificationService;
 
 
     public MemberDto.Response signUp(SignUpRequest request) {
@@ -83,7 +81,7 @@ public class MemberService {
         }
         log.warn(">>>>>>>> memberService : " + registrationToken);
         member.setRegistrationToken(registrationToken);
-        log.warn(">>>>>>>> memberService out : " + member.getRegistrationToken());//의심됨
+        log.warn(">>>>>>>> memberService out : " + member.getRegistrationToken());
         return member;
     }
 
@@ -176,7 +174,6 @@ public class MemberService {
     //fcm 서버 초기화 + fcm등록토큰 db에 추가
     @Transactional
     public void saveRegistrationToken(Long userId, String token) {
-//        notificationService.initializer();
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
