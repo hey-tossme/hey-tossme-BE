@@ -40,9 +40,10 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application.yml 
-          echo "${{ secrets.PROPERTIES }}" > ./application.yml 
+          echo "${{ secrets.PROPERTIES }}" > ./application.yml
+          touch ./firebase-service-account.json
+          echo "${{ secrets.FIREBASE_SETTING }}" > ./firebase-service-account.json
           ls -al
-          pwd
 
       - name: Make gradle excutable
         run: chmod +x ./gradlew
@@ -66,8 +67,6 @@ jobs:
           script: |
             touch ./docker-compose.yml
             echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
-            touch ./app/secret/firebase-service-account.json
-            echo "${{ secrets.FIREBASE_SETTING }}" > ./app/secret/firebase-service-account.json
             docker compose stop
             docker compose pull
             docker compose up -d
