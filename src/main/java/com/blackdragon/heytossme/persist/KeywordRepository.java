@@ -12,7 +12,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     List<Keyword> findAllByMemberId(Long memberId);
 
-    Keyword findByKeyword(String keyword);
+    Keyword findByKeywordAndMemberId(String keyword, Long memberId);
 
     @Query("select k from Keyword k where :title like concat('%', k.keyword, '%')")
     List<Keyword> findKeyword(@Param("title") String title);
