@@ -49,7 +49,7 @@ public class NotificationService {
 	}
 
 	public void sendPush(NotificationRequest request) {
-		log.info(">>>>>>>>> request : " + request.getRegistrationToken());
+		log.info("request : " + request.getRegistrationToken());
 		WebpushConfig webpushConfig = WebpushConfig.builder()
 				.setNotification(new WebpushNotification(request.getTitle(), request.getBody()))
 				.build();
@@ -59,7 +59,6 @@ public class NotificationService {
 				.setToken(request.getRegistrationToken())
 				.build();
 
-//		FirebaseApp heytossme2 = FirebaseApp.getInstance("[DEFAULT]");
 		for (var app : FirebaseApp.getApps()) {
 			log.info("app list = {}", app.getName());
 		}
@@ -72,9 +71,9 @@ public class NotificationService {
 			log.error("error code : " + e.getErrorCode());
 			log.error("error message : " + e.getMessage());
 		} catch (Exception e) {
-			log.error(" >>>>>>>>> error : " + e.getMessage());
+			log.error("error : " + e.getMessage());
 			for (var i : e.getStackTrace()) {
-				log.error(" >>>>>>>>> error : {}", i);
+				log.error("error : {}", i);
 			}
 		}
 

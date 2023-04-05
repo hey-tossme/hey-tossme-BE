@@ -57,8 +57,8 @@ public class KakaoLoginService {
         //DB 에서 해당 유저 이메일로 찾기
         Member member = getOrSaveUserByEmail(kakaoInfo);
 
-        //소셜로그인성공 -> fcm서버초기화 + fcmToken저장.
-//        this.doFcmInitializer(member, registrationToken);
+        //소셜로그인성공 -> fcmToken저장.
+        this.saveFcmToken(member, registrationToken);
 
         Response response = new Response();
         response.setId(member.getId());
@@ -83,12 +83,11 @@ public class KakaoLoginService {
         return responseForm;
     }
 
-//    @Transactional
-//    public Member saveFcmToken(Member member) {
-//        notificationService.initializer();
-////        member.setRegistrationToken(registrationToken);
-//        return member;
-//    }
+    @Transactional
+    public Member saveFcmToken(Member member, String registrationToken) {
+        member.setRegistrationToken(registrationToken);
+        return member;
+    }
 
     private Member getOrSaveUserByEmail(Map<String, String> kakaoInfo) {
         Optional<Member> memberOptional = memberRepository.findByEmail(kakaoInfo.get("email"));
@@ -201,10 +200,4 @@ public class KakaoLoginService {
         }
         return kakaoToken;
     }
-
-//    @Transactional
-//    private void doFcmInitializer(Member member, String registrationToken) {
-//        notificationService.initializer();
-//        member.setRegistrationToken(registrationToken);
-//    }
 }
