@@ -31,12 +31,19 @@ public class BookmarkDto {
         private int price;
         private LocalDateTime createdAt;
         private LocalDateTime dueTime;
+        private String address;
+        private String addressDetail;
         private float latitude;
         private float longitude;
         private String imageUrl;
         private String status;
 
         public static CreateResponse from(Bookmark bookmark) {
+            String address = bookmark.getItem().getAddress().getFirstDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getSecondDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getThirdDepthRegion() + " "
+                    + bookmark.getItem().getAddress().getFirstDetailAddress();
+            String addressDetail = bookmark.getItem().getAddress().getSecondDetailAddress();
             return CreateResponse.builder()
                     .id(bookmark.getId())
                     .itemId(bookmark.getItem().getId())
@@ -46,6 +53,8 @@ public class BookmarkDto {
                     .contents(bookmark.getItem().getContents())
                     .price(bookmark.getItem().getPrice())
                     .createdAt(bookmark.getCreatedAt())
+                    .address(address)
+                    .addressDetail(addressDetail)
                     .dueTime(bookmark.getItem().getDueDate())
                     .latitude(bookmark.getItem().getLatitude())
                     .longitude(bookmark.getItem().getLongitude())

@@ -11,6 +11,11 @@ import lombok.Data;
 
 public class NotificationDto {
 
+	@Data
+	public static class FCMRequest {
+		private String fcmToken;
+	}
+
     @Builder
     @Data
     public static class Response {
@@ -22,6 +27,8 @@ public class NotificationDto {
         private String message;
         private boolean readOrNot;
         private LocalDateTime createdAt;
+		private NotificationType type;
+		private String title;
 
         public static Response from(Notification notification) {
             return Response.builder()
@@ -29,6 +36,8 @@ public class NotificationDto {
                     .itemId(notification.getItem().getId())
                     .message(notification.getMessage())
                     .readOrNot(notification.isReadOrNot())
+					.type(notification.getType())
+					.title(notification.getItem().getTitle())
                     .createdAt(notification.getCreatedAt())
                     .build();
         }

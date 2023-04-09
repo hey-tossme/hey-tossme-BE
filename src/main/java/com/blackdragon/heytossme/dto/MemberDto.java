@@ -33,7 +33,7 @@ public class MemberDto {
         private String email;
         @NotBlank
         private String password;
-        private String registrationToken;
+        private String fcmToken;
     }
 
     @Data
@@ -42,13 +42,6 @@ public class MemberDto {
         private String imageUrl;
         private String account;
         private String bankName;
-    }
-
-    @Data
-    public static class DeleteRequest {
-
-        @NotBlank
-        private String curPassword;
     }
 
     @Data

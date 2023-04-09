@@ -31,10 +31,6 @@ public class UploadService {
 
         String url = s3Uploader.upload(uploadedFilePaths);
 
-        member.setImageUrl(url);
-
-        memberRepository.save(member);
-
         return url;
     }
 }

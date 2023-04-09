@@ -18,11 +18,13 @@ import com.blackdragon.heytossme.persist.entity.Item;
 import com.blackdragon.heytossme.persist.entity.Member;
 import com.blackdragon.heytossme.type.NotificationType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
@@ -39,6 +41,11 @@ public class BookmarkService {
     }
 
     public CreateResponse registerBookmark(Long userId, Long itemId) {
+        boolean existedBookmark = bookmarkRepository.findByItemIdAndMemberId(itemId, userId).isEmpty();
+        if (!existedBookmark) {
+            throw new BookmarkException(BookmarkErrorCode.DUPLICATED);
+        }
+
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
         Member member = memberRepository.findById(userId)
@@ -49,13 +56,15 @@ public class BookmarkService {
                 .build());
 
         NotificationRequest notificationInfo = NotificationRequest.builder()
-                .registrationToken(member.getRegistrationToken())
+                .registrationToken(item.getSeller().getRegistrationToken())
                 .title("BOOKMARK")
-                .body("고객님의 제품이 북마크 처리되었습니다")
+                .body(item.getSeller().getName() + "고객님의 "
+                        + item.getTitle() + "제품이 북마크 처리되었습니다")
                 .type(NotificationType.BOOKMARK)
                 .item(item)
                 .member(member)
                 .build();
+        log.info("북마크 된 상품의 판매자 토큰 : "+  notificationInfo.getRegistrationToken());
 
         notificationService.sendPush(notificationInfo);
 
@@ -65,7 +74,7 @@ public class BookmarkService {
     public DeleteResponse deleteBookmark(Long userId, Long itemId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        Bookmark bookmark = bookmarkRepository.findByItemIdAndMemberId(member.getId(), itemId)
+        Bookmark bookmark = bookmarkRepository.findByItemIdAndMemberId(itemId, member.getId())
                 .orElseThrow(() -> new BookmarkException(BookmarkErrorCode.UNAUTHORIZED));
         bookmark.getMember().setId(member.getId());
         bookmarkRepository.deleteById(bookmark.getId());

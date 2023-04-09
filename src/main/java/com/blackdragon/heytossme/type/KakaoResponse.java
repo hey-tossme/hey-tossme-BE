@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum KakaoResponse {
 
-    LOG_IN("Successfully Login In");
+    LOG_IN("Successfully Kakao Login In");
 
     final String message;
 

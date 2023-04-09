@@ -1,5 +1,6 @@
 package com.blackdragon.heytossme.service;
 
+import com.blackdragon.heytossme.config.WebConfig;
 import com.blackdragon.heytossme.dto.ItemDto.DealListResponse;
 import com.blackdragon.heytossme.dto.ItemDto.ItemRequest;
 import com.blackdragon.heytossme.dto.ItemDto.Response;
@@ -9,11 +10,9 @@ import com.blackdragon.heytossme.dto.NotificationDto.NotificationRequest;
 import com.blackdragon.heytossme.exception.AuthException;
 import com.blackdragon.heytossme.exception.ItemException;
 import com.blackdragon.heytossme.exception.MemberException;
-import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.AuthErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.ItemErrorCode;
 import com.blackdragon.heytossme.exception.errorcode.MemberErrorCode;
-import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.AddressRepository;
 import com.blackdragon.heytossme.persist.HistoryRepository;
 import com.blackdragon.heytossme.persist.ItemRepository;
@@ -65,6 +64,7 @@ public class ItemService {
     private final AddressRepository addressRepository;
     private final NotificationService notificationService;
     private final KeywordRepository keywordRepository;
+    private final WebConfig webConfig;
 
     @Value("${com.blackdragon.kakao.key}")
     private String apiKey;
@@ -337,11 +337,8 @@ public class ItemService {
         notificationService.sendPush(buyerPush);
     }
 
-    //키워드 찾고 있는지확인해서 있으면 발송
     public List<Keyword> sendKeywordPush(Item item) {
         List<Keyword> keywordList = keywordRepository.findKeyword(item.getTitle());
-        Item item1 = itemRepository.findById(3L)
-                .orElseThrow(() -> new NotificationException(NotificationErrorCode.BAD_REQUEST));
 
         if (!keywordList.isEmpty()) {
             for (int i = 0; i < keywordList.size(); i++) {
@@ -351,7 +348,7 @@ public class ItemService {
                         .title("키워드 알림")
                         .body(body)
                         .type(NotificationType.KEYWORD)
-                        .item(item1)
+                        .item(item)
                         .member(keywordList.get(i).getMember())
                         .build();
                 notificationService.sendPush(keywordPush);

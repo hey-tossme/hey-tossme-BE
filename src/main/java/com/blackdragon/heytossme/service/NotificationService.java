@@ -6,21 +6,16 @@ import com.blackdragon.heytossme.exception.NotificationException;
 import com.blackdragon.heytossme.exception.errorcode.NotificationErrorCode;
 import com.blackdragon.heytossme.persist.NotificationRepository;
 import com.blackdragon.heytossme.persist.entity.Notification;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -32,6 +27,7 @@ public class NotificationService {
 
     public List<Response> getNotification(Long userId) {
 		List<Notification> notificationList = notificationRepository.findAllByMemberId(userId);
+		System.out.println("notificationList : " + notificationList);
         return notificationList.stream().map(Response::from).collect(Collectors.toList());
     }
 
@@ -52,24 +48,8 @@ public class NotificationService {
 		return Response.from(notification);
 	}
 
-	public void initializer() {
-		try {
-			ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
-			InputStream inputStream = resource.getInputStream();
-
-			FirebaseOptions options = FirebaseOptions.builder()
-					.setCredentials(GoogleCredentials.fromStream(inputStream))
-					.build();
-			FirebaseApp firebaseApp = FirebaseApp.initializeApp(options);
-		} catch (IOException e) {
-			log.error("Failed load FCM file");
-		} catch (Exception e) {
-			log.error("Failed FCM Initializer");
-		}
-	}
-
 	public void sendPush(NotificationRequest request) {
-
+		log.info("request : " + request.getRegistrationToken());
 		WebpushConfig webpushConfig = WebpushConfig.builder()
 				.setNotification(new WebpushNotification(request.getTitle(), request.getBody()))
 				.build();
@@ -79,6 +59,10 @@ public class NotificationService {
 				.setToken(request.getRegistrationToken())
 				.build();
 
+		for (var app : FirebaseApp.getApps()) {
+			log.info("app list = {}", app.getName());
+		}
+
 		try {
 			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("response : " + response);
@@ -86,6 +70,11 @@ public class NotificationService {
 			log.error("fcm을 통한 메시지 push 발송 실패");
 			log.error("error code : " + e.getErrorCode());
 			log.error("error message : " + e.getMessage());
+		} catch (Exception e) {
+			log.error("error : " + e.getMessage());
+			for (var i : e.getStackTrace()) {
+				log.error("error : {}", i);
+			}
 		}
 
 		Notification notification = Notification.builder()

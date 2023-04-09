@@ -2,14 +2,12 @@ package com.blackdragon.heytossme.service;
 
 
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_CODE;
-import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.INCORRECT_PASSWORD;
 import static com.blackdragon.heytossme.exception.errorcode.MemberErrorCode.MEMBER_NOT_FOUND;
 
 import com.blackdragon.heytossme.component.AuthExtractor;
 import com.blackdragon.heytossme.component.MailComponent;
 import com.blackdragon.heytossme.component.TokenProvider;
 import com.blackdragon.heytossme.dto.MemberDto;
-import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.PasswordRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
@@ -32,7 +30,6 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,7 +47,6 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final AuthExtractor authExtractor;
     private final MailComponent mailComponent;
-    private final NotificationService notificationService;
 
 
     public MemberDto.Response signUp(SignUpRequest request) {
@@ -83,8 +79,9 @@ public class MemberService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new MemberException(MemberErrorCode.INCORRECT_PASSWORD);
         }
-        notificationService.initializer();
+        log.warn(">>>>>>>> memberService : " + registrationToken);
         member.setRegistrationToken(registrationToken);
+        log.warn(">>>>>>>> memberService out : " + member.getRegistrationToken());
         return member;
     }
 
@@ -116,7 +113,7 @@ public class MemberService {
         return modelMapper.map(member, Response.class);
     }
 
-    public void deleteUser(Long userId, DeleteRequest request) {
+    public void deleteUser(Long userId) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -153,7 +150,7 @@ public class MemberService {
                 .sameSite("Lax")
                 .httpOnly(false)
                 .secure(false)
-                .maxAge(Duration.ofHours(3))
+                .maxAge(Duration.ofDays(3))
                 .build();
     }
 
@@ -171,15 +168,12 @@ public class MemberService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        member.setRegistrationToken(Strings.EMPTY); //fcm등록토큰을 빈값으로 변경
-
         return MemberDto.SignOutResponse.from(member);
     }
 
     //fcm 서버 초기화 + fcm등록토큰 db에 추가
     @Transactional
     public void saveRegistrationToken(Long userId, String token) {
-        notificationService.initializer();
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 

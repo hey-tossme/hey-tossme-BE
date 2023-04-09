@@ -46,7 +46,7 @@ public class KakaoLoginService {
     private final NotificationService notificationService;
 
     @Transactional
-    public ResponseForm  getAccessToken(String authorizationCode) {
+    public ResponseForm  getAccessToken(String authorizationCode, String registrationToken) {
 
         //kakao openId 토큰 발급 받기
         String token = getKakaoOpenIdToken(authorizationCode);
@@ -57,7 +57,8 @@ public class KakaoLoginService {
         //DB 에서 해당 유저 이메일로 찾기
         Member member = getOrSaveUserByEmail(kakaoInfo);
 
-        this.doFcmInitializer(member);
+        //소셜로그인성공 -> fcmToken저장.
+        this.saveFcmToken(member, registrationToken);
 
         Response response = new Response();
         response.setId(member.getId());
@@ -83,9 +84,8 @@ public class KakaoLoginService {
     }
 
     @Transactional
-    public Member saveFcmToken(Member member) {
-        notificationService.initializer();
-//        member.setRegistrationToken(registrationToken);
+    public Member saveFcmToken(Member member, String registrationToken) {
+        member.setRegistrationToken(registrationToken);
         return member;
     }
 
@@ -199,10 +199,5 @@ public class KakaoLoginService {
             throw new RuntimeException(e);
         }
         return kakaoToken;
-    }
-
-    private void doFcmInitializer(Member member) {
-//        notificationService.initializer();
-//        member.setRegistrationToken();
     }
 }

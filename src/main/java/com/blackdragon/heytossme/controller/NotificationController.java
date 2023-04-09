@@ -33,6 +33,7 @@ public class NotificationController {
         log.info("getNotification start");
 
         Long userId = (Long) request.getAttribute(USER_ID);
+        log.warn("최근 알림 리스트의 유저 : " + userId);
         List<NotificationDto.Response> data = notificationService.getNotification(userId);
         return ResponseEntity.ok(
                 new ResponseForm(NotificationResponse.GET_NOTIFIACTION_LIST.getMessage(), data));

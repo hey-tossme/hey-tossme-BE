@@ -1,7 +1,6 @@
 package com.blackdragon.heytossme.controller;
 
 import com.blackdragon.heytossme.dto.MemberDto;
-import com.blackdragon.heytossme.dto.MemberDto.DeleteRequest;
 import com.blackdragon.heytossme.dto.MemberDto.ModifyRequest;
 import com.blackdragon.heytossme.dto.MemberDto.Response;
 import com.blackdragon.heytossme.dto.MemberDto.ResponseToken;
@@ -47,8 +46,9 @@ public class MemberController {
     @PostMapping("/v2/members/signin")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest request,
             HttpServletResponse response) {
-
-        Member member = memberService.signIn(request, request.getRegistrationToken());
+        log.warn(">>>>>>>>> 프론트에서받은 fcm토큰 " + request.getFcmToken());
+        Member member = memberService.signIn(request, request.getFcmToken());
+        log.info(">>>>>>>>> 저장된 fcmtoken : " + member.getRegistrationToken());
         ResponseToken tokens = memberService.generateToken(member.getId(), member.getEmail());
         var cookie = memberService.generateCookie(tokens.getRefreshToken());
 
@@ -113,12 +113,11 @@ public class MemberController {
     }
 
     @DeleteMapping("/v1/members")
-    public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest,
-            @Valid @RequestBody DeleteRequest request) {
+    public ResponseEntity<ResponseForm> delete(HttpServletRequest httpServletRequest) {
         log.info("member delete start");
 
         Long id = (Long) httpServletRequest.getAttribute(USER_ID);
-        memberService.deleteUser(id, request);
+        memberService.deleteUser(id);
 
         return ResponseEntity.ok(
                 new ResponseForm(MemberResponse.DELETE_USER.getMessage(), null));
