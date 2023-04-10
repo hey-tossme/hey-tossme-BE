@@ -5,9 +5,11 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +20,28 @@ public class RabbitConfig {
     private static final String CHAT_QUEUE_NAME = "chat.queue";
     private static final String CHAT_EXCHANGE_NAME = "chat.exchange";
     private static final String ROUTING_KEY = "room.*";
+
+    @Value("${com.blackdragon.rabbitmq.clientId}")
+    private String clientId;
+    @Value("${com.blackdragon.rabbitmq.clientPw}")
+    private String clientPw;
+    @Value("${com.blackdragon.rabbitmq.virtualHost}")
+    private String virtualHost;
+    @Value("${com.blackdragon.rabbitmq.host}")
+    private String host;
+    @Value("${com.blackdragon.rabbitmq.port}")
+    private int port;
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(port);
+        connectionFactory.setVirtualHost(virtualHost);
+        connectionFactory.setUsername(clientId);
+        connectionFactory.setPassword(clientPw);
+        return connectionFactory;
+    }
 
     @Bean
     public Queue queue() {
